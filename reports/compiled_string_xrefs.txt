@@ -1,0 +1,4 @@
+.?AUCompiledString@Font@mset@@ type=0x1724610
+  COL=0x14424A8 vtable=0x13C1C68 offset=0 funcs=0:0xCA84B0
+.?AVFontResource@mset@@ type=0x16B19C8
+  COL=0x13D93C8 vtable=0x1329EC8 offset=0 funcs=0:0x1110C0,1:0x111040,2:0xD081B0

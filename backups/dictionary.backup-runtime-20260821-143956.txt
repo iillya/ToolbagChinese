@@ -1,0 +1,2297 @@
+﻿# Toolbag 5 Chinese dictionary
+# Format: English;Chinese
+Check for Updates;检查更新
+Beta Updates;测试版更新
+Remember Window Position;记住窗口位置
+Tablet-Friendly Input;平板友好输入
+Prompt for Unsaved Changes;未保存更改时提示
+Display Tooltips;显示提示
+Empty;空
+Last Opened;最近打开
+Template;模板
+Startup Scene;启动场景
+New Scenes;新建场景
+Offline;离线
+Interactive;交互
+Default Baker;默认烘焙器
+Windows Pointer;Windows 指针
+WinTab;WinTab
+Tablet Backend;平板后端
+Tablet backend change requires restart.;平板后端更改需要重启。
+Always Ask;始终询问
+Always Send;始终发送
+Never Send;从不发送
+Crash Reporting;崩溃报告
+Browse for Missing Files;浏览缺失文件
+Browse for Missing Meshes;浏览缺失网格
+Auto-Reload Textures;自动重新加载纹理
+Auto-Reload Model References;自动重新加载模型引用
+Import Models As References;将模型作为引用导入
+Import Materials With Models;随模型导入材质
+8ML;8ML
+ABC;ABC
+FBX;FBX
+OBJ;OBJ
+PLY;PLY
+STL;STL
+USD;USD
+Retain;保留
+Replace;替换
+Create Unique;创建唯一
+Existing Materials;现有材质
+Marmoset;Marmoset
+Mikk;Mikk
+Maya;Maya
+3DS Max;3DS Max
+Default Tangent Space;默认切线空间
+Right-Handed;右手
+Left-Handed;左手
+Default Tangent Orientation;默认切线方向
+Millimeters (mm);毫米 (mm)
+Centimeters (cm);厘米 (cm)
+Meters (m);米 (m)
+Kilometers (km);千米 (km)
+Inches (in);英寸 (in)
+Feet (ft);英尺 (ft)
+Yards (yd);码 (yd)
+Miles (mi);英里 (mi)
+Default Units;默认单位
+Automatic Updates;自动更新
+Downloads;下载
+...;...
+User Files;用户文件
+GPU Timeout (secs):;GPU 超时（秒）：
+Apply;应用
+Revert;还原
+Auto;自动
+Generic;通用
+Accelerated / RTX;加速 / RTX
+Ray Tracing;光线追踪
+Ray Tracing VRAM Budget (%);光线追踪显存预算 (%)
+Show Watermark by Default;默认显示水印
+Autosave Scenes;自动保存场景
+Save Relative to Scene;相对于场景保存
+Timer (mins);定时器（分钟）
+Max Saves;最大保存数
+Max Autosave Folder Size;最大自动保存文件夹大小
+MB;MB
+GB;GB
+Usage;使用量
+Clear;清除
+Open Folder;打开文件夹
+Normal Map:;法线贴图：
+Roughness Map:;粗糙度贴图：
+Albedo Map:;反照率贴图：
+Metalness Map:;金属度贴图：
+v5.03 (5032);v5.03 (5032)
+None;无
+No Selection;未选择
+- / +;- / +
+__;__
+File;文件
+Edit;编辑
+View;视图
+Scene;场景
+Texture;纹理
+Material;材质
+Render;渲染
+Window;窗口
+Help;帮助
+Frames;帧
+FPS;FPS
+Length;长度
+Speed;速度
+Bake Speed;烘焙速度
+Show Only Errors;仅显示错误
+Size:;大小：
+x;x
+Clear...;清除...
+UV Paint;UV 绘制
+3D Paint;3D 绘制
+Viewport Brush;视口笔刷
+Size;大小
+Flow;流量
+Sharpness;锐度
+Cancel;取消
+Red;红
+Green;绿
+Blue;蓝
+Alpha;Alpha
+Reset View;重置视图
+texture;纹理
+UDIM:;UDIM：
+1001;1001
+sRGB Color Space;sRGB 色彩空间
+Use Filtering;使用过滤
+Use Mipmaps;使用 Mipmap
+1x;1x
+2x;2x
+4x;4x
+8x;8x
+16x;16x
+Anisotropic Filtering;各向异性过滤
+Clamp;钳制
+Repeat;重复
+Mirror;镜像
+Wrapping;环绕
+Frame:;帧：
+VP Quality:;视口质量：
+Interval:;间隔：
+Draw:;绘制：
+GPU:;GPU：
+Reset;重置
+Tare:;归零：
+Mesh VRAM RT: 0.00MB;网格显存 RT: 0.00MB
+RGB;RGB
+Channel;通道
+Shift Left;左移
+Shift timeline selection left;向左移动时间轴选区
+Shift Right;右移
+Shift timeline selection right;向右移动时间轴选区
+Zoom In;放大
+Zoom in;放大
+Zoom in (alternative);放大（备用）
+Zoom Out;缩小
+Zoom out;缩小
+Zoom out (alternative);缩小（备用）
+Next Frame;下一帧
+Go to the next frame;转到下一帧
+Nudge Keyframe Down;向下微调关键帧
+Nudge keyframe selection down;向下微调关键帧选区
+Nudge Keyframe Up;向上微调关键帧
+Nudge keyframe selection up;向上微调关键帧选区
+Play/Pause;播放/暂停
+Play/Pause the animation;播放/暂停动画
+Previous Frame;上一帧
+Go to the previous frame;转到上一帧
+Set Frame to Next Keyframe;将帧设为下一关键帧
+Set frame to next keyframe;将帧设为下一关键帧
+Set Frame to Previous Keyframe;将帧设为上一关键帧
+Set frame to previous keyframe;将帧设为上一关键帧
+Skew Tool;倾斜工具
+Show Offset;显示偏移
+Show offset;显示偏移
+Show Skew;显示倾斜
+Show skew;显示倾斜
+Toggle High Visibility;切换高模可见性
+Toggle the visibility of high poly objects;切换高模对象可见性
+Toggle Low Visibility;切换低模可见性
+Toggle the visibility of low poly objects;切换低模对象可见性
+Run Again;再次运行
+Run last plugin;运行上一个插件
+Clear Template Material;清除模板材质
+Clear template material;清除模板材质
+Clear Template Scene;清除模板场景
+Clear template scene;清除模板场景
+Set Template Material;设置模板材质
+Set template material;设置模板材质
+Set Template Scene;设置模板场景
+Set template scene;设置模板场景
+Hotkeys;快捷键
+Open the hotkeys window;打开快捷键窗口
+Preferences;偏好设置
+Open the preferences window;打开偏好设置窗口
+Redo;重做
+Redo the last action;重做上一个操作
+Redo Camera;重做相机
+Redo the last camera action;重做上一个相机操作
+Undo;撤销
+Undo the last action;撤销上一个操作
+Undo Camera;撤销相机
+Undo the last camera action;撤销上一个相机操作
+Export;导出
+Export a file;导出文件
+Export Selected;导出所选
+Export selected objects;导出所选对象
+Import;导入
+Import a file;导入文件
+New Scene;新建场景
+Create a new scene file;新建场景文件
+Open Scene;打开场景
+Open a scene file;打开场景文件
+Open Scene Folder;打开场景文件夹
+Open the folder containing the current scene file;打开当前场景文件所在文件夹
+Quit;退出
+Quit Toolbag;退出 Toolbag
+Revert the current scene file to the last saved state;将当前场景还原到上次保存状态
+Save Backup;保存备份
+Save a backup of the current scene file;保存当前场景的备份
+Save Scene;保存场景
+Save the current scene file;保存当前场景文件
+Save Scene As;场景另存为
+Save the current scene file as a new file;将当前场景另存为新文件
+Save Scene to Library;保存场景到库
+Save the current scene file to the Library;将当前场景保存到库
+Save Selected to Library;将所选保存到库
+Save selected objects to the Library;将所选对象保存到库
+Reload Shaders;重新加载着色器
+Reload shaders;重新加载着色器
+Toggle Console;切换控制台
+Toggle Console window;切换控制台窗口
+Toggle Performance Window;切换性能窗口
+Toggle Performance window;切换性能窗口
+About;关于
+Change Account;切换账户
+Change account;切换账户
+Documentation;文档
+Go to the documentation page;转到文档页面
+Python API Reference;Python API 参考
+Go to the Python API Reference page;转到 Python API 参考页面
+Send Feedback;发送反馈
+Send feedback;发送反馈
+Tutorials;教程
+Go to the tutorials page;转到教程页面
+Apply to Selection;应用到所选
+Apply the current material to the selected objects;将当前材质应用到所选对象
+Clear Unused;清除未使用
+Clear unused materials;清除未使用材质
+Export material;导出材质
+Import material;导入材质
+New Material;新建材质
+Create a new material;新建材质
+Enable Hybrid;启用混合渲染
+Enable hybrid render mode;启用混合渲染模式
+Enable Raytracing;启用光线追踪
+Enable raytracing render mode;启用光线追踪渲染模式
+Bake All;全部烘焙
+Bake all;全部烘焙
+Open When Done;完成后打开
+Toggle open when done;切换完成后打开
+Render All Images;渲染所有图像
+Render all images;渲染所有图像
+Render All Videos;渲染所有视频
+Render all videos;渲染所有视频
+Render Options;渲染选项
+Open render options;打开渲染选项
+Render Viewport;渲染视口
+Render current viewport to file;将当前视口渲染到文件
+Render Viewport to Clipboard;将视口渲染到剪贴板
+Render current viewport to clipboard;将当前视口渲染到剪贴板
+Directional Light;平行光
+Add a new directional light to the scene;在场景中添加新的平行光
+Omni Light;点光源
+Add a new omni light to the scene;在场景中添加新的点光源
+Spot Light;聚光灯
+Add a new spot light to the scene;在场景中添加新的聚光灯
+Backdrop;背景板
+Add a new backdrop to the scene;在场景中添加新的背景板
+Bake Project;烘焙工程
+Add a new bake project to the scene;在场景中添加新的烘焙工程
+Camera;相机
+Add a new camera to the scene;在场景中添加新的相机
+Fog;雾
+Add a new fog to the scene;在场景中添加新的雾
+Shadow Catcher;阴影捕捉器
+Add a new shadow catcher to the scene;在场景中添加新的阴影捕捉器
+Sky;天空
+Add a new sky to the scene;在场景中添加新的天空
+Texture Project;纹理工程
+Add a new texture project to the scene;在场景中添加新的纹理工程
+Turntable;转盘
+Add a new turntable to the scene;在场景中添加新的转盘
+Lock Selection;锁定选择
+Lock selected objects;锁定所选对象
+Blur;模糊
+Add blur;添加模糊
+Curves;曲线
+Add curves;添加曲线
+Gradient Map;渐变映射
+Add gradient map;添加渐变映射
+Hue/Saturation;色相/饱和度
+Add hue/saturation;添加色相/饱和度
+Invert;反相
+Add invert;添加反相
+Levels;色阶
+Add levels;添加色阶
+Recolor;重新着色
+Add recolor;添加重新着色
+Sharpen;锐化
+Add sharpen;添加锐化
+Cellular;细胞状
+Add cellular;添加细胞状
+Checkered;棋盘格
+Add checkered;添加棋盘格
+Clouds;云彩
+Add clouds;添加云彩
+Gradient;渐变
+Add gradient;添加渐变
+Perlin;Perlin 噪声
+Add perlin;添加 Perlin 噪声
+Scatter;散射
+Add scatter;添加散射
+Tiles;平铺
+Add tiles;添加平铺
+Turbulence;湍流
+Add turbulence;添加湍流
+Voronoi;Voronoi
+Add voronoi;添加 Voronoi
+Color Selection;颜色选择
+Add color selection;添加颜色选择
+Curvature;曲率
+Add curvature;添加曲率
+Direction;方向
+Add direction;添加方向
+Dirt;污垢
+Add dirt;添加污垢
+Height;高度
+Add height;添加高度
+Occlusion;环境光遮蔽
+Add occlusion;添加环境光遮蔽
+Scratch;划痕
+Add scratch;添加划痕
+Thickness;厚度
+Add thickness;添加厚度
+Center on Brush;居中到笔刷
+Center the brush in the brush editor;在笔刷编辑器中居中笔刷
+Decrease Brush Culling Angle;减小笔刷剔除角度
+Decrease the brush cull angle in the brush editor;减小笔刷编辑器中的笔刷剔除角度
+Decrease Brush Hardness;减小笔刷硬度
+Decrease the brush hardness in the brush editor;减小笔刷编辑器中的笔刷硬度
+Decrease Brush Size;减小笔刷大小
+Decrease the brush size in the brush editor;减小笔刷编辑器中的笔刷大小
+Increase Brush Culling Angle;增大笔刷剔除角度
+Increase the brush cull angle in the brush editor;增大笔刷编辑器中的笔刷剔除角度
+Increase Brush Hardness;增大笔刷硬度
+Increase the brush hardness in the brush editor;增大笔刷编辑器中的笔刷硬度
+Increase Brush Size;增大笔刷大小
+Increase the brush size in the brush editor;增大笔刷编辑器中的笔刷大小
+Show Decal Falloff Planes;显示贴花衰减平面
+Show decal falloff planes;显示贴花衰减平面
+Layer;图层
+Rasterize layer;栅格化图层
+Layer with Children;图层及其子图层
+Rasterize layer with children;栅格化图层及其子图层
+Mask;蒙版
+Rasterize mask;栅格化蒙版
+All;全部
+Select all;全选
+Invert selection;反选
+Select none;取消选择
+Switch Axis;切换轴
+Switch axis;切换轴
+Toggle Symmetry;切换对称
+Toggle symmetry;切换对称
+Sharpen Point;锐化点
+Sharpen the selected point;锐化所选点
+Smooth Point;平滑点
+Smooth the selected point;平滑所选点
+Toggle Point Snapping;切换点捕捉
+Toggle all point snapping;切换所有点捕捉
+Brush Tool;笔刷工具
+Clone Stamp Tool;仿制图章工具
+Decal Tool;贴花工具
+Face/UV Island/Mesh Tool;面/UV 岛/网格工具
+Cycle between Face/UV Island/Mesh Tool;在面/UV 岛/网格工具之间切换
+Flood Fill Tool;油漆桶工具
+Gradient Tool;渐变工具
+Magic Wand Tool;魔棒工具
+Tile Strip Tool;平铺条工具
+Add Carve Group;添加雕刻组
+Add carve group;添加雕刻组
+Add Decal Layer;添加贴花图层
+Add decal layer;添加贴花图层
+Add Fill Layer;添加填充图层
+Add fill layer;添加填充图层
+Add Layer Mask;添加图层蒙版
+Add layer mask;添加图层蒙版
+Add Paint Layer;添加绘制图层
+Add paint layer;添加绘制图层
+Delete Layer Mask;删除图层蒙版
+Delete layer mask;删除图层蒙版
+Merge Selection;合并所选
+Merge selected layers;合并所选图层
+Next Map;下一贴图
+Switch to the next map;切换到下一贴图
+Previous Map;上一贴图
+Switch to the previous map;切换到上一贴图
+Ungroup;取消编组
+Ungroup current selection;取消当前选择编组
+Paint Inverse;反向绘制
+Paint inverse;反向绘制
+Aperture;光圈
+Update the aperture of the camera;更新相机光圈
+Brightness;亮度
+Update the brightness of the light;更新灯光亮度
+Distance;距离
+Update the distance of the light;更新灯光距离
+Spot Angle;聚光角度
+Update the spot angle of the light;更新灯光聚光角度
+Edit Pivot;编辑轴心
+Edit transform pivot;编辑变换轴心
+World Space;世界空间
+Toggle local/world space;切换局部/世界空间
+Lasso/Polygon Tool;套索/多边形工具
+Cycle between Lasso/Polygon Tool;在套索/多边形工具之间切换
+Rectangle/Ellipse Tool;矩形/椭圆工具
+Cycle between Rectangle/Ellipse Tool;在矩形/椭圆工具之间切换
+Rotate Tool;旋转工具
+Scale Tool;缩放工具
+Select Tool;选择工具
+Transform Tool/Text Tool;变换工具/文本工具
+Translate Tool;移动工具
+Highlights;高光
+Outline;轮廓
+Default Viewport Mode;默认视口模式
+Switch to the default viewport mode;切换到默认视口模式
+Deselect;取消选择
+Deselect current selections;取消当前选择
+Enter/Exit Full Screen;进入/退出全屏
+Toggle full screen mode;切换全屏模式
+Frame Scene;取景场景
+Frame the current viewport to the entire scene;将当前视口取景到整个场景
+Frame Selection;取景所选
+Frame the current viewport to the selected object;将当前视口取景到所选对象
+Maximize Viewport;最大化视口
+Maximize the current viewport;最大化当前视口
+Next Viewport Mode;下一视口模式
+Switch to the next viewport mode;切换到下一视口模式
+Previous Viewport Mode;上一视口模式
+Switch to the previous viewport mode;切换到上一视口模式
+Show All;显示全部
+Show all objects;显示所有对象
+Show/Hide Guides;显示/隐藏辅助
+Show or hide current viewport guides;显示或隐藏当前视口辅助
+Toggle Visibility;切换可见性
+Toggle visibility of the selected object;切换所选对象的可见性
+Animate;动画
+Classic;经典
+Setup;设置
+Add Workspace;添加工作区
+Add new workspace based on active workspace;基于当前工作区新建工作区
+Color Picker;颜色选择器
+Open Color Picker window;打开颜色选择器窗口
+Delete Workspace;删除工作区
+Delete active workspace;删除当前工作区
+History;历史记录
+Toggle History window;切换历史记录窗口
+Keyframes;关键帧
+Toggle Keyframes window;切换关键帧窗口
+Layer Settings;图层设置
+Toggle Layer Settings window;切换图层设置窗口
+Layers;图层
+Toggle Layers window;切换图层窗口
+Library;库
+Open Library window;打开库窗口
+Materials;材质
+Toggle Materials window;切换材质窗口
+Next workspace;下一工作区
+Cycle to next workspace;切换到下一工作区
+Previous workspace;上一工作区
+Cycle to previous workspace;切换到上一工作区
+Reset Default Workspace;重置默认工作区
+Reset default workspace;重置默认工作区
+Reset Workspace;重置工作区
+Reset workspace;重置工作区
+Toggle Scene window;切换场景窗口
+Status Bar;状态栏
+Toggle Status Bar;切换状态栏
+Timeline;时间轴
+Toggle Timeline window;切换时间轴窗口
+Tool Settings;工具设置
+Toggle Tool Settings window;切换工具设置窗口
+Workspace Bar;工作区栏
+Toggle Workspace Bar;切换工作区栏
+Open Recent;打开最近使用
+Save Scene As...;场景另存为...
+Revert...;还原...
+Open Scene Folder...;打开场景文件夹...
+Export Selected...;导出所选...
+Open Scene...;打开场景...
+Set Template Material...;设置模板材质...
+Clear Template Scene...;清除模板场景...
+Plugins;插件
+Clear Template Material...;清除模板材质...
+Hotkeys...;快捷键...
+Preferences...;偏好设置...
+Save Selected Objects to Library...;将所选对象保存到库...
+Save Scene to Library...;将场景保存到库...
+Set Template Scene...;设置模板场景...
+Templates;模板
+Full Screen;全屏
+Selection Highlights;选择高亮
+Add Object;添加对象
+Selection Behavior;选择行为
+Show Guides;显示辅助
+Duplicate Selected Layers;复制所选图层
+Group Layers;图层编组
+Selected Layer Color;所选图层颜色
+Delete Selected Layers;删除所选图层
+Layer With Children;图层及其子图层
+Duplicate Selection;复制所选
+Group Selection;所选编组
+New Texture Project;新建纹理工程
+Render Mode;渲染模式
+Render Options...;渲染选项...
+Duplicate Selected;复制所选
+Viewport to Clipboard;视口到剪贴板
+All Videos;所有视频
+All Images;所有图像
+Reload GUI;重新加载界面
+GUI Skin...;界面皮肤...
+Send Feedback...;发送反馈...
+Performance...;性能...
+Console...;控制台...
+View Log;查看日志
+Workspace;工作区
+Change Account...;切换账户...
+Camera %i;相机 %i
+Lock Object;锁定对象
+Unlock Object;解锁对象
+Show Selection;显示所选
+Turntable %i;转盘 %i
+Bake Project %i;烘焙工程 %i
+Add Baker;添加烘焙器
+Fog %i;雾 %i
+Texture Project %i;纹理工程 %i
+Shadow Catcher %i;阴影捕捉器 %i
+Backdrop %i;背景板 %i
+Sky %i;天空 %i
+Template Scene;模板场景
+Reset Default Workspaces;重置默认工作区
+Revert Scene;还原场景
+Open;打开
+Hide Selection;隐藏所选
+re-skinning GUI to %s...;正在将界面皮肤切换为 %s...
+Select a folder containing a GUI skin;选择包含界面皮肤的文件夹
+shader reload completed in %.2fs;着色器重新加载完成，耗时 %.2f 秒
+reloading shaders...;正在重新加载着色器...
+re-skin complete;界面皮肤切换完成
+Light %i;灯光 %i
+This scene has unsaved changes. Do you wish to save before;当前场景有未保存的更改。是否在
+Do you wish to clear the template scene? This operation cannot be undone.;是否清除模板场景？此操作无法撤销。
+Revert the scene to the last saved version? Any unsaved changes will be lost.;是否将场景还原到上次保存的版本？任何未保存的更改都将丢失。
+cannot write to scene file '%s';无法写入场景文件 '%s'
+could not revert to file "%s";无法还原到文件 "%s"
+Your system details have been copied to the clipboard.;你的系统信息已复制到剪贴板。
+Would you like to open your default email client to write Marmoset an email containing this report?;是否打开默认邮件客户端，向 Marmoset 发送包含此报告的邮件？
+Main Camera;主相机
+Scale & Units;缩放与单位
+Scale:;缩放：
+Imported;导入
+Use File Units;使用文件单位
+Use Physical Light Units;使用物理灯光单位
+Full Quality;完整质量
+Lighting;灯光
+Exposure;曝光
+Shadows;阴影
+Shadow Quality;阴影质量
+High;高
+Use Cascades;使用级联阴影
+Cascade Distance;级联距离
+Shadow Offset;阴影偏移
+Ambient Occlusion;环境光遮蔽
+Off;关闭
+Ambient;环境
+Diffuse;漫反射
+Specular;高光
+Occlusion Strength;遮蔽强度
+Occlusion Size;遮蔽大小
+Reflection;反射
+Local Reflections;局部反射
+Reflection Intensity;反射强度
+Local Diffuse;局部漫反射
+Diffuse Intensity;漫反射强度
+Diffuse Distance;漫反射距离
+Fog Shadow Quality;雾阴影质量
+Medium;中
+Ambient / Sky Illumination;环境/天空照明
+Light Illumination;灯光照明
+Raster;光栅
+Render Cameras;渲染相机
+Add New;新建
+Render Passes;渲染通道
+Final Composite;最终合成
+Output;输出
+Image;图像
+Resolution:;分辨率：
+Format;格式
+PNG;PNG
+Overwrite Existing;覆盖现有文件
+Samples;采样
+Transparency;透明度
+Render Image;渲染图像
+Open Image Location...;打开图像位置...
+Video;视频
+MPEG4;MPEG4
+Compression Quality;压缩质量
+Watermark;水印
+Use Watermark;使用水印
+Hide in Viewport;在视口中隐藏
+Dark;深色
+Two-Tone;双色
+X Position;X 位置
+Y Position;Y 位置
+VRAM: 5%;显存：5%
+VRAM: 6%;显存：6%
+|   Untitled;|   未命名
+Ctrl+Z;Ctrl+Z
+Shift+Ctrl+Z;Shift+Ctrl+Z
+Ctrl+Y;Ctrl+Y
+Shift+Ctrl+Y;Shift+Ctrl+Y
+Ctrl+,;Ctrl+,
+Ctrl+/;Ctrl+/
+Refresh;刷新
+Show User Plugin Folder;显示用户插件文件夹
+Show Default Plugin Folder;显示默认插件文件夹
+Examples;示例
+Fun;趣味
+Generate Primitives;生成基本体
+MPIC Convert;MPIC 转换
+ChineseLocalizer;ChineseLocalizer
+1.0;1.0
+0.0;0.0
+0.8;0.8
+1.5;1.5
+0.04;0.04
+1920;1920
+1080;1080
+256;256
+90;90
+0.15;0.15
++;+
+C:/Users/liuwenbo/Desktop;C:/Users/liuwenbo/Desktop
+Duplicate Materials;复制材质
+Duplicate Material (;复制材质（
+Paste Material;粘贴材质
+Paste Materials;粘贴材质
+Apply Material;应用材质
+Copy Material Settings;复制材质设置
+Copy Materials;复制材质
+Copy Material;复制材质
+Material-Group;材质组
+New Group;新建组
+Group...;编组...
+Paste Material Settings;粘贴材质设置
+Import Material (;导入材质（
+Add Material To Group;将材质添加到组
+Ungrouped;未分组
+Deleted Material;已删除材质
+Delete Materials;删除材质
+Delete Material (;删除材质（
+Disband Material Group (;解散材质组（
+Duplicate Material Group (;复制材质组（
+Add Material;添加材质
+Paste Material Group;粘贴材质组
+Modify Material;修改材质
+Add Material Group;添加材质组
+Delete Unused Materials;删除未使用材质
+Flip Y;detail;翻转 Y；细节
+Create Material;创建材质
+Subdivide;细分
+Subdivision;细分
+Sharpen Corners;锐化边角
+Subdivision Level;细分级别
+Geometry Reduction;几何体简化
+Invisible to Camera;对相机不可见
+Cull Back Faces;剔除背面
+Delete Objects;删除对象
+Unlock;解锁
+Lock;锁定
+Expand;展开
+Copy Object Settings;复制对象设置
+Export to Library;导出到库
+Paste Object Settings;粘贴对象设置
+Paste Object;粘贴对象
+Paste Objects;粘贴对象
+Reparent Objects;重新设置父级
+Reparent;重新设置父级
+Save Object(s) to Library;将对象保存到库
+Export Object(s);导出对象
+Frame;帧
+Draw;绘制
+Collapse All;全部折叠
+Import...;导入...
+Export...;导出...
+Restore Defaults;恢复默认
+Brush Texture:;笔刷纹理：
+Min;最小
+Jitter;抖动
+Hardness;硬度
+Tightness;紧密
+Opacity;不透明度
+Spacing;间距
+Angle;角度
+Squish;挤压
+Warp;扭曲
+Tip Contrast;笔尖对比度
+Lazy Mouse;惰性鼠标
+Directional;方向
+Adaptive Flow;自适应流量
+Symmetry;对称
+X;X
+Y;Y
+Z;Z
+Custom;自定义
+Axis;轴
+Count;数量
+Position;位置
+Rotation;旋转
+Align;对齐
+Fine-Tune;微调
+Stencil Texture:;模板纹理：
+Fade;淡出
+Contrast;对比度
+Stencil Display;模板显示
+Wrap;环绕
+Hide When Painting;绘制时隐藏
+Tiling;平铺
+U;U
+Offset U;U 偏移
+Offset V;V 偏移
+Reset Transforms;重置变换
+Backface Culling;背面剔除
+Backface Falloff;背面衰减
+UV;UV
+Tangent;切线
+Tangent-Wrap;切线环绕
+Sticker;贴纸
+Screen;屏幕
+Tube;管状
+Alignment;对齐
+Object;对象
+Size Space;大小空间
+Contiguous Mesh Only;仅连续网格
+Distortion Compensation;畸变补偿
+Use Normal Map for Culling;使用法线贴图进行剔除
+Current Layer;当前图层
+All Layers;所有图层
+Select From:;选择来源：
+Reset Position;重置位置
+Smudge Distance;涂抹距离
+All Meshes;所有网格
+Contiguous Mesh;连续网格
+UV Island;UV 岛
+Smudge Over:;涂抹覆盖：
+File reference(s) could not be found.;找不到文件引用。
+Download All;全部下载
+Search in Folder;在文件夹中搜索
+Continue;继续
+Bake;烘焙
+Adjust Render Settings;调整渲染设置
+Adjusting Project Maps;调整工程贴图
+Arguments and Environment;参数与环境
+Baking;烘焙
+Batch Rendering;批量渲染
+Camera Object;相机对象
+Console Logging;控制台日志
+Creating Materials from Images;从图像创建材质
+Creating UIs;创建界面
+Editing Layer Parameters;编辑图层参数
+Editing Library;编辑库
+Editing Materials;编辑材质
+Gemstone;宝石
+Group Parents;组父级
+Input and Output Maps;输入与输出贴图
+Interacting with Layers;图层交互
+Set Keyframes;设置关键帧
+Strange Attractors;奇异吸引子
+Switch Scenes;切换场景
+Texture Project Settings;纹理工程设置
+Transforming Objects;变换对象
+Using pip;使用 pip
+Wireframe;线框
+Geometry;几何体
+IDs;ID
+Material Values;材质值
+JPEG;JPEG
+TGA;TGA
+PSD;PSD
+PSD (16-bit);PSD（16 位）
+EXR (16-bit);EXR（16 位）
+EXR (32-bit);EXR（32 位）
+AVI Lossless;AVI 无损
+Render Video;渲染视频
+Open Video Location...;打开视频位置...
+Ray Traced;光线追踪
+Low;低
+Mega;极高
+Restore Undo State;恢复撤销状态
+Viewport;视口
+Draft Quality;草稿质量
+Gray;灰度
+Untextured;无纹理
+Albedo;反照率
+Alpha Mask;Alpha 蒙版
+Depth;深度
+Diffuse (Complete);漫反射（完整）
+Diffuse (Direct);漫反射（直接）
+Diffuse (Indirect);漫反射（间接）
+Displacement;置换
+Emissive;自发光
+Gloss;光泽
+Incidence;入射
+Lighting (Direct);光照（直接）
+Lighting (Indirect);光照（间接）
+Material ID;材质 ID
+Metalness;金属度
+Normals;法线
+Object ID;对象 ID
+Reflectivity;反射率
+Roughness;粗糙度
+Specular (Complete);高光（完整）
+Specular (Direct);高光（直接）
+Specular (Indirect);高光（间接）
+Console;控制台
+Add Texture Project;添加纹理工程
+VRAM: 3%;显存：3%
+Cameras;相机
+Canvas;画布
+Perspective;透视
+Top;顶
+Bottom;底
+Left;左
+Right;右
+Front;前
+Back;后
+Hide/Show Selection;隐藏/显示所选
+Ctrl+N;Ctrl+N
+Ctrl+O;Ctrl+O
+Ctrl+S;Ctrl+S
+Shift+Ctrl+S;Shift+Ctrl+S
+Ctrl+9;Ctrl+9
+Ctrl+I;Ctrl+I
+Ctrl+E;Ctrl+E
+Shift+Ctrl+E;Shift+Ctrl+E
+Ctrl+Q;Ctrl+Q
+Shift+Ctrl+H;Shift+Ctrl+H
+Shift+Ctrl+D;Shift+Ctrl+D
+Ctrl+F;Ctrl+F
+Shift+Ctrl+F;Shift+Ctrl+F
+Shift+Space;Shift+Space
+Ctrl+U;Ctrl+U
+Ctrl+Enter;Ctrl+Enter
+Shift+L;Shift+L
+.;.
+,;,
+M;M
+Latitude;纬度
+Longitude;经度
+Time of Day;时间（一天中的时刻）
+Day of Year;日期（一年中的第几天）
+Tint;色调
+Haze;雾霾
+White Balance;白平衡
+Location;位置
+Guess Time Zone;猜测时区
+Source:;来源：
+Procedural;程序化
+Time Zone:;时区：
+Month;月份
+Include Sun;包含太阳
+Random Width;随机宽度
+Random Width Frequency;随机宽度频率
+Outside;外侧
+Centered ;居中 
+Inside;内侧
+Rounding;圆角
+Taper;锥度
+Warp Frequency;扭曲频率
+Delete Preset;删除预设
+Save Preset...;保存预设...
+Profile Amount;轮廓数量
+Front Taper;前锥度
+Back Taper;后锥度
+From Texture Project;来自纹理工程
+Change Texture;更改纹理
+Paste Texture;粘贴纹理
+Show File;显示文件
+Text Direction;文本方向
+Spline;样条线
+Create;创建
+Line;直线
+Scribble;涂鸦
+Round Corner;圆角
+Rect Select;矩形选择
+Mold;塑形
+Handles;手柄
+Measure;测量
+Enable Snapping;启用捕捉
+Lines;线条
+Snapping;捕捉
+Set Point Radius;设置点半径
+Mold Spline;塑形样条线
+Add Spline Handle;添加样条线手柄
+Move Spline Points;移动样条线点
+Symmetry Plane;对称平面
+Add Spline Shape;添加样条线形状
+Finish Spline Shape;完成样条线形状
+Rotate Spline Shape;旋转样条线形状
+Scale Spline Shape;缩放样条线形状
+Move Spline Shape;移动样条线形状
+Plane Transform;平面变换
+Transform Spline Plane;变换样条线平面
+Modify Pivot;修改轴心
+Enable Selection;启用选择
+Translation Snapping;移动捕捉
+Translate:;移动：
+Rotate:;旋转：
+Center Pivot;居中轴心
+Camera Target;相机目标
+Pivot;轴心
+Behavior;行为
+Independent Center;独立中心
+Always On;始终开启
+Move;移动
+Zoom;缩放
+Frame Camera;取景相机
+Set Camera Focus;设置相机焦点
+Independent Scale;独立缩放
+VP Render;视口渲染
+VP Present;视口显示
+High DPI;高 DPI
+Anti-aliasing;抗锯齿
+Show Scale Reference;显示比例参考
+On (Nvidia DLSS);开启（Nvidia DLSS）
+Auto (Nvidia DLSS);自动（Nvidia DLSS）
+Compiling Shaders...;正在编译着色器...
+Rotate Sky;旋转天空
+Sky Time;天空时间
+Sky Time of Day;天空时间（一天中的时刻）
+Rotate;旋转
+Pan;平移
+Line Spacing;行距
+Kerning;字距
+Relative Scale;相对缩放
+Generate Z;生成 Z
+Flip Y;detail;翻转 Y；细节
+Flip Z;detail;翻转 Z；细节
+Bevel Angle;倒角角度
+Detail Weight Map;细节权重贴图
+Detail Tiling;细节平铺
+Detail Weight;细节权重
+Minimum;最小
+Exponent;指数
+Smoothness;平滑度
+Bevel Hard Edges;倒角硬边
+Bevel Same Surface Only;仅同一表面倒角
+Sheen Tint;光泽色调
+Use Translucency;使用半透明
+Horizon Smoothing;地平线平滑
+Distortion Limit;畸变限制
+Software Update Available;有可用软件更新
+Marmoset Toolbag News;Marmoset Toolbag 新闻
+Release Notes;发布说明
+This scene has unsaved changes. Do you wish to save before ;当前场景有未保存的更改。是否在
+clearing traceable scene...;正在清除可追踪场景...
+Unlock ;解锁 
+Lock ;锁定 
+Reparent ;重新设置父级 
+Possible UDIM changes due to reparenting;重新设置父级可能导致 UDIM 变化
+Mesh VRAM: %.2f MB;网格显存：%.2f MB
+Mesh VRAM RT: %.2fMB;网格显存 RT：%.2fMB
+Frame Time;帧时间
+Marmoset Library Folder;Marmoset 库文件夹
+User Library Folder;用户库文件夹
+Marmoset Auto Save Folder;Marmoset 自动保存文件夹
+Reading Scene Objects;正在读取场景对象
+SceneObject created;场景对象已创建
+SceneObject destroyed;场景对象已销毁
+Project?;项目？
+ Objects; 对象
+
+# --- Static scan: official Toolbag help text (machine draft) ---
+Raster rendering - high performance, worst visual quality.;Raster渲染 - 性能高,视觉质量最差.
+Hybrid rendering - smooth interaction, good visual quality.;混合渲染 - 平滑的相互作用,良好的视觉品质.
+Ray Traced rendering - most accurate, best visual quality.;Ray Traced渲染 - 最准确,最好的视觉品质.
+Select;选择
+Transform;变形
+Translate;翻译
+Scale;缩放
+Paint Offset;绘图偏移
+Paint Skew;绘画扭曲
+Camera Limits;相机限制
+Image Comparison;图像比较
+Brush;笔刷
+Erase;擦除
+Clone;克隆
+Smudge;污点
+Rectangle Select;矩形选择
+Ellipse Select;椭圆选择
+Flood Fill;填满
+Wand Select;选择魔杖
+Lasso Select;拉索选择
+Polygon Select;多边形选择
+Face Select;面部选择
+UV Island Select;紫外线岛选择
+Mesh Select;网格选择
+Color Sampler;颜色样本
+Light Controller;轻型控制器
+Focus;焦点
+Decal;解码
+Select and Edit Shapes;选择和编辑形状
+Select and Edit Points;选择和编辑点
+Pen;笔
+Curve;曲线
+Rectangle;矩形
+Ellipse;椭圆
+Polygon;多边形
+Sketch;缩写
+Tile Strip;砖条
+Enable vector point snapping;启用矢量点按键
+Snap points to the grid (decal mode only);坐标点到网格( 仅以十进制模式)
+Snap points to other vector shape points;连接到其它矢量形状点
+Snap to vector shape borders between points;点间与矢量形状边框对齐
+Snap points to the plane or axis of symmetry;坐标指向对称的平面或轴
+Import Model;导入模式
+New Light;新光线
+New Camera;新建相机
+New Fog;新建雾
+New Backdrop;新建后空投
+New Shadow Catcher;新建阴影捕捉器
+New Bake Project;新巴克项目
+New Turntable;新建旋转式
+Presentation;列报
+Delete Selection;删除选择
+Filter Scene Objects;过滤场景对象
+This interface is disabled because the selected object is locked.;此接口因选定对象被锁定而禁用 。
+Anti-aliasing provides a reduction of undersampling artifacts such as jagged edges, at a modest performance cost.;反变相可以减少凹槽边缘等底样文物,性能成本不高.
+Sets the method by which images are rendered for each eye. Some modes may require special hardware.;设定为每个眼睛渲染图像的方法。 一些模式可能需要特殊的硬件.
+Swaps the left and right eye images.;将左右眼影相换.
+Specifies the separation between the eyes of the viewer, in scene units. Greater values will make the scene appear "smaller".;指定在场景单位中将观众的眼睛分开。 更大的值会使场景出现"较小".
+Enables polygon edge display.;启用多边形边缘显示 。
+Controls the intensity of the wireframe effect.;控制线框效应的强度。
+Sets the color of the wireframe effect.;设置线框效果的颜色。
+Displays the tile name in the canvas.;在画布中显示瓷砖名称。
+Displays the tile border in the canvas.;在画布中显示瓷砖边框。
+Sets a divisor for the speed of light in the atmosphere. This setting only applies to materials which use the refractive index reflectivity model.;为大气层中的光速设置一个偏移器。 此设置仅适用于使用折射指数反射模型的材料.
+Enables refractions inside of objects.;启用对象内部的折射。
+Enables an approximation of inter-object reflections, which can improve the quality of reflective surfaces. This effect only applies to raster renders.;启用对象间反射的近似,可以提高反射表面的质量. 这种效果只适用于光栅制造。
+Adjusts the brightness of local reflections.;调整本地反射的亮度。
+Enables an approximation of diffuse light scattering between objects. This effect only applies to raster renders.;启用物体间散射光散的近似值。 这种效果只适用于光栅制造。
+Adjusts the brightness of local diffuse light.;调整局部散射光的亮度。
+Adjusts the falloff length of local diffuse light. This value is not in scene units but rather a ratio with camera distance.;调整局部散射光的掉落长度。 这个值不是在场景单位中,而是有相机距离的比例.
+Controls the resolution of all shadow maps, for improved detail and precision. Higher settings have an adverse effect on performance.;控制所有阴影图的解析度,以提高细节和精度. 较高设置对性能有不利影响.
+Adds a small spatial offset between shadows and shadow casters. This can be useful for tweaking shadow artifacts in difficult cases.;添加阴影和阴影铸造器之间的小空间偏移。 这对于在困难情况下对影子文物进行微调有用.
+Enables cascading shadows for higher quality directional lights in large scenes.;在大场景中为质量更高的方向灯启用串联阴影.
+Enables an inter-object light occlusion approximation. This effect only applies to raster renders.;启用对象间光闭合近似。 这种效果只适用于光栅制造。
+The occlusion effect darkens diffuse light from the sky background.;隐蔽效应使天空背景的散射光变暗.
+The occlusion effect darkens diffuse light from all sources. This setting overrides the "Ambient" option.;隐蔽效应使所有来源的散射光变暗. 此设置将覆盖“ 角度” 选项 。
+The occlusion effect darkens specular light. The occlusion color hue is not used for specular occlusion.;闭塞效应暗射光谱. 隔膜色调不用于光谱隔膜.
+Sets the color of the ambient occlusion effect.;设置环境隔离效应的颜色。
+Sets the intensity of the ambient occlusion effect.;设定环境隔离效应的强度。
+Sets the spread of the ambient occlusion effect.;设置环境隔离效应的传播。
+Controls the ambient occlusion ray length.;控制环境闭塞射线长度。
+Controls the ambient occlusion ray offset from surface.;控制从表面抵消的环境隔离射线。
+Enables ambient occlusion in viewport.;允许在视野内进行环境隔离。
+Controls the number of ambient occlusion rays used in sampling.;控制取样中使用的环境隔离射线的数量。
+Mixes between a volumetric medium that is lit by the sky background, and a simple ambient color.;由天空背景点燃的音量介质和简单的环境颜色混合。
+Controls the brightness of omni, spot, and directional light sources in the medium.;控制介质中的omni,spot,和方向光源的亮度.
+Enables path traced global illumination, which simulates bounces of light between objects in a scene.;启用跟踪路径环球照明, 它模拟一个场景中物体之间的光弹跳 。
+Progressively improves viewport preview quality by accumulating frames over time.;随着时间的推移,通过累积帧逐渐提高视图预览质量.
+Applies noise reduction in the viewport preview, once several frames have accumulated.;在视图预览中应用降噪,一旦数帧累积.
+Noise reduction mode in the viewport preview. GPU mode requires a supported NVIDIA graphics adapter.;视图预览中的降噪模式. GPU模式需要支持的NVIDIA图形适配器.
+Noise reduction quality level in the viewport preview.;视图预览中降噪质量级别.
+Automatically adjusts number of accumulated samples per frame while trying to maintain target frame rate. When disabled only 1 sample is accumulated per frame.;在试图保持目标帧率的同时,自动调整每个帧累积样本的数量. 当禁用时,每个框架只累积一个样本。
+Number of indirect light bounces to trace.;间接光弹回追踪的次数。
+Number of transmission light bounces to trace. Increasing this value might help if transmissive objects appear too dark.;传送光弹回追踪的次数。 如果传送对象看起来太暗,增加这一值可能会有所帮助。
+Reduces noise in scenes with many lights. Has moderate impact on render time and viewport performance.;减少场景中的噪音,并带有许多灯光. 对渲染时间和景点性能有中度影响.
+Maximum allowed sample direct radiance. Decreasing this value can reduce fireflies but when set too low it negatively impacts lighting quality.;最大允许样品直接光度。 降低这一值可以减少萤火虫,但如果定得太低,会对照明质量产生不利影响。
+Maximum allowed sample indirect radiance. Decreasing this value can reduce fireflies but when set too low it negatively impacts lighting quality.;最大允许的样本间接光度 。 降低这一值可以减少萤火虫,但如果定得太低,会对照明质量产生不利影响。
+Intensity of diffuse indirect lighting.;扩散间接照明强度.
+Intensity of reflected indirect lighting.;反映的间接照明强度。
+Determines the primary direction of scattering in fog, either forwards (positive) or backwards (negative). A value of zero is even, isotropic scattering.;确定雾中散落的主要方向,或是前向(正向)或是后向(负向). 零值是均匀的,异热带散射。
+Applies image upscaling algorithm to speed up rendering times while maintaining image quality.;应用图像提升算法来加快渲染时间,同时保持图像质量.
+Displays the viewport render resolution.;显示视图端口使解析度。
+Displays the width of the viewport render resolution.;显示视图端口的宽度
+Displays the height of the viewport render resolution.;显示视图端口的高度
+Choose between different NVIDIA's Deep Learning Super Sampling (DLSS) modes which impacts upscaling quality and performance.;在不同的 NVIDIA 深层学习超级采样模式中选择影响提升质量和性能的模式 。
+Choose between different NVIDIA's Image Scaling (NIS) modes which impacts upscaling quality and performance and allows for different parameter controls.;在不同的NVIDIA的图像缩放(NIS)模式中选择,这些模式影响提升质量和性能,并允许不同的参数控制.
+Sets the render resolution scale of the NIS algorithm. (Scale mode only);设置 NIS 算法的渲染分辨率尺度。 (仅限比例模式)
+Sets the sharpness of the NIS algorithm.;设置 NIS 算法的锐度 。
+Sets the sharpness of the FSR algorithm.;设置 FSR 算法的锐度 。
+Sets whether the 'Rendered in Marmoset Toolbag' watermark is displayed.;设定是否显示 Marmoset Toolbag 水印 。
+Controls how large the watermark appears.;控制水印的大小 。
+Determines whether to use the light or dark watermark image. The dark watermark image provides better readability with bright scenes.;确定是使用光线还是暗水标记图像。 暗水印图像以明亮的场景提供更好的可读性.
+Determines whether to use a monotone or colored watermark.;确定是使用单色还是彩色水印。
+Sets the horizontal position of the watermark.;设置水印的横向位置。
+Sets the vertical position of the watermark.;设置水印的垂直位置。
+Enables the display of Scale Reference Teddy.;允许显示缩放引用泰迪。
+Sets scale reference color.;设置比例参考颜色。
+Enables the display of guide icons for objects such as cameras and lights.;允许显示相机和灯光等对象的引导图标。
+Enables Hybrid mode's denoiser.;启用混合模式的 denoiser.
+Intensity of denoising direct illumination.;大力打消直接照明.
+Intensity of denoising diffuse GI.;强烈的消遣扩散GI。
+Intensity of denoising specular reflection.;调伏光谱反射强度.
+Choose between low quality sampling with more noise but more performant rendering and high quality sampling with less noies but slower rendering.;选择低质量采样、噪音较大但性能较强的渲染和高质量采样、噪声较少但渲染较慢两种方法。
+Number of diffuse GI bounces to trace.;分散的GI弹跳次数
+Number of specular reflection bounces to trace.;光谱反射数回弹追踪.
+Enables ray traced diffuse GI.;启用射线追踪扩散 GI 。
+Enables ray traced specular reflection.;启用射线跟踪光谱反射 。
+Enables ray traced refraction.;启用射线跟踪折射 。
+Number of specular refraction bounces to trace.;光谱折射数反弹追踪.
+Maximum allowed radiance. Decreasing this value can reduce fireflies but when set too low it negatively impacts lighting quality.;最大允许光度 。 降低这一值可以减少萤火虫,但如果定得太低,会对照明质量产生不利影响。
+The target space (object, tangent, or view) to visualize normals.;目标空间(对象,正切,或视图)可视化正常.
+Inverts normals on the X axis, or red channel of the material texture.;在X轴上反转正常,或物质纹理的红色通道.
+Inverts normals on the Y axis, or green channel of the material texture.;颠倒Y轴上的正常,或物质纹理的绿色通道.
+Inverts normals on the Z axis, or blue channel of the material texture.;在Z轴上颠倒正常,或物质纹理的蓝色通道.
+Show backfaces when rendering wireframes.;在渲染线框时显示背面.
+The method by which depth values will be normalized.;深度值正常化的方法 。
+The method by which position values will be normalized.;定位值正常化的方法 。
+Enables dithering for 8 bit outputs.;启用 8 位输出的抖动 。
+Takes into account an object's reflectivity in albedo calculation, showing the raw albedo value fed to lighting calculations.;在反照率计算中考虑到物体的反照率,显示为照明计算提供的原始反照率值。
+Use material albedo in this lighting pass. When this option is disabled lighting calculations use neutral (white) albedo.;使用材料反照率 在这个照明通道。 当此选项被禁用时, 使用中性( 白色) 反照率计算 。
+Include single bounce of scattering transmission in this lighting pass.;将散射传输的单弹跳 包含在这个照明通道。
+Include refraction and thin surface transmission in this lighting pass.;在此照明通道中包含折射和薄表面传输.
+Hide meshes using refraction or thin surface transmission from camera view in this lighting pass.;使用折射或薄表面传输从相机视图中隐藏 meshes 在这个照明通道中.
+Contrast used when displaying displacement.;显示迁移时使用的对比。
+Controls the position, rotation, and various post effects related to camera objects.;控制位置,旋转,以及与相机物体相关的各种后效应.
+Controls the position and rotation of group objects.;控制组对象的位置和旋转。
+Controls the position, rotation, and properties of imported meshes.;控制导入 meshes 的位置、旋转和属性。
+Controls global scene options like scene scale.;控制全局场景选项, 如场景规模 。
+Controls the sky lighting, including image-based lighting, child lights, and backdrop style.;控制天空照明,包括基于图像的照明,儿童照明,以及背景风格.
+Marks this object as the current camera target.;将此对象标为当前相机目标.
+Controls object location.;控制对象位置 。
+Controls object orientation.;控制对象方向。
+Controls object size.;控制对象大小。
+Use these controls to move the camera forward, left, back, right, up, and down.;使用这些控制器将相机向前,左,后,右,上,下移动.
+Controls how fast the camera pans through the scene. For complex environments, it can be helpful to set this value manually.;控制摄像头通过场景的速度 对于复杂的环境,手动设置这个值会有所帮助.
+Use these controls to pan the camera.;用这些控件把摄像机盖上
+When enabled, the camera will rotate around a point in the scene. When disabled, the camera will act as a free look or first-person shooter style camera.;启用后,相机将围绕场景中的某个点旋转. 禁用时,相机将起到自由外观或第一人称射击风格的相机的作用.
+Continually points the camera to the current target object, if present.;继续将相机指向当前的目标对象,如果存在的话.
+Specifies how closely the camera follows the target object.;指定相机跟随目标对象的距离。
+Use limit settings to constrain camera motion in the Toolbag viewport. Active limits always export to Marmoset Viewer regardless of this setting.;在 Toolbag 视图端口使用限制设置来限制相机运动. 活动限制总是导出到 Marmoset 查看器, 不论设置如何 。
+Constrains camera panning either completely or to vertical motion only.;摄像头或者完全关闭 或者只有垂直运动。
+Enforces a minimum orbit distance, specified by the "Orbit Near" value.;执行最小轨道距离,由"轨道近"值指定.
+Enforces a maximum orbit distance, specified by the "Orbit Far" value.;执行最大轨道距离,由"轨道远"值指定.
+Specifies the minimum orbit distance.;指定最小轨道距离。
+Specifies the maximum orbit distance.;指定最大轨道距离。
+Sets the "Orbit Near" value to the current orbit distance.;将“轨道近距离”值设定为当前轨道距离。
+Sets the "Orbit Far" value to the current orbit distance.;设置当前轨道距离的“轨道远”值。
+The minimum pitch angle, or vertical orbit, in degrees.;最小投球角度,或垂直轨道,以度计.
+The maximum pitch angle, or vertical orbit, in degrees.;最大投球角度,或垂直轨道,以度计.
+The minimum yaw angle, or horizontal orbit, in degrees.;最小的 ya角,或水平轨道,以度计.
+The maximum yaw angle, or horizontal orbit, in degrees.;最大 ya角,或水平轨道,以度计.
+Shifts the yaw values by a constant offset, in degrees. This is useful for easily re-orienting the yaw range.;以恒定偏移值移动 。 这对于易重定向的yaw范围有用.
+The selected model animation has control of this value - user edits are disabled while this animation is active.;所选模型动画对此值有控制 - 用户编辑在此动画活动期间被禁用.
+Controls how much of the scene is visible by setting the scale of the camera. Decreasing zooms into the scene, while increasing zooms out.;通过设定相机的尺度来控制场景的可见度. 缩小放大到现场,同时增加放大.
+Previews the region of the viewport that will be present in exported screenshots and videos.;预览导出截图和视频中将显示的视图港区域。
+Enables the depth of field effect, which blurs areas in front or behind the focus point. This setting has an adverse effect on performance.;启用字段效果的深度,这模糊了焦点前后的区域. 这种设置对性能有不利影响.
+Enables the sticky focus feature, which maintains the point of focus after the camera is re-positioned.;启用粘性焦点功能,在相机重新定位后保持焦点.
+Determines the location of the focal point in relation to the camera. This distance can also be set by middle-clicking on an object in the viewport.;确定相对于相机的焦点位置。 此距离也可以通过在视图端点中单击对象来设定.
+Engages the focus tool, which allows you to click a point on the screen to set the focus distance.;使用焦点工具,使您可以点击屏幕上的点来设定焦点距离。
+Controls distortion of the out of focus highlights near the edges of the frame.;控制偏移焦点的扭曲在帧边缘附近突出.
+Determines the aperture shape, which controls the appearance of the out of focus highlights and lens flares. New shapes can be created and loaded as well.;确定孔径形状,用于控制焦距亮度和镜头耀斑的外观. 新的形状也可以创建和加载.
+The ratio of focal length to aperture diameter. Lower numbers give more defocus.;焦距与孔径之比. 较低的数字使注意力更分散。
+Load a custom aperture shape that controls the out of focus highlights and lens flares.;装入自定义的孔径形状,以控制焦点亮点和镜头照明弹的外移.
+Horizontal distortion ratio for simulating anamorphic lens bokeh.;模拟无形镜头的横向扭曲率。
+Sets the direction of the aperture shape for both out of focus highlights and lens flares.;设定焦亮度和镜头耀斑的孔径形状方向。
+Sets the intensity of the lens flare effect.;设定镜头耀斑效果的强度。
+Simulates a thin surface layer on the lens system, changing the color and appearance of lens flares.;模拟镜头系统中的薄表面层,改变镜头耀斑的颜色和外观.
+Sets the size of the individual flares or "ghosts".;设定单个信号弹或"鬼"的大小.
+Sets the fringe offset for the red channel.;设置红色通道的边缘偏移 。
+Sets the fringe offset for the green channel.;设置绿色通道的边缘偏移 。
+Sets the fringe offset for the blue channel.;设置蓝色通道的边缘偏移 。
+Renders a motion blur effect for final render animations and stills.;让动画和静物产生模糊的效果
+Allows the last animation frame to wrap back to the first frame for motion blur. This option works best for looping animations.;允许最后的动画框包回第一个框进行运动模糊. 此选项对循环动画最有效 。
+Controls the quality of the motion blur. More samples results in smoother blur but longer renders.;控制运动质量模糊。 更多的样本导致更平滑的模糊,但时间更长。
+Loads a post effect preset file.;装入邮件效果预设文件。
+Saves a post effect preset file.;保存邮件效果预设文件。
+Sets the method used to map high-dynamic-range values into low-dynamic range color space.;设置用于将高动力范围值映射到低动力范围色彩空间的方法.
+Opens the curve editor, to manipulate the contrast of the render on a per-channel basis.;打开曲线编辑器,每个通道操纵渲染的对比度.
+Sets the brightness of the render.;设置渲染的亮度。
+Sets the color and intensity of the exposure effect.;设定曝光效果的颜色和强度。
+Sets the brightness point for the brightest values. Increase to make the highlights brighter and decrease to recover clipped detail.;设置最亮值的亮度点。 增加使亮点更亮,减少则恢复剪切的细节。
+Sets the brightness point for the darkest values. Increase to recover details in the shadows and decrease to crush the blacks.;设置最暗值的亮度点。 增加以恢复阴影中的细节,减少以粉碎黑人.
+Sets the brightness point for the middle values.;设置中间值的亮度点。
+Sets the level of micro-contrast. Increase to enhance details and decrease to soften the render.;设置微复数的级别。 增加以强化细节,减少软化渲染.
+Sets the disparity of value between light and dark.;设定光和暗之间的值差异。
+Sets the color and intensity of the contrast effect.;设置对比效果的颜色和强度。
+Sets the color and intensity of the contrast center effect.;设置对比中心效应的颜色和强度。
+Controls the vibrancy of color in the rendered image.;控制渲染图像中颜色的活力。
+Sets the color and intensity of the saturation effect.;设置饱和效果的颜色和强度。
+Sets the intensity of the sharpening effect, which increases the contrast of fine details to enhance acutance.;设定磨合效果的强度,这可以提高细细细节的对比度,以加强剪切.
+Controls the maximum allowable amount of the sharpen effect. Lower values will prevent major contrast alterations to the image in some cases.;控制磨合效果的最大允许量。 降低值将防止在某些情况下对图像进行重大对比改变。
+Sets the radius of the blur component of the bloom effect.;设置开花效果模糊部分的半径。
+Sets the color and intensity of the bloom effect.;设置开花效果的颜色和强度。
+Sets the intensity of the vignette effect, which darkens the edges of the frame.;设置 vignette 效果的强度,使框架边缘变暗.
+Sets the color and intensity of the vignette effect.;设置 vignette 效果的颜色和强度。
+Sets how harsh or smooth the falloff of the vignette effect appears.;设定 Vignette 效应的坠落有多严酷或平滑。
+Sets the style of grain.;设置谷类的样式。
+Toggles randomized preview of the grain effect.;切换任意预览 graft 效果 。
+Sets the strength of the grain effect.;设定谷物效应的强度。
+Sets the texture or coarseness of the grain effect.;设置谷物效果的纹理或粗糙度。
+Sets the overall opacity of the scratches and stains.;设置划痕和污点的整体不透明。
+Controls the amount scratches and stains visible in each frame.;控制每个框中可见的数量划痕和污点。
+Controls the size of scratches and stains.;控制刮痕和污点的大小。
+Determines the active channel.;确定活动频道。
+Confirms changes and closes the curve editor.;确认更改并关闭曲线编辑器。
+Resets curve adjustments in all channels.;重新调整所有频道的曲线调整 。
+Units of measurement used for this scene.;本场景使用的测量单位.
+A custom scale factor that will apply to all measurements in this scene.;适用于此场景中所有测量的自定义尺度因子 。
+Use unit information in imported files for proper unit conversion upon import. Disable this to override file units with the "Imported" unit setting.;使用进口文件中的单位信息,在进口时进行适当的单位转换. 禁用以“ 导入” 单位设置覆盖文件单元 。
+Determines whether or not objects in the scene occlude light.;确定场景中的物体是否为光线。
+Determines whether or not this light casts lens flare.;决定此光是否投射镜头照明弹.
+Sets the lens flare strength of the light.;设定光线的镜头耀斑强度.
+Sets the color and intensity of the light.;设置光线的颜色和强度。
+Enables the use of temperature to adjust light color.;允许使用温度来调整光色。
+Produces a color tint based on the black body radiation temperature, in degrees Kelvin. This result is multiplied with the light color.;根据黑色身体辐射温度,以开尔文度制成一种颜色锡. 此结果与光色相乘.
+Select from a list of preset color temperatures, calibrated to common light sources.;从预设的颜色温度列表中选择,校准为常见的光源.
+Determines the geometry of the light source.;确定光源的几何形状。
+Sets how large the light source is, which in turn defines how blurry the shadows are.;设定光源的大小,进而定义阴影的模糊度.
+Sets how much the light is stretched along the X axis, useful for creating non-spherical lights such as fluorescent tube lighting.;设定光线沿X轴被拉长多少,用于创建荧光管照明等非球形灯光.
+Sets how much the light is stretched along the Y axis, useful for creating non-spherical lights such as fluorescent tube lighting.;设定沿Y轴的光线拉长多少,用于创建荧光管照明等非球形灯光.
+Cast light from both sides of the rectangle.;从矩形两侧铸造光.
+Makes the light shape size only affect shadow softness and not the amount of emitted light.;使光的形状大小只影响阴影软度,而不是射出的光量.
+Sets whether or not the light shape shows up in the rendered image.;设定亮度形状是否出现在渲染的图像中 。
+Sets the width of the spot light cone. This setting only applies when light type is set to "Spot".;设置点光锥的宽度。 此设置仅适用于光类型设定为"Spot"时.
+Sets the softness of the spot light cone. This setting only applies when light type is set to "Spot".;设置点光锥的柔软度. 此设置仅适用于光类型设定为"Spot"时.
+Loads an image to mask the light shape.;装入图像以掩盖光线形状。
+Sets how many times the gel image repeats.;设定凝胶图像重复的次数 。
+Determines whether or not the mesh occludes light.;确定网状是否为光线。
+Determines whether or not the backsides of polygons are drawn. This should be disabled for meshes such as alpha planes which require both sides to be visible.;确定多边形的背面是否被绘制。 这对中间体如α飞机来说应该被禁用,它们要求双方可见.
+Selects a tangent space algorithm for this mesh. This selection should match the convention in which a normal map was baked.;选择此网格的正切空间算法 。 这种选择应当与烤制普通地图的公约相匹配。
+Attempts to fix any issues arising from mirrored tangent spaces. Issues may arise on meshes with mirrored UVs.;试图解决来自镜像中切合空间的任何问题。 镜像的紫外线可能出现问题。
+Adaptively removes redundant polygons in the subdivided result, resulting in a similar mesh with fewer polygons.;适应性地去除细分结果中的冗余多边形,导致类似网状,多边形较少.
+Selects the wireframe display for subdivided meshes.;选择子网格显示的线框。
+This option will retain the shape of open edges in Catmull-Clark mode.;此选项将在 Catmull- Clark 模式中保留开放边缘的形状 。
+The number of repeated subdivision steps.;复次次分步骤数.
+Enables mesh subdivision, creating a higher resolution version of the original mesh.;启用 mesh 子分区,创建一个分辨率更高的原 mesh 版本.
+Loads a custom sky light background, which will also be used to light the scene. Use a 360 degree panoramic HDR image for best results.;装入自定义的天光背景,它也会用来点亮场景. 使用360度全景HDR图像获取最佳效果.
+Exports the current sky to a .tbsky archive.;导出当前天空到 . tbsky 存档 。
+Exports the current sky to the library.;导出当前天空到库中 。
+Opens the sky library for a handy selection of sky presets.;打开天空库,以方便选择天空预设。
+Sets the exposure of the image-based lighting, child lights, and background image.;设定基于图像的照明,儿童灯光,和背景图像的曝光.
+Sets the exposure of child lights in relation to the master sky brightness setting.;设定与主天亮度设定相关的儿童灯光曝光。
+Toggles importance sampling of sky light image. Disabling this option can increase ray tracing performance at the expense of sky lighting quality.;切换天光图像的重要采样 。 禁用此选项可以提高射线追踪性能,而牺牲天空照明质量.
+Gives a preview of the current sky lighting image, and allows creation (left click) movement (left button drag) and deletion (right click) of child lights.;给出当前天空照明图像的预览,并允许创建(左键点击)移动(左键拖动)和删除(右键点击)儿童灯.
+Multiplies the exposure of specific values in the sky light image, which is useful for controlling contrast by making highlights brighter or darker.;乘以天光图像中特定值的曝光量,通过使亮度更亮或更暗来控制对比度是有用的.
+Sets the exposure point for the selective brightness effect. For instance, a value of 2 means that areas that are brighter than 2 will be affected.;设置选择性亮度效应的曝光点。 例如,2值意味着比2更亮的区域将受到影响。
+Sets the intensity of the selective brightness effect. Values lower than 1 will darken the image content, while values higher than 1 will brighten it.;设置选择性亮度效应的强度。 低于1的值会暗化图像内容,而高于1的值会亮化图像内容.
+Removes any selective brightness alterations.;删除任何选择性亮度修改。
+Applies the current settings for selective brightening.;应用当前设置来选择亮度。
+Sets the color of the background. This setting only applies when the backdrop mode is set to "Color".;设置背景颜色。 此设置仅在背景模式设定为"Color"时才适用.
+Controls how blurry the background image is. This setting only applies when the backdrop mode is set to "Blurred Sky".;控制背景图像的模糊度 。 此设置仅在背景模式设定为"Blurred Sky"时才适用.
+Location settings for specifying the scene's point on the earth.;指定地上场点的位置设置 。
+Degrees latitude on earth, from -90 south to 90 north.;地球上的纬度,从南-90到北90.
+Degrees longitude on earth, from -180 west to 180 east.;地球上的经度,从西-180到东180.
+Automatically computes a rough estimate of the time zone setting when longitude is changed.;自动计算经度变化时的时区设置的粗略估计。
+Time zone, specified as hours relative to Universal Coordinated Time (UTC).;时区,指相对于通用坐标时间(UTC)的时数.
+The time of day, as HH:MM. Generally hours run from 0 to 23, though values above this range will work too. This time is specified in the current time zone.;时间,作为HH:MM. 时间一般从0小时到23小时不等,尽管超过这个范围的数值也会起作用. 此时间由当前时区指定.
+The month of the year, from 1 to 12. This affects the seasonal position of the sun.;每年的月份,从1到12. 这影响了太阳的季节性位置.
+The day of the month. This affects the seasonal position of the sun.;月日时. 这影响了太阳的季节性位置.
+A multiplier on the brightness of the sun, relative to the sky. A value of 1 is most accurate, but lower values can sometimes be easier to work with.;乘于阳明,相对于天. 1的值是最准确的,但较低的值有时可以更容易使用.
+A multiplier on the apparent size of the sun, as seen from earth. A value of 1 is most accurate.;从地球上看到的太阳表面大小的乘数。 1的值是最准确的.
+Controls the amount of particulate matter in the atmosphere, which will affect the appearance of scattered light in the sky.;控制大气中微粒物质的数量,这将影响天空中散射光的出现.
+A pair of colors specifies the appearance of the ground plane near the scene and toward the horizon, respectively.;一对颜色分别指定了地面平面靠近场景和向地平线的外观.
+Shifts the color temperature of the sun and sky.;移动日空的颜色温度。
+Shifts the color balance of the sun and sky, being complementary to white balance.;移动日空的颜色平衡,是对白平衡的补充.
+Adjusts the intensity of colors in the sun and sky.;调整太阳和天空颜色的强度。
+The color of the fog medium.;雾介质的颜色.
+Determines how dense if the fog medium.;确定雾介质的密度。
+This is the maximum occlusion the medium can provide, regardless of distance.;这是介质所能提供的最大隔离,无论距离如何.
+The mode of the fog volume.;雾量模式.
+Determines the scattering color of light passing through the object.;确定通过对象的光线的散射颜色。
+The height of the bottom boundary of the fog.;雾底边界的高度.
+Height range that the fog occupies.;雾占据的高度范围。
+The height of the top boundary of the fog.;雾顶边界的高度.
+Point at which the bottom falloff ends.;最底层坠落结束的点。
+The range of fog falloff.;雾降范围.
+Point at which the top falloff start.;顶部坠落开始的点
+The path to the external model file. Toolbag will modify this path to be relative to the Toolbag scene file, when possible.;外部模型文件的路径 。 Toolbag将在可能时修改此路径以相对 Toolbag 场景文件.
+Browse for a new external model file. This will clear and reload the contained scene objects from disk.;浏览新的外部模型文件 。 这将清除并重新装入磁盘中包含的场景对象 。
+Enables realtime automatic reloading of this model file.;启用此模型文件的实时自动重载 。
+Move all parts back to original position when reloading the model - disable to retain user edits to sub-parts.;重新装入模型时将所有部件回移到原位置 - 禁用将用户编辑保留到子部件 。
+Forces a reload of the external model file.;强制重装外部模型文件 。
+Clears the animation rotation value.;清除动画旋转值。
+An image to present in the background of the rendered scene. Backdrops apply only to cameras under which they have been parented.;显示在已渲染场景背景中的图像 。 后空投只适用于其被父化的相机 。
+Determines whether to use the alpha channel of the provided image for transparency.;确定是否使用所提供图像的α通道实现透明。
+Selects an overall opacity for the backdrop image.;为背景图像选择总体不透明。
+Sets the opacity of the received shadows.;设置接收阴影的不透明性。
+Fades shadows out near the edges of the shadow catcher.;浮影笼罩在捕影者的边缘
+A texture to mask the fade effect over the surface of the shadow catcher.;遮蔽阴影捕捉器表面的淡出效应的纹理.
+Selects which color channel from the Fade texture to use.;选择要使用的淡出纹理的颜色通道。
+Radius of the edge fade effect.;边缘的半径变淡效应.
+Falloff of the edge fade effect.;边缘脱落 淡出效应。
+Enables receiving shadow from the sky light (ray tracing only).;启用接收来自天光的阴影( 只有光线跟踪) 。
+Enables receiving reflections and bounced lighting from nearby objects (ray tracing only).;允许接收来自附近物体的反射和反射光线(只有光线跟踪).
+Enables turntable rotation during animation playback.;在动画回放时启用旋转式旋转 。
+Rate at which the turntable and its sub-objects will rotate, in degrees per second.;旋转台及其子物体旋转的速度,以每秒度计。
+Select a subroutine for this part of the material shader.;为这部分材料阴影选择一个子例程。
+Select a blend mode for this part of the material layer.;为这部分材料层选择混合模式。
+Determines how UV coordinates are stored (UV, UDIM) or generated (Triplanar).;确定紫外线坐标的存储方式(UV,UDIM)或生成方式(Triplanar).
+Controls which UV channel will be used for texture sampling.;用于纹理取样的紫外线通道控制器。
+Controls the scale by which UV texture coordinates are scaled. Higher values result in more tilling.;控制紫外线纹理坐标的缩放规模。 较高的价值导致更多的耕作。
+Controls the amount of horizontal texture tiling.;控制水平纹理板的量。
+Controls the amount of vertical texture tiling.;控制垂直纹理板的量。
+Specifies a horizontal texture offset.;指定横向纹理偏移。
+Specifies a vertical texture offset.;指定垂直纹理偏移。
+Specifies a texture rotation.;指定纹理旋转。
+Sets the degree of anisotropic filtering applied to this material. Higher values look better but may reduce performance.;设定适用于这种材料的异同位素过滤程度。 较高的值看起来更好,但可能降低性能。
+Enables texel filtering for this material. Results in sharp "pixelated" texel borders when disabled.;启用此材料的 Texel 过滤 。 禁用时在尖锐的“ pixeled” texel 边框中产生结果 。
+Sets how sharp or soft the transition between the different axes or projection planes is.;设定不同轴或投影平面之间的过渡有多尖锐或柔和.
+Albedo or diffuse color map input for standard materials.;标准材料的 Albedo 或 扩散色图输入.
+The texture that will be used to control the albedo or diffuse color.;用来控制反照率或扩散颜色的纹理。
+Sets the albedo or diffuse color.;设置反照率或扩散颜色。
+Albedo or diffuse map input with support for vertex colors.;支持顶点颜色的 Albedo 或 扩散地图输入。
+Determines whether vertex color information is sRGB corrected or used as linear space.;确定顶点颜色信息是否被 SRGB 校正或用作线性空间。
+Enables use of the vertex alpha channel, which is used as an alpha mask for transparency when "Alpha from Albedo" is enabled in a Transparency shader.;启用顶点α通道,当“Alpha from Albedo”在透明阴影器中启用时,该通道被用作透明化的α掩码。
+A texture that controls the brightness and color of the sheen effect.;一种控制羊舍效应的亮度和颜色的纹理.
+Adjusts the brightness of microfiber sheen, a view-dependent reflection effect.;调整微纤维谢恩的亮度,一种视线依赖的反射效果.
+The color of the sheen effect.;谢恩效应的颜色.
+Modifies the extent to which sheen color combines with the final effect.;修改羊色与最终效果结合的程度.
+A texture which specifies roughness for the purpose of microfiber shading. Roughness will affect the shape and size of the sheen highlights.;用于微纤维阴影的纹理。 粗糙会影响雪莲亮度的形状和大小.
+Selects the color channel used in the roughness map.;选择粗糙度图中使用的颜色通道。
+Adjusts the microfiber roughness to affect the shape and size of sheen highlights.;调整微纤维粗糙度以影响 Sheen 亮度的形状和大小。
+Inverts the roughness values, providing the opposite appearance.;颠倒粗糙值,提供相反的外观.
+Standard displacement mapping, which uses a grayscale heightmap to displace geometry inwards and outwards.;标准迁移图,使用灰度高度图将几何图向内和向外迁移.
+Determines which channel in the displacement map will be used.;确定将使用迁移图中的哪个通道 。
+The texture that will be used to control displacement intensity and direction.;用于控制流离失所强度和方向的纹理。
+Sets the intensity of the displacement effect.;设定迁移效应的强度。
+Sets whether the displacement map is applied relative to the bounding box scale. If disabled, absolute scale in scene units is used.;设定移位图相对于边框缩放是否应用。 如果禁用,则使用场景单位的绝对尺度.
+Adjusts the contrast of the height map.;调整高度图的对比度。
+Adjusts the values used for the contrast center of the height map.;调整用于高度图对比中心的数值。
+Offsets the map contents.;偏移地图内容。
+Merge shared vertices along UV seams using the averaged position.;用平均位置将紫外线接合线上的共享顶点合并起来。
+Generate fresh surface normals using the displaced vertices.;利用流转的顶点产生新鲜的表面常态.
+Vector displacement mapping can displace geometry inwards, outwards and in multiple directions via the use of a colored vector displacement map.;通过使用彩色矢量迁移图,向内、向外和从多个方向取代几何图形。
+Sets whether the vector displacement map uses tangent or world space.;设定矢量移位图是否使用切换或世界空间 。
+Inverts the content in the X axis or red channel of the texture.;反转纹理的X轴或红色通道中的内容。
+Inverts the content in the Y axis or green channel of the texture.;反转纹理的Y轴或绿色通道中的内容。
+Inverts the content in the Z axis or blue channel of the texture.;颠倒纹理的Z轴或蓝色通道中的内容.
+Sets whether the displacement map is applied relative to the bounding box scale. If disabled, absolute scale is used.;设定移位图相对于边框缩放是否应用。 如果禁用,则使用绝对尺度.
+When enabled emission is attenuated by the clearcoat layer so that it looks like it's coming from inside the object.;当允许的释放被 清除层减轻, 使它看起来像它来自物体内部。
+The texture that will be used to blend between "Temperature" and "Minimum Temperature".;用于混合"温度"和"最低温度"的纹理.
+Sets the strength of the heat effect.;设置热效应的强度.
+Sets the temperature, in degrees kelvin, which determines the brightness and color of the light emitted.;设置温度, 单位为 kelvin 度, 以决定所射光的亮度和颜色 。
+Determines the value that black is mapped to in the texture, which sets the minimum brightness of the light emission.;确定黑色在纹理中被映射的值,该纹理设定了光排放的最低亮度.
+The emissive model allows you to load a brightness or glow texture to define areas of your material that emit light.;发射模型允许您加载亮度或发光纹理来定义您物质中放光的区域.
+The texture that will be used to control the emissive or glow effect.;用来控制发射或发光效应的纹理.
+Sets the emissive intensity and color.;设置发射强度和颜色。
+Sets the intensity of the emissive or effect.;设定发射效果的强度。
+Determines which UV channel the emissive map makes use of.;确定发送地图使用的紫外线通道。
+Specifies the color of the fluorescence effect. Fluorescent materials emit light when absorbing nonvisible wavelengths, such as ultraviolet.;指定荧光效果的颜色。 荧光材料在吸收紫外线等非可见波长时会发光.
+Determines whether to treat sky light as a source of activating illumination.;确定是否将天空光作为激活照明的来源。
+Determines whether to treat direct light as a source of activating illumination.;确定是否将直接光作为激活照明的源头。
+Specifies how sparse or densely populated the glint flakes are.;指定闪烁片的密度或密度。
+Specifies the intensity of the glint effect. Values darker than white fade to Beckmann reflections.;指定格林特效应的强度。 价值比白人更暗淡 贝克曼反射。
+Determines the channel of the texture from which to read the glint map content.;确定读取glint地图内容的纹理通道。
+The texture used to control the intensity of the glint effect. Values darker than white fade to Beckmann reflections.;纹理用来控制glint效应的强度. 价值比白人更暗淡 贝克曼反射。
+Sets the glint roughness value, 1 corresponds to rough reflections, while 0 corresponds to smooth reflections.;设置glint粗糙值,1对应粗糙反射,0对应平滑反射.
+Determines the channel of the texture from which to read the glint roughness map content.;确定读取 glint 粗糙度图内容的纹理通道。
+The texture used to specify glint roughness. White corresponds to rough glints, while black corresponds to smooth glints.;用于指定glint粗糙度的纹理. 白色对应粗糙的胶原,黑色对应光滑的胶原.
+Specifies the size of the glint flakes.;指定闪烁片的大小。
+When enabled the glint roughness is synchronized with the roughness or gloss settings.;当启用 glint 粗糙度与粗糙度或光滑度设置同步 。
+Specifies the maximum gloss value.;指定最大光泽值。
+The texture used to control glossiness or roughness. White corresponds to smooth surfaces while black corresponds to rough surfaces.;纹理用来控制光泽或粗糙. 白色对应平滑表面,黑色对应粗糙表面.
+Determines the channel of the texture from which to read gloss or roughness content.;确定用于读取光泽或粗糙内容的纹理的通道。
+Sets the glossiness value, 1 corresponds to smooth surfaces while 0 corresponds to rough surfaces.;设置光泽值, 1 对应平滑表面, 0对应粗糙表面.
+Specifies the maximum roughness value.;指定最大粗糙度值。
+The texture used to specify surface roughness. White corresponds to a rough surface while black corresponds to smooth surfaces.;用于指定表面粗糙度的纹理. 白色对应粗糙的表面,而黑色对应光滑的表面.
+Determines the channel of the texture from which to read roughness content.;确定用于读取粗糙度内容的纹理通道。
+Inverts the output of the roughness shader. Useful for loading gloss maps in place of roughness maps.;倒置粗糙阴影器的输出 。 用于加载光泽图以代替粗糙度图。
+The texture used to specify microsurface detail. This map can be used as either smoothness or roughness.;用于指定微表面细节的纹理 。 这张地图既可以是光滑的,也可以是粗糙的.
+Determines the channel of the texture from which to read microsurface values.;确定用于读取微表面值的纹理通道。
+Specifies the maximum microsurface value. Values from the texture are scaled to be no greater than this value.;指定最大微表面值。 纹理值的缩放不大于此值.
+Specifies the minimum microsurface value. Values from the texture are shifted to be no less than this value.;指定最小的微表面值。 纹理的值被转换为不低于这个值.
+Sets the intensity of the horizon smoothing effect, which increases the apparent smoothness of the material at extreme angles.;设置地平线平滑效果的强度,这可以提高材料在极端角度上的表面平滑度.
+The texture that will be used to control glossiness or roughness. White corresponds to smooth surfaces while black corresponds to rough surfaces.;用于控制光泽或粗糙的纹理. 白色对应平滑表面,黑色对应粗糙表面.
+Determines the channel of the texture from which to read the gloss or roughness content.;确定用于读取光泽或粗糙内容的纹理的通道。
+Inverts the content of the gloss map. Useful for loading roughness maps where white corresponds to rough surfaces while black corresponds to smooth surfaces.;颠倒光泽图的内容. 用于装入粗糙度图,其中白色对应粗糙表面,黑色对应平滑表面.
+The occlusion model allows you to load ambient occlusion and cavity maps, ideal for any material that has crevices which would block light.;闭塞模型允许您加载环境闭塞和腔图, 对于任何有会阻断光线的裂缝的材料来说是理想的。
+The texture that will be used to control the ambient occlusion effect, which uses a grayscale map to occlude ambient diffuse sky light.;用于控制环境封存效应的纹理,它使用灰色比例图来覆盖环境扩散的天空光.
+Determines which channel of the texture will be used for the ambient occlusion map.;确定环境闭合图将使用哪条纹理通道。
+Determines which UV channel the ambient occlusion map makes use of.;确定环境隔离图使用的紫外线通道。
+Determines which vertex color channel is used for ambient occlusion content.;确定哪个顶点颜色通道用于环境隔离内容。
+The texture that will be used to control the cavity effect, which uses a grayscale map to occlude diffuse and specular light.;用来控制腔内效应的纹理,它使用灰色比例图来覆盖扩散和光谱光.
+Determines which channel of the texture will be used for the cavity map content.;确定纹理的哪个通道将被用于腔图内容。
+Determines how much influence the cavity map has on diffuse light.;确定腔图对扩散光的影响力有多大.
+Determines how much influence the cavity map has on specular reflections.;确定腔图对光谱反射的影响有多大.
+Determines which channel of the curvature map is used. This setting only applies in grayscale mode.;确定使用曲率图的通道。 此设置只在灰度模式下适用 。
+Adjusts the scale of the curvature values.;调整曲率值的尺度。
+Sets the mask value that determines the strength of transmission. When a mask map is loaded this value should be set to 1.;设置决定传输强度的遮罩值。 当一个掩码映射被装入时,此值应设置为 1 。
+The texture that will be used to set the mask value. Brighter pixels correspond to stronger transmission.;用于设置遮罩值的纹理 。 更亮的像素对应更强的传输.
+Determines which channel of the texture will be used for the transmission mask.;确定用于传输罩的纹理通道。
+Inverts the mask value so that darker pixels correspond to stronger transmission.;反转遮罩值,使较暗的像素对应更强的传输.
+Uses the material's albedo alpha value to provide a transmission mask.;用材料的反照率α值来提供传输罩.
+A texture which controls scatter depth and color, as a proportion of the Scatter Depth setting.;用于控制散射深度和颜色的纹理,占散射深度设置的比例。
+Specifies the distance light will scatter in this material. This value is specified in millimeters; using accurate scene scale is advised.;指定在此材料中散射的距离。 此值以毫米表示;建议使用准确的场景尺度。
+Determines the scatter color.;确定散点颜色。
+A texture used to mask and color the fuzz effect.;一种用于遮盖和涂色模糊效果的纹理.
+Controls the strength of the "fuzz" effect, which approximates the appearance of fine hairs.;控制"fuzz"效应的强度,这大致相当于细毛的外观.
+Determines the color of the fuzz effect.;确定模糊效果的颜色。
+Masks the fuzz appearance with the material gloss value.;遮盖模糊的外表 与物质光泽值。
+Determines the primary direction of scattering, either forwards or backwards. A value of zero is even, isotropic scattering.;确定向前或向后分散的主要方向。 零值是均匀的,异热带散射。
+A color tint for light passing through the object.;光通过物体的颜色 。
+Uses the material's albedo to provide refraction tint.;利用材料的反照率提供折射锡.
+The texture that will be used to set the index of refraction value.;用于设定折射值索引的纹理 。
+Sets the index of refraction. Higher values will distort light to a greater degree but won't affect surface reflectivity.;设置折射索引。 更高的值会扭曲光度更高,但不会影响表面反射率.
+Automatically derive index of refraction from Reflectivity. Uncheck this box to override with index value below.;从Reflective自动获取折射指数. 取消选中此项以覆盖下方的索引值 。
+Lower values limit the distortion effect in rasterized views, which is often useful for thin lenses. This setting does not affect ray traced renders.;较低的值限制了光栅化视图中的扭曲效果,这往往对薄镜头有用. 此设定不影响追踪到的射线。 Name
+Controls the amount of scattering of light passing through the object.;控制通过物体的光的散射量。
+A texture which modulates the scattering color of light passing through the object.;调制光穿过物体的散射颜色的纹理。
+Modifies refraction roughness. Positive values make refraction more rough than reflection, while negative values make refraction less rough than reflection.;修补逆顺粗. 正面值使折射比反射更粗糙,而负面值使折射比反射更粗糙.
+Specifies the primary direction of scattering, either forwards or backwards. A value of zero is even, isotropic scattering.;指定向前或向后分散的主要方向。 零值是均匀的,异热带散射。
+A texture specifying the brightness and color of light passing through from the opposite side of the object.;指定从物体对面穿过的光的亮度和颜色的纹理。
+Tints the translucency effect.;微小的半透明效应。
+Uses the material's albedo color for translucency.;使用材料的反照率颜色进行透明.
+Determines the amount of light scattering inside the surface.;确定在表面内散射的光量。
+A texture that controls the radial roughness of the hair.;一种控制毛发光线粗糙的纹理.
+Determines which channel of the texture will be used for the radial roughness map content.;确定纹理的哪个通道将用于射线粗糙度图的内容.
+Applies a color tint to the hair.;在头发上应用一种颜色
+Shifts the highlights along the hair strand.;沿发线移动亮点。
+Inverts the radial roughness values, providing the opposite appearance.;反转光圈粗糙值,提供相反的外观.
+A texture that controls the direction of the hair. (Hair Cards Only);一种控制头发方向的纹理. (仅限发卡)
+Remaps vector data from the range [0,1] to [-1,1]. Disable this setting with floating-point textures.;将矢量数据从[0]到[-1,1]范围重映. 以浮点纹理禁用此设置 。
+The anisotropic reflection model allows you to define the highlight direction for complex surfaces like hair, fur and brushed metal.;非同位素反射模型允许您定义毛发,毛皮和刷金等复杂表面的突出方向.
+Swaps the direction map content in the red and green channels.;将方向图内容换入红绿通道.
+Sets the intensity of the anisotropic reflection effect, use to define the highlight shape for complex surfaces.;设置异构反射效果的强度,用于定义复杂表面的亮度形状.
+Sets direction in which the anisotropic reflections face. This value can be used for hair when all UVs point in the same general direction.;设定非同位素反射面的方向. 当所有紫外线都指向相同的一般方向时,这个值可用于毛发.
+Blinn-Phong is a standard reflection model with a relatively harsh edge to the highlight shape.;Blinn-Phong是一个标准反射模型,与亮点形状的边缘相对严酷.
+Sets the gloss or roughness value relative to the base value.;设置相对于基准值的光滑或粗糙值。
+Sets the reflection intensity relative to the base value.;设定相对基准值的反射强度。
+Sets the color of the secondary reflection intensity.;设置二次反射强度的颜色。
+Sets the Fresnel intensity relative to the base value.;设定相对基准值的弗雷斯内尔强度。
+Sets the color of the secondary Fresnel intensity.;设置二级弗雷斯内尔强度的颜色。
+Sets the intensity of the horizon occlusion effect, which reduces light leaking from backwards facing vectors in the normal map.;设定地平线闭塞效应的强度,这可以减少正常地图中向后面对向量的光泄漏.
+The texture that controls the thickness of the outer surface layer. This affects the interference pattern, as higher thicknesses display more "rings".;控制外表层厚度的纹理. 这影响了干扰模式,因为更高的厚度显示更多的"环".
+Determines which channel of the texture will be used for the thickness map.;确定厚度图所用的纹理通道。
+Sets the intensity of the interference effect.;设置干扰效果的强度。
+Controls the thickness of the outer surface layer. This affects the interference pattern, as higher thicknesses display more "rings".;控制外表面层的厚度。 这影响了干扰模式,因为更高的厚度显示更多的"环".
+Sets lower bound thickness that corresponds to the lowest value in the thickness map.;设置对应于厚度图中最低值的下限厚度。
+Allows you to control reflectivity with index of refraction values.;允许您用折射值索引控制反射。
+Sets the color and intensity of the extinction effect.;设定灭绝效果的颜色和强度。
+The advanced metalness model is similar to the metalness model, but provides extra control over specular reflection intensity for insulators or non-metals.;先进的金属性模型与金属性模型相似,但为绝缘器或非金属提供了对光谱反射强度的额外控制.
+The texture input that will be used to set the reflectivity value for insulators or non-metals.;用于设定绝缘器或非金属的反射值的纹理输入.
+Determines which channel of the texture will be used for the specular map content.;确定用于图谱内容的纹理通道。
+Sets the reflectivity value for insulators or non-metals.;设置绝缘器或非金属的反射值。
+Inverts the metalness value so that white defines insulators and black defines metals.;反转金属性值,使白色定义绝缘器,黑色定义金属.
+Adds a curve to the specular input to match the Frostbite engine. When the slider is set to 0.16, a gray value of 128 equates to 4% reflectivity.;在光谱输入中添加曲线,以匹配Frostbite引擎. 当滑盘设置为0.16时,128的灰色值等于4%的反射率.
+The texture that will be used to set the metalness value. Black defines non-metals or insulators, while white defines metals.;用于设定金属值的纹理。 黑色定义非金属或绝缘器,白色则定义金属.
+Sets the metalness value, which should generally be 0 for insulators or 1 for metals. When a metalness map is loaded, this value should be set to 1.;设置金属性值,一般应为绝缘器0. 当金属质图被装入时,该值应设定为 1 。
+Determines which channel of the texture will be used for the metalness map.;确定金属质度图将使用哪条纹理通道。
+The specular map model provides an input to set the explicit specular reflection intensity and color. If your material has a specular map, use this model.;光谱映射模型为设定明显的光谱反射强度和颜色提供了投入. 如果你的材料有谱图,请使用这个模型.
+The texture that will be used to set the color and intensity of the specular reflections.;用于设定光谱反射的颜色和强度的纹理.
+Specifies color channel(s) to use in the specular map.;指定在光谱图中使用的彩色通道。
+Sets the intensity of the specular reflections.;设置光谱反射的强度。
+Sets the color and intensity of the specular reflections.;设置光谱反射的颜色和强度。
+Sets the intensity of the Fresnel effect, or how reflective surfaces are at grazing angles.;设定弗雷斯内尔效应的强度,或者在放牧角度如何反射表面.
+Sets the color and intensity of the Fresnel effect.;设置弗雷斯内尔效应的颜色和强度。
+Energy conservation darkens the albedo map to ensure that the sum of diffuse and specular light is not greater than the amount of light that hits the object.;节能使反照率图暗化,以确保散射光和光谱光的总和不大于击中物体的光量.
+Flat subdivision tessellates the geometry without altering its shape.;平分子排列几何而不改变形状.
+Sets the level of tessellation or geometry limit for sub-division.;设置子分区的纹理或几何限制。
+This computer does not support this feature.;此计算机不支持此特性 。
+PN Triangles subdivision tessellates the geometry and attempts to smooth the silhouette.;PN三角小区对几何结构进行分解,并试图平滑硅.
+Sets the intensity of the PN Triangles effect, which tessellates geometry while smoothing the surface.;设置PN三角效应的强度,该效应在平滑表面时会分解几何.
+Standard normal mapping for per-pixel lighting, with an additional detail normal map slot.;每像素照明的标准普通映射,并附加一个细节的普通映射槽.
+A second normal map to provide additional detail.;提供更多细节的第二张普通地图.
+The UV set that will be used for the micro detail normal map.;用于微细节普通地图的紫外线设定 。
+Remaps vector data from the range [0,1] to [-1,1]. Disable this when using floating-point textures.;将矢量数据从[0]到[-1,1]范围重映. 使用浮点纹理时禁用 。
+Inverts the content in the X axis, or red channel, of the texture.;反转纹理 X 轴中的内容,或红色通道。
+Inverts the content in the Y axis, or green channel, of the texture.;倒置纹理的Y轴,或绿色通道中的内容.
+Inverts the content in the Z axis, or blue channel, of the texture.;反转纹理的Z轴,或蓝色通道中的内容.
+Sets the spacing for tiling of the detail normal map.;设置细节普通地图的平面间隔。
+Shifts the detail normal map. This may be useful for avoiding repeating artifacts.;移动细节普通地图。 这可能有助于避免文物的重复。
+The texture that will be used to set the intensity of the micro detail normal map.;用于设定微细节普通地图的强度的纹理 。
+Determines which channel of the texture will be used for the detail normal weight map.;确定纹理的哪个通道将用于细节普通重量图。
+Sets the intensity of the micro detail normal map.;设置微细节普通地图的强度。
+Standard normal mapping for per-pixel lighting.;每像素照明的标准正常映射.
+A texture map providing per-pixel surface normal vectors for additional lighting detail.;纹理图提供了每像素表面的正常矢量,用于额外的照明细节.
+Generates the normal's Z coordinate from X and Y. This is generally useful for two-channel normal maps.;从X和Y生成正常的Z坐标. 这一般对双通道的普通地图有用.
+The texture that will be used to define the depth of the parallax effect.;用于定义参数效应深度的纹理.
+Sets the intensity of the parallax effect.;设置参数效果的强度。
+Quality of the parallax effect.;准音效果的质量.
+Radius of the bevel effect in millimeters.;以毫米计的贝效应的半径.
+Limits the bevel effect to corners greater than this value in degrees.;将贝效应限制在大于此值的角上 。
+Controls the quality of the bevel effect. Wider bevels benefit from more samples. This setting significantly affects rendering performance.;控制贝效应的质量。 大贝壳从更多的样品中获益. 此设置会严重影响渲染性能 。
+When enabled the bevel effect is always applied to any hard edges.;当启用时,贝效应总是应用于任何硬边缘.
+When enabled bevels are not applied at intersections with other meshes.;当启用的贝壳不应用在其他 meshes 的交叉处 。
+Allows for masking bevel width by interpolated vertex color channel.;通过插孔顶点彩色通道允许遮盖贝绒宽度.
+Determines whether or not the alpha channel of the albedo map is used for the transparency map.;确定是否将反照率图的α通道用于透明度图。
+This texture is used to define the opacity of the material. White corresponds to full opacity while black denotes full transparency.;这种纹理用来定义材料的不透明度. 白色表示完全不透明,黑色表示完全透明。
+Determines which channel of the texture will be used in the transparency map.;确定透明地图将使用哪条纹理通道。
+Sets the opacity for the material. White corresponds to full opacity while black denotes full transparency.;设置材料的不透明性。 白色表示完全不透明,黑色表示完全透明。
+Determines whether to use cutout or dither when cutting out the refraction material.;确定在剪除折射材料时是使用剪切还是切除。
+Inverts the mask, useful when using a transparency map as a mask.;反转掩码,在使用透明映射作为掩码时有用.
+Additive transparency adds specular lighting on top of other objects in the scene. This is useful for transparent materials like glass or reflective shells.;增加透明度在现场其他物体上方增加了光谱照明. 这对玻璃或反射壳等透明材料有用。
+Sets the color of the additive tint effect.;设置添加剂锡效应的颜色。
+Includes the diffuse contribution when using additive blending. This will typically result in a glowing or ghost-like appearance.;包括在使用添加剂混合时的散射作用。 这通常会导致发光或类似鬼的外表.
+Cutout or alpha test is a simple method for defining transparent materials, which works as an on-or-off function.;Cutout或alpha测试是定义透明材料的简单方法,它起到在或关闭功能的作用.
+Pixels with alpha values below this threshold will be clipped and not rendered, resulting in a hard "cut-out" border.;α值低于此阈值的像素会被剪切而不会渲染,从而形成一个硬的"剪切"边框.
+Edit the current shader file.;编辑当前阴影文件 。
+Reload the current custom shader file (Ctrl+Shift+C).;重新装入当前自定义的阴影文件(Ctrl+Shift+C).
+Clear the reference to the current shader file.;清除当前阴影文件的引用 。
+Create a new material.;创建新材料.
+Duplicate the selected material.;复制选中的材料 。
+Create a material from a preset.;从预设中创建材料 。
+Apply the selected material to the selected scene object(s).;将选中的材料应用到选定的场景对象。
+Delete the selected material or group.;删除选定的材料或组。
+Import a material file from disk.;从磁盘导入一个材料文件 。
+Export a material file to disk.;导出一个材料文件到磁盘 。
+Material thumbnail size.;材料缩略图大小.
+Create a new material group.;创建新材料组.
+Sets the X axis 3D space position for the projection in relation to the material mesh(es).;设定与物质网格(s)相对应的投影的X轴3D空间位置。
+Sets the Y axis 3D space position for the projection in relation to the material mesh(es).;设置 Y 轴 3D 空间位置,用于相对物质网格进行投影。
+Sets the Z axis 3D space position for the projection in relation to the material mesh(es).;设置投影相对于材料网(s)的Z轴3D空间位置。
+Sets the X axis 3D space size for the projection in relation to the material mesh(es).;设定相对于物质网格的投影的 X 轴 3D 空间大小。
+Sets the Y axis 3D space size for the projection in relation to the material mesh(es).;设定与物质网格(s)相对应的投影的Y轴3D空间大小。
+Sets the Z axis 3D space size for the projection in relation to the material mesh(es).;设定投影相对于材料网格(s)的Z轴3D空间大小。
+Sets the X axis 3D space rotation for the projection in relation to the material mesh(es).;设定相对于物质网格(s)投影的X轴3D空间旋转.
+Sets the Y axis 3D space rotation for the projection in relation to the material mesh(es).;设置 Y 轴的 3D 空间旋转,用于相对物质网格的投影。
+Sets the Z axis 3D space rotation for the projection in relation to the material mesh(es).;设定投影相对于材料网格(s)的Z轴3D空间旋转.
+Adjust the projection inside the viewport.;调整视野内的投影。
+Finish adjusting the projection inside the viewport.;完成在视图端口内调整投影.
+Reset the projection transform.;重置投影转换.
+Select the channel of the map to be used for blending layers.;选择用于混合层的映射通道。
+Adjust brightness.;调整亮度。
+Adjust contrast.;调整对比度。
+Remove mask.;删除面具。
+Add mask.;增加口罩.
+Mask used for blending layers.;混合层用的面具.
+Select the mask used for blending layers.;选择用于混合层的遮罩。
+Select the UV set used for blending layers.;选择用于混合层的紫外线集。
+Height map used for blending layers.;用于混合层的高度图.
+Channel of the height map used for blending layers.;用于混合层的高度图的通道.
+Toggle layer visibility.;切换层可见度 。
+Remove layer.;删除图层。
+Add layer.;增加一层.
+Expand this module.;扩展此模块 。
+Collapse this module.;折叠此模块 。
+Select a different shader model for this slot.;为此槽选择不同的阴影模型 。
+Adjust the extra parameters for this texture map.;调整此纹理图的额外参数 。
+Preview this texture map.;预览此纹理图 。
+Preview this texture map in the viewport.;在视图中预览此纹理图 。
+Edit with the content creation app associated with this file type.;与此文件类型相关的内容创建应用程序编辑 。
+Reload this texture map.;重装此纹理图 。
+Remove this texture map.;删除此纹理图 。
+Sets whether this texture uses filtering. Disable for pixel art style textures where pixelation is desired.;设定此纹理是否使用过滤 。 禁用像素艺术风格的纹理 。
+Sets the degree of anisotropic filtering applied to this texture. Higher values look better but may reduce performance.;设定适用于此纹理的异同位素过滤度。 较高的值看起来更好,但可能降低性能。
+Adds an offset to the mipmap level. Useful for previewing the appearance of lower mipmap levels both in the viewport and the preview window.;向 mipmap 级别添加一个偏移。 用于预览视图端口和预览窗口中mipmap级别较低的显示.
+Toggle display of the red channel.;切换显示红色通道 。
+Toggle display of the green channel.;切换显示绿色通道 。
+Toggle display of the blue channel.;切换蓝色频道显示 。
+Toggle display of the alpha channel. Images will appear blended against a checkered background.;切换 Alpha 通道的显示 。 图像将会与剪切背景混合。
+Determines whether or not you will be prompted to install new updates. If enabled, Toolbag will check for new versions every time it opens.;确定您是否会被提示安装新的更新。 如果启用, Toolbag 每次打开都会检查新版本 。
+If enabled, the Toolbag window will load with the same position and size as it was when last closed.;如果启用, Toolbag 窗口将装入与上次关闭时相同的位置和大小 。
+If enabled, you will be prompted to save any unsaved work when closing a scene.;如果启用, 您将会被提示在关闭一个场景时保存任何未保存的工作 。
+Disabling this would remove these helpful little boxes. Pro-moves only.;拆掉这个可以移除这些有用的小盒子. 只主张动.
+Runs an extra integrity check on the scene when an action is undone or redone. Also displays diagnostic data in the performance window.;当一个动作被撤销或重开时, 在现场进行额外的完整性检查 。 同时在性能窗口中显示诊断数据.
+Selects whether, on startup, Toolbag will open a blank scene, the last opened scene, or the template scene.;选择启动时 Toolbag 会打开空白场景, 最后一个打开的场景, 还是模板场景 。
+Determines whether new scenes are empty or created from the template scene.;确定新场景是空的还是从模板场景创建的。
+Specifies the default directory for the skybox browser to use when Toolbag launches.;指定在 Toolbag 启动时用于天盒浏览器的默认目录。
+Select a new default skybox browser directory.;选择一个新的默认天盒浏览器目录 。
+Reset the default skybox browser directory to Toolbag's "sky" folder.;将默认的天盒浏览器目录重置为 Toolbag 的"sky"文件夹.
+Enables enhanced tablet compatibility. This setting can sometimes solve issues with tablet input, and disables some mouse features.;启用增强的平板兼容性。 此设置有时可以通过平板输入解决问题,并禁用一些鼠标特性.
+The default backend when using a digitizer, defaults to the latest available to your operating system.;使用数字化器时的默认后端,默认为您的操作系统可用的最新版本.
+Selects the default baking mode for new bake projects.;为新烘焙项目选择默认烘焙模式。
+Displays prompts to locate missing external files, such as textures and animations, during scene loads.;显示在场景加载时查找缺失的外部文件的提示,例如纹理和动画.
+Displays prompts to locate missing external meshes during scene loads.;显示在场景加载时查找缺失外部网格的提示 。
+Changed textures will be automatically reloaded when Toolbag regains focus.;改变的纹理将在 Toolbag 重拾焦点时自动重新装入.
+Sets the tangent space that will be applied to meshes when imported. Choose the application that you most frequently use to bake normal maps.;设置导入时将应用于 meshes 的切换空间 。 选择您最常用来烘烤普通地图的应用程序 。
+Newly created bake and texture projects will default to this tangent space handedness.;新创建的烘焙和纹理工程将默认为此切换空间的交接.
+Model files will import along with any available material definitions, including textures and other parameters where available.;模型文件将连同任何现有的材料定义一起导入,包括纹理和其他现有参数。
+Action that should be taken when materials import with a duplicate name to one currently in the scene.;在将重复名称的材料输入现场时应当采取的行动。
+Determines which unit system to use for new scenes. This setting should match the unit setting in your 3D modeling application.;确定用于新场景的单位系统。 此设置应当匹配您三维模型应用程序中的单位设置 。
+Sets the default directory where rendered images are saved when creating a new scene.;设定创建新场景时保存已渲染图像的默认目录 。
+Determines whether or not the "Rendered in Marmoset Toolbag" watermark is enabled when creating a new scene.;确定创建新场景时是否启用“ 在 Marmoset Toolbag 中渲染的” 水印 。
+Resets the Windows GPU timeout setting to the default of 2 seconds. This may negatively affect stability for complex scenes.;将 Windows GPU 的超时设置重置为默认2秒 。 这可能会对复杂场景的稳定产生不利影响。
+Automatically update assets when a new version is available.;新版本可用时自动更新资产.
+Path where first party library content is stored.;第一党图书馆内容存储路径 。
+Path where user third party library content is stored.;用户第三方库内容存储路径 。
+Automatically save a backup of your scene to the autosave folder at the specified time interval.;在指定的时间间隔中自动保存您的场景备份到自动保存文件夹 。
+Creates autosave files in the same folder as your current scene. The Max Saves and Max Autosave Folder Size settings do not apply when this is option enabled.;在与当前场景相同的文件夹中创建自动保存文件 。 最大保存和最大自动保存文件夹大小设置在启用此选项时不适用 。
+Determines how often autosaving occurs.;确定自动保存的频率。
+Determines the folder that backups are saved in.;确定备份保存的文件夹。
+Maximum amount of space the autosave folder can use. Older autosaves will be deleted when total size of the folder exceeds this value.;自动保存文件夹可使用的最大空间 。 当文件夹的总大小超过此值时, 旧自动保存将被删除 。
+Determines whether the Maximum Autosave Folder Size is set in GBs (gigabytes) or MBs (megabytes).;确定最大自动保存文件夹大小是GBs(gigabytes)还是MB(megabytes).
+Delete all files in the autosave folder.;删除自动保存文件夹中的所有文件 。
+Open the autosave folder location using the file explorer.;使用文件探索器打开自动保存文件夹位置 。
+The size of the autosave folder.;自动保存文件夹的大小 。
+The location to which rendered images will be written. Specify either a directory or file name.;绘制图像的位置将被写入 。 指定目录或文件名称。
+Browse for a file location for saving images.;浏览保存图像的文件位置 。
+Sets the dimensions of the exported image, in pixels.;设置导出图像的尺寸,以像素为单位。
+Sets the width of the exported image, in pixels.;设置导出图像的宽度,以像素为单位。
+Sets the height of the exported image, in pixels.;设置导出图像的高度,以像素为单位。
+Select from a variety of resolution presets.;从多种分辨率预设中选择。
+Overwrites existing files with new renders. If this option is disabled, new renders will be given numbered file names.;用新 makes 覆盖已有文件 。 如果禁用此选项, 将给新 makes 以编号文件名 。
+Sets the number of render samples per pixel. Higher values improve image quality but take longer to render.;设定每个像素的渲染样本数量。 更高的数值提高了图像质量,但需要更长的时间才能渲染出来。
+Selects the file type of the exported image.;选择导出图像的文件类型。
+Saves a transparency mask into the alpha channel of the exported image (where supported).;将透明掩码保存到导出图像的α通道( 支持的地方) 。
+Performs noise reduction in the final image or video frame. This setting only takes effect with ray traced renders.;在最终图像或视频框中执行降噪. 此设定仅随射线追踪成像而生效 。
+Noise reduction mode. GPU mode requires a supported NVIDIA graphics adapter.;降噪模式. GPU模式需要支持的NVIDIA图形适配器.
+Noise reduction quality level.;降噪质量水平.
+The location to which rendered animations will be written. Specify either a directory or file name.;制作动画的地点将被写入 。 指定目录或文件名称。
+Browse for a file location for saving animations.;浏览保存动画的文件位置 。
+Sets the dimensions of the exported animations, in pixels.;设置导出动画的尺寸, 像素。
+Sets the width of the exported animation, in pixels.;设置导出动画的宽度, 以像素为单位。
+Sets the height of the exported animation, in pixels.;设置导出动画的高度, 像素。
+Selects an output format for the animation. Sequence formats will write a series of still images instead of a single video file.;选择动画的输出格式。 序列格式会写一系列静态图像,而不是一个单一的视频文件.
+Video image quality (applies only to compressed video). Higher values will produce larger files that look better.;视频图像质量(仅适用于压缩视频). 更高的值将产生看起来更好的更大的文件.
+Saves a transparency mask into the alpha channel of the exported image sequence. This is not supported with video files.;将透明遮罩保存到导出图像序列的α通道中。 这不支持视频文件 。
+Automatically opens the resulting video file once the export is complete.;导出完成后自动打开生成的视频文件 。
+File path to which your scene will be exported.;您的场景将被导出的文件路径 。
+Browse for an export location.;浏览导出位置 。
+Export models in the scene.;现场输出模型.
+Export cameras in the scene.;在现场输出摄像头。
+Export lights in the scene. Note: Toolbag uses its own units for lights, so brightness will look different in other applications.;现场输出灯光. 注意: Toolbag使用自己的单位进行照明,因此在其他应用中亮度会有所不同.
+Export materials in the scene, converted to their closest equivalent.;出口现场的材料,转换为最接近的等效物.
+Export skies in the scene. Note: Toolbag uses its own units for sky brightness, so skies will look different if converted to their closest equivalent.;在现场输出天空。 注意: Toolbag使用自己的单位进行天空亮度,因此如果转换到最接近的等效物,天空会显得不同.
+Export other objects in the scene such as Baker Objects, Texture Project Objects, etc.;导出场景中的其他对象,如贝克对象,纹理项目对象等.
+Embed textures in the export file. Depending on the format being exported this may not be possible.;在导出文件中嵌入纹理 。 这取决于所导出的格式。
+Export normals from geometry in the scene.;从场景中的几何导出常态.
+Export tangents from geometry in the scene.;从现场几何导出正切值.
+Export all UV maps from geometry in the scene.;从现场几何导出所有紫外线地图 。
+Export vertex colors from geometry in the scene.;从场景中的几何导出顶点颜色.
+Export animations from the scene. Depending on the format being exported this may look different.;从现场输出动画. 视所导出的格式而定, 这可能看起来不同 。
+Export geometry with subdivisions applied.;应用分区导出几何 。
+Export geometry with displacement applied.;出口几何学并采用移位法。
+Triangulate exported geometry.;三角输出几何.
+Weld vertices for exported geometry.;用于输出几何的焊接顶点.
+Determines whether referenced files such as textures will be bundled with this file, or retain their original paths.;确定是否将纹理等被引用文件与该文件捆绑在一起,或保留其原始路径。
+Determines whether to overwrite, skip, or create a unique texture name in the case where the same file name exists at the export path.;确定是否在导出路径中存在同一文件名的情况下覆盖、跳过或创建独有的纹理名称。
+Export only the objects that are currently selected.;只导出当前选中的对象 。
+Give your scene a title! This will display in the viewer next to your work.;给你的场景一个标题! 这将显示在您作品旁边的观看器中 。
+Your name or handle. This text will display in the viewer next to the title.;你的名字或手柄。 此文本将在标题旁边的查看器中显示 。
+Title and author text will link to this URL, if one is set.;如果设置了标题和作者文本, 则会链接到此 URL 。
+Export an animated scene. Animations from the active timeline range will be included.;导出一个动画场景 。 将列入活动时间范围动画。
+Start playback immediately.;立即开始播放。
+Allow access to playback controls for the exported scene.;允许对导出场景进行回放控制 。
+Will automatically load and display the scene upon page load.;将自动加载并在页面加载时显示场景 。
+Specifies the width of the viewer frame. This setting is ignored if the 'Full Frame' option is checked.;指定视图框的宽度。 如果选中“ 框架” 选项, 此设置将被忽略 。
+Specifies the height of the viewer frame. This setting is ignored if the 'Full Frame' option is checked.;指定视图框的高度。 如果选中“ 框架” 选项, 此设置将被忽略 。
+Uploads the current scene package to ArtStation.com.;将当前场景包上传至ArtStation.com.
+Opens an in-browser preview of the current scene.;打开当前场景的浏览器预览 。
+Cancels the export.;取消导出 。
+Exports the Marmoset Viewer scene package to disk.;导出 Marmoset 查看器场景包到磁盘中 。
+File path to which your glTF scene will be exported.;您的 glTF 场景将导出到的文件路径 。
+Sets the quality of included textures, by adjusting compression levels and images sizes. Lower quality settings will often result in smaller file sizes.;通过调整压缩水平和图像大小,设定包含的纹理的质量. 质量较低的设置往往会导致文件大小较小.
+Includes vertex colors where possible. glTF renders vertex colors as a multiplier on a material's base color.;尽可能包括顶点颜色。 glTF 使顶点颜色成为材料基色上的乘数.
+Exports the glTF scene package to disk.;导出 glTF 场景包到磁盘 。
+Sets the directory where rendered images are saved.;设置已保存图像的目录 。
+Selects a camera for viewport and screenshot rendering.;选择用于视图和截图渲染的相机。
+Edit the currently active camera.;编辑当前活动相机 。
+Edit the current render settings.;编辑当前渲染设置 。
+Select mode for visualizing material, bake, or texture project attributes in this viewport.;在此视图端口选择可视化材料,烘焙,或纹理工程属性的模式.
+Speedy viewport mode. This disables various render features for a faster, more responsive viewport. (Ctrl+Shift+J);快速视港模式. 这样可以使各种功能成为更快,反应更灵敏的景点. (中文(简体) ).
+Determines the behavior of selection outlines, where they can either be disabled, fade in, or be on perpetually.;确定选择大纲的行为,其中可以禁用、淡出或永久使用。
+Determines if a viewport's position is independent, or if its position should be shared across multiple viewports.;确定一个景点的位置是独立的,还是应当通过多个景点共享其位置.
+Determines if a viewport's scale is independent, or if its scale should be shared across multiple viewports.;确定一个景点的尺度是独立的,还是其尺度应该在多个景点之间共享.
+Configure viewport settings.;配置视图设置 。
+Bakes all active outputs and writes them to disk.;刻录所有活动输出并将其写入磁盘 。
+Exports all active bake outputs to a single, layered PSD file.;将所有活跃的烘焙产出输出到一个分层的私营部门司文件。
+Cancels any ongoing bakes.;取消任何正在进行的烘焙。
+Creates a new bake group. Bake groups are useful for isolating groups of geometry from one another to prevent unwanted intersections.;创建新的烘焙组。 巴克组有助于将几何组相互隔离,防止不必要的交叉。
+Toggles visibility of high-poly baker objects.;切换高Poly面包机物件的能见度.
+Toggles visibility of low-poly baker objects.;切换低poly面包机对象的能见度.
+Unified material preview, produces a single result material for all bake meshes when enabled.;统一材料预览,启用时会为所有烘焙网格产生单一结果材料.
+Refreshes material assignments, repairing or updating as needed.;根据需要更新、修复或更新材料任务。
+Removes any previews of baked maps displayed in the viewport.;删除视图中显示的烘焙地图的任何预览。
+Loads a model (or models), and attempts automatic assignment to high and low polygon baker groups.;装入一个模型(或模型),并尝试自动指派给高低多边形面包师组.
+Reloads any external mesh files, and assigns them as needed to high and low polygon baker groups.;重新装入任何外部网格文件,并按需要分配给高低多边形面包师组.
+Removes any external mesh files from the baker.;从面包店中删除任何外部网格文件。
+Automatically checks external mesh files for changes and reloads them as needed.;自动检查外部网格文件进行修改,并根据需要重新加载.
+Meshes hidden in the outliner will be used for baking.;提纲中隐藏的梅舍斯将用于烘焙.
+Mesh transforms, such as rotation and position, will be ignored for the purposes of baking.;网格变换,如旋转和位置,将为烘焙目的忽略.
+Smooths low-poly mesh normals for the purposes of baking projection. This is generally helpful to avoid discontinuities along UV seams.;为烘焙投影目的平滑低孔网状常态. 这通常有助于避免紫外线接合线上的不连续。
+Ignores the backsides of triangles on the high-poly mesh when baking. This is often useful for correctly baking crevices or floating geometry.;烘焙时忽略了高波力网面上三角形的背面. 这对于正确烘焙裂缝或浮动几何往往有用.
+Attempts to fix any issues arising from mirrored tangent spaces in low poly meshes.;试图解决在低多层层的镜像正切空间所产生的任何问题。
+Previews the baked map on the low-poly mesh in the viewport.;预览在景区低波网点上的烘焙地图.
+Previews the baked map in the texture window.;预览纹理窗口中的烤制地图。
+Edits the baked map.;编辑烤好的地图。
+Edit the settings of this map.;编辑此地图的设置 。
+Allows the baker to cast through materials that are transparent. Useful for superimposing different meshes on top of each other.;允许面包师通过透明材料投放. 用来在对方的顶部 制造不同的迷你药
+Selects a tangent space convention for all meshes. This is equivalent to changing the same setting on each low-poly mesh in the bake project manually.;为所有 meshes 选择一个切合空间公约。 这相当于在烘焙项目中,在每一个低孔网格上手动改变相同的设置.
+Determines whether the tile name will be added before or after the map name when creating the file on disk.;确定在磁盘上创建文件时,在地图名称之前或之后会添加瓷砖名称。
+Determines the separator used between the tile name and the map name when creating the file on disk.;确定磁盘上创建文件时在瓷砖名称和地图名称之间使用的分隔符。
+Enable or disable this tile.;启用或禁用此瓷砖 。
+The suffix used when outputting the map file.;输出地图文件时使用的后缀.
+Overrides the global soften setting, allowing a unique soften value for this map.;覆盖全局软化设置,为此映射提供了独特的软化值.
+Applies a softening filter to the baked map. This value will override the global soften setting.;将软化过滤器应用到烤好的地图上. 此值将覆盖全球软化设置 。
+Enable texture sets, a way of baking multiple maps based on unique materials applied to low polygon mesh(es).;启用纹理集,一种基于适用于低多边形网格(s)的独特材料的烘焙多幅地图的方法.
+Output path for bake results. This path will be used in both multi-file and multi-layer PSD outputs.;烘焙结果输出路径 。 这一路径将用于多文件和多层次的私营部门司产出。
+Width for all image outputs.;所有图像输出的宽度 。
+Height for all image outputs.;所有图像输出的高度 。
+Samples per pixel. Higher numbers may yield better quality for some outputs, but will greatly increase baking times.;样本每像素. 数量增加可能会提高某些产出的质量,但会大大增加烘烤时间。
+Bit precision per color channel. Higher precision results in larger files, often with fewer banding artifacts.;每个彩色通道的位精度. 更精密的结果是文件数量较大,往往带宽的文物较少.
+Pads the resulting outputs to fill empty areas of the UV layout. This is generally useful to prevent filtering or mipmapping artifacts along UV borders.;支持由此产生的输出以填补紫外线布局的空区域。 这通常有助于防止沿紫外线过滤或模仿文物。
+Applies a softening filter to the baked surface. This can be useful for smoothing borders around floaters or other hard edges.;将软化过滤器应用到烤好的表面. 这可用于平滑浮标或其他硬边缘周围的边框.
+Bake a tangent-space normal map. The normal orientations will match the tangent space selected for each low poly mesh.;刻录正弦空间正常地图 。 正常方向将匹配为每个低聚网所选择的切换空间.
+Bake an object-space normal map.;Bake 对象空间正常映射.
+Bake a tangent-space bent normal map where the normals will be oriented in the direction of least occlusion.;Bake 一张正弦空间弯曲的普通地图,其中的常态方向将是最小的闭塞。
+Bake an object-space bent normal map where the normals will be oriented in the direction of least occlusion.;Bake 一种物体空间弯曲的普通地图,其中的正常方向是最小隐蔽。
+Bake a height map.;烤一个高度图。
+Bake a position gradient map.;标记一个位置梯度图 。
+Bake a vertex color map.;烤一个顶点颜色图。
+Bake a curvature map.;烤一个曲面图。
+Bake a convex curvature map.;烧烤凸轮曲面图.
+Bake a concave curvature map.;烧焦凸轮曲面图.
+Bakes a thickness map for use in subsurface scattering materials.;制作厚度图,用于地下散射材料。
+Bake an ambient occlusion map.;烧烤环境隔离图。
+Bake a second ambient occlusion map, with separate settings.;Bake是第二张环境闭塞图,有单独的设置.
+Bakes a diffuse lighting map with all visible lights in the scene.;制作一张散射照明图 里面有所有可见的灯光
+Bakes a specular lighting map with all visible lights in the scene.;制作一张带有现场所有可见灯光的光谱图.
+Bakes a complete map of all lighting, shadows, and material effects.;制成所有照明、阴影和物质效果的完整地图。
+Bakes a map of diffuse and specular indirect lighting bounces.;制作一张散射和光谱间接照明的地图。
+Bake a material ID map. Each color in this map corresponds to a different material assigned to the high poly mesh.;烧制一个材料 ID地图。 本地图中的每个颜色都对应指定给高聚网的不同材料.
+Bake a Object ID map. Each color in this map corresponds to a different object assigned to the high poly mesh.;刻录对象标识图 。 此图中的每个颜色都对应指定给高多网格的不同对象.
+Bake a Group ID map. Each color in this map corresponds to a different bake group assigned to the high poly mesh.;制作一个团体ID地图。 本地图中的每个颜色对应分配给高聚网的不同的烘焙组.
+Bake a UV Island map. Each color in this map corresponds to a different UV island.;烤一个紫外岛地图。 本地图中的每一种颜色都对应不同的紫外线岛.
+Bake an alpha mask based on the geometry of the high poly mesh.;基于高聚网的几何学的α面罩.
+Bake a wireframe mesh overlay from the low poly mesh.;烤一个线框网膜从低多层网膜上覆盖.
+Bake a composite emissive map from materials assigned to the high poly mesh.;制成从分配给高聚网的材料中发出的复合发射图。
+Bake a composite alpha map from materials assigned to the high poly mesh.;烧焦来自高聚网材料的复合α图.
+Reverse the X (red) axis on tangent space normal maps.;反转正空间正常地图上的X(红色)轴。
+Reverse the Y (green) axis on tangent space normal maps.;反转当前空间正常地图上的 Y( 绿色) 轴 。
+Reverse the Z (blue) axis on tangent space normal maps.;反转当前空间正常地图上的 Z (蓝色) 轴 。
+Inner height map distance from the low poly mesh, in world units. This value maps to black in the height map.;内高度图距离低多网,以世界单位表示. 此值映射为高度图中的黑色 。
+Outer height map distance from the low poly mesh, in world units. This value maps to white in the height map.;外高图距离低多网,以世界单位表示. 此值映射到高度图中的白色 。
+The method by which you normalize position data.;您将定位数据正常化的方法 。
+Sets the scale of the curvature output. Smoother meshes may require a higher strength value to make features clearly visible.;设置曲率输出的尺度。 平滑的中间体可能需要更高的强度值才能使特征清晰可见.
+Determines the width of the curvature features.;确定曲面特征的宽度。
+Sets the size of curvature highlights. Higher sharpness values give tighter, more distinct feature silhouettes but may obscure some details.;设置曲率亮度的大小。 较高的锐度值使特征更紧凑、更明显,但可能模糊一些细节。
+Outputs UV island vector data as an additional SVG file.;输出紫外岛矢量数据作为额外的SVG文件.
+When baking specular materials into metalness, specular values higher than this threshold will be treated as metal.;当将光谱材料制成金属时,高于这个阈值的光谱值将被作为金属处理.
+Adjusts the brightness of the baked lighting.;调整烤光的亮度。
+Limits the number of ray traced diffuse and specular light reflections. Higher values improve image quality but take longer to render.;限制射线跟踪扩散和光谱反射的数量。 更高的数值提高了图像质量,但需要更长的时间才能渲染出来。
+Adjusts the strength of the denoising effect. A value of zero skips denoising altogether.;调整调试效果的强度。 零的值跳过全名。
+Selects the type of indirect light to be included in the bake.;选择烘焙中要包含的间接光线类型。
+Sample rays for each pixel of the map. Higher ray counts will result in higher quality, but will increase bake times.;地图每个像素的样本射线. 更高的射线计数会提高质量,但会增加烘烤时间.
+Provides occlusion beneath the model, simulating a floor plane.;提供模型下的隐蔽,模拟地板平面.
+Adjusts the strength of the floor occlusion effect, which simulates a plane beneath the model.;调整地板闭塞效应的强度,模拟模型下的平面.
+Uses both sides of polygons for occlusion tests. This may cause areas of mesh intersection to become fully occluded if "Ignore Groups" is also enabled.;使用多边形的两侧进行隔离测试. 如果“无知组”也启用的话,这可能使网状交叉区域完全被占用。
+Dithering adds subtle noise to 8-bit outputs to prevent banding.;抖音在8位输出中增加了微妙的噪音,以防止带宽.
+The maximum distance a sample ray can travel. A setting of 0 results in unlimited distance.;样本射线可以旅行的最大距离. 设定 0 的结果无限距离。
+Adjusts the scale of the thickness value range, as a proportion of the model bounds.;调整厚度值范围的比例。
+Applies a gamma curve to the final color values. Use this if you prefer a higher-contrast appearance.;将伽玛曲线应用到最终的颜色值中. 如果你喜欢高调的外观,请使用这个.
+Applies a gamma curve to the vertex color values. Use this setting if the vertex colors on your mesh are not linear values.;将伽马曲线应用到顶点的颜色值。 如果网格上的顶点颜色不是线性值,则使用此设置。
+Includes vertex alpha values in the final result.;在最终结果中包括顶点α值。
+Set the thickness of the wireframe being rendered.;设定正在渲染的线框的厚度 。
+Set the color of the wireframe being rendered.;设置正在渲染的线框的颜色 。
+Sets the relative vertex radius of the wireframe being rendered, 1.0 means it's the same radius as line thickness.;设定正在渲染的线框的相对顶点半径,1.0表示其与线条厚度相同的半径.
+Displays the cage mesh offset in the viewport.;在视图中显示笼盖网格偏移。
+Display the cage mesh skew directions in the viewport.;在景点中显示笼盖的网状方向。
+Minimum cage offset. This specifies the minimum distance the cage will trace from the low-poly mesh. This value corresponds to black in the offset map.;最小笼子的位移。 此处指定了笼盖与低孔网状网状网状网状网状网状网状网状网状网状网状网的最小距离. 此值对应偏移图中的黑色 。
+Maximum cage offset. This specifies the maximum distance the cage will trace from the low-poly mesh. This value corresponds to white in the offset map.;最大笼盖偏移。 此处指定了笼盖从低孔网状物跟踪的最大距离. 此值对应于偏移图中的白色 。
+Overwrites the current cage offset map with a best-guess estimate for height.;覆盖当前笼盖偏移图,并给出高度的最佳估计值。
+Set the visibility of the offset cage that the baker uses.;设定面包师使用的抵消笼的能见度.
+Exclude this mesh from the Ignore Groups option for passes such as AO, Thickness, Lighting.;将这个网格从 AO 、 厚度 、 照明 等 忽略组 选项中排除 。
+Use a custom cage when baking. You may want to do this for better fine grain control over the location of cage points.;烘焙时使用定制笼. 你也许想这样做 更好的精细的谷物控制 笼点的位置。
+Remove the custom cage for this mesh.;删除此网格的自定义笼子 。
+Brush Color;刷子颜色
+Brush Size;刷子大小
+Brush Flow;笔刷流
+Brush Value;刷新数值
+Brush Sharpness;笔刷锋利
+Clear the canvas to its default color.;清除画布到默认颜色 。
+Linear;线性
+Radial;辐射
+Reflected;反映
+Diamond;钻石
+Knurled;弯曲
+Plays the animation.;播放动画.
+Pauses the animation.;暂停动画.
+Goes to the first frame.;进入第一帧
+Goes to the previous frame.;转到前一个框架。
+Goes to the next frame.;到下一个框。
+Goes to the previous keyframe.;转到上一个键框 。
+Goes to the next keyframe.;转到下一个键框 。
+Goes to the last frame.;转到最后一帧。
+Toggles looping of animation playback.;切换动画回放的循环.
+Determines the total frame count of the animation.;确定动画的总帧数。
+Determines the frame rate, or frames per second, of the animation.;确定动画的帧率或帧每秒。
+Determines the length of the animation in seconds.;以秒决定动画的长度。
+Sets the playback speed for preview purposes. Preview speed is not applied to exported video content.;为预览目的设定播放速度。 预览速度不适用于导出视频内容 。
+Scales the animation to match the preview speed. Use this if you want to permanently speed up or slow down your animation.;缩放动画以匹配预览速度。 如果您想要永久加快或慢化动画, 请使用此功能 。
+Determines whether to show all frames in the timeline or only the frames within the selection range.;确定是显示时间表中的所有框架,还是只显示选择区域内的框架。
+Trims the animation to the selected frame range.;将动画调整到选定的帧范围。
+Sets the falloff for the selected control point to stepped, which is useful for instantaneous changes in motion.;设置选定控制点的掉落点,这对运动的瞬间变化有用。
+Sets the falloff for the selected control point to linear, which is useful for constant motion like a camera rotating at a fixed rate.;将选定控制点的掉落值设定为线性,这对像照相机一样以固定速率旋转的恒定运动是有用的.
+Sets the falloff for the selected control point to smooth, which is useful for setting up smooth changes in motion or velocity.;将选定控制点的掉落点设置为平滑,这对设置运动或速度的平滑变化有用。
+Splits the falloff for the selected control point into separate before-and-after tangents, which can be independently edited.;将选定的控制点的掉落点分割成独立的前后切换点,这些切换点可以独立编辑。
+Add a new keyframe, or control point for the selected channels at the current frame.;在当前框架中为选定的频道添加新的密钥框架或控制点。
+Deletes the selected control point(s).;删除选中的控制点。
+Deletes ALL keyframed data for the selected object(s).;删除选定对象的所有密钥框架数据。
+Toggles the display of multiple channels between stacked and overlaid drawing styles.;切换堆叠和覆盖的绘图样式之间的多个通道显示。
+Toggles the display of numeric values.;切换数值显示。
+Toggles the auto-fit function. When on, auto-fit will scale the visible range to fill out the vertical space in the keyframe editor.;切换自动适应功能。 启用时,自动适配会缩放可见范围,以填充键框编辑器中的垂直空间.
+Resets the zoom state.;重置缩放状态 。
+Sets the current animation for the object.;为对象设置当前动画。
+Sets the playback speed for the object.;设定对象的播放速度。
+Smoothly interpolate start and end frames.;平滑的内插始末帧.
+The name of the custom animation (this will appear in the dropdown list).;自定义动画的名称( 这将出现在下拉列表中) 。
+The start frame of the custom animation, using the original model FPS.;定制动画的起始帧,使用原型号FPS.
+The end frame of the custom animation, using the original model FPS.;定制动画的末端框,采用原型FPS.
+The total playback duration in scene time.;场景时间的总播放时间.
+Delete the custom animation entry.;删除自定义动画条目。
+Add a custom animation entry.;添加自定义动画条目 。
+Import matching animation data from another file (models must be similar).;从另一个文件中导入匹配的动画数据(模型必须相似).
+Automatically adjust the spin rate for a continuous loop (based on timeline length).;自动调整连续循环的自旋率(基于时间长度).
+Add a new paint layer.;添加新的油漆层 。
+Add a new vector layer.;添加一个新的矢量层 。
+Add a new fill layer.;添加新的填充层 。
+Add a new decal layer.;添加一个新的标记层 。
+Add a new adjustment layer.;添加新的调整层 。
+Add a new input processor layer.;添加一个新的输入处理器层 。
+Add a new procedural layer.;增加一个新的程序层。
+Duplicate the selected item.;复制选中的项目 。
+Add a layer group.;添加一层组 。
+Add a layer carve group.;添加一层雕刻组 。
+Delete the selected item(s).;删除选中的项目 。
+Add mask to selected layer.;将遮罩添加到选中的层 。
+Add a new sync point layer. Sync points synchronize input curvature, height, and ambient occlusion maps with layers below.;添加新的同步点层 。 同步点同步输入曲率,高度,以及下层的环境包围图.
+Regenerate any out-of-date sync point maps.;重新生成任何过时的同步点地图.
+Open the sync point settings window.;打开同步点设置窗口 。
+Clears the activity log.;清除活动日志。
+Displays only errors in the activity log.;只显示活动日志中的错误。
+Width and Height of the texture project output.;纹理项目输出的宽度和高度.
+Adjust the pixel size of the texture project.  Paint layers will be resized to the new resolution.;调整纹理工程的像素大小 。 油漆层将调整为新分辨率。
+Enables extension of pixel values beyond the UV borders, which reduces artifacts near UV seams.;允许像素值扩展至紫外线边界以外,这减少了紫外线接缝附近的文物.
+Sets the size of the UV padding effect in pixels.;设定像素中的紫外线粘贴效果大小。
+Link the currently selected material in the material editor to this texture project.;将材料编辑器中目前选中的材料链接到此纹理工程.
+Create a new material and link it to this texture project.;创建新材料并将其链接到这个纹理工程中.
+Remove this linked material from the texture project.;从纹理工程中删除此链接的材料 。
+Click to load or replace a texture map for this texture project;单击以加载或替换此纹理工程的纹理映射
+Remove this input map from the texture project, any layer types that require this input may no longer render correctly.;从纹理工程中移除此输入图,任何需要此输入的层类型都可能不再正确渲染.
+Add an additional input map.;添加额外的输入映射 。
+Project map settings.;工程地图设置 。
+Remove this project map.;删除此工程映射 。
+Add an additional project map.;添加额外的项目映射 。
+Save all textures to disk.;将所有纹理保存到磁盘中 。
+The location on disk where the images will be saved.;将图像保存在磁盘上的位置 。
+Set the word(s) that will be appended to the end of the file.;设定要附加到文件末尾的单词 。
+Save only this image to disk.;只保存此图像到磁盘 。
+Remove this output map.;删除此输出图 。
+Add an additional output map.;添加额外的输出映射 。
+Selects which style texture output is used. Types with + in the name allow packing of different Project Maps in the various channels.;选择使用的样式纹理输出。 名称为+的类型允许在各种通道中包装不同的项目地图。
+Selects the file type for the exported image.;为导出图像选择文件类型。
+Selects which Project Map to pack into this slot.;选择要装入此槽的工程映射 。
+Sets the bit-depth of this output map.;设置此输出图的位深 。
+Sets the size multiplier for texture export.;设置纹理导出的大小乘数。
+Set the resolution of the tile.;设置瓦片的解析度 。
+Link the width and height of the tile to global resolution.;将瓦片的宽度和高度链接到全局分辨率.
+Determines whether the bump map is combined with the normal map for additional height map detail.;确定凸起图是否与普通地图相结合,以获取额外的高度图细节。
+Sets the strength of the bump mapping effect.;设定凸起映射效果的强度。
+Determines whether the displacement map is sent to the displacement or parallax input in the material system.;确定迁移图是发送到迁移的还是材料系统中的参数输入.
+Determines whether the thickness input map is used as the base content for the scatter project map.;确定厚度输入图是否用作散射项目图的基础内容。
+Generate and save the final image to disk.;生成并保存最终图像到磁盘中 。
+Open the folder where the image is saved.;打开保存图像的文件夹 。
+Generate and save the final video to disk.;生成并保存最后的视频到磁盘中.
+Open the folder where the video is saved.;打开保存视频的文件夹 。
+Remove this render camera.;移除此渲染相机 。
+Create a new camera in the scene and add it to this list.;在现场创建新相机并添加到此列表中.
+Adjust the extra parameters for this render pass.;调整此渲染通过的额外参数 。
+Add an additional render pass.;额外增加一个渲染通道。
+Open the last render saved to disk.;打开保存到磁盘的最后一个渲染 。
+Preview  the last render saved to disk.;预览保存到磁盘的最后一个渲染 。
+Remove this render pass.;移除此渲染通道 。
+Browse for the export directory.;浏览导出目录 。
+Split this viewport horizontally or vertically.;横向或纵向分割此视图 。
+Pop this viewport out into a floating window.;把这个风景点打开,放进浮动窗口
+Maximize this viewport.;最大化此视港.
+When green, indicates this viewport is active.;当绿色时,请显示此视图端口活动 。
+Sample a given color or material data on the screen.;在屏幕上取样一个特定的颜色或材料数据。
+Reset the reference material to its original state.;将参考材料重置为原状态.
+Reload the reference material from disk.;从磁盘中重新装入参考材料 。
+Remove the reference material.;删除参考材料。
+Create a copy of this material in the material editor.;在材料编辑器中创建此材料的副本.
+Import a material from disk.;从磁盘中导入材料 。
+Material mode receives texture content from the reference material.;材料模式接收参考材料中的纹理内容.
+Texture mode allows you to load a custom texture map.;纹理模式允许您加载自定义纹理图.
+Load or replace this texture map.;装入或替换此纹理图 。
+Reset this map's color to its original state.;将本地图的颜色重置为原状态.
+Inverts the values of this map.;反转此地图的值。
+Edit the color of this map type.;编辑此地图类型的颜色 。
+Sets the value for this map type.;设置此映射类型的值。
+Adjust the contrast for this map type.;调整此映射类型的对比度 。
+Interprets this normal map as either right- (Y+) or left-handed (Y-) coordinate space.;将此普通地图解释为右-(Y+)或左-(Y-)坐标空间.
+Create a new texture project.;创建新纹理工程 。
+Toggle this layer's visibility.;切换此层的可见度 。
+Expand or collapse this layer's children.;扩张或崩溃这个层的孩子。
+Set the opacity for the selected layer.;设置选定层的不透明度 。
+Toggle opacity linking, which synchronizes the opacity setting for all map types. Turn off to adjust the opacity of only the selected map type.;切换不透明链接, 它会同步所有地图类型的不透明设置 。 关闭仅调整所选地图类型的不透明度 。
+Select which project maps this layer modifies.;选择此图层修改的工程图 。
+Set the texture width.;设置纹理宽度 。
+Set the texture height.;设置纹理高度.
+Lock or unlock the texture's aspect ratio.;锁定或解锁纹理的宽度比.
+Set the sensitivity of the wand tool.;设定魔杖工具的敏感性 。
+Determines whether the selection area is limited to connected meshes.;确定选择区域是否仅限于连接网格。
+Sets whether the wand tool uses the 3D viewport or 2D canvas area to create the selection;设定魔杖工具是使用3D视图端口还是2D画布区域创建选择
+Determines whether the texture values are sampled from all layers or the current layer when creating the wand selection;确定在创建魔杖选择时是否从所有层或当前层对纹理值进行采样
+Determines whether objects will occlude the resulting selection.;确定对象是否会绕过所选区域。
+Determines whether the edges of the selection will be filtered to reduce jaggedness.;确定选择的边缘是否将被过滤以减小夹痕。
+Sets how soft or blurry the edges of the selection will be.;设定选择的边缘将有多柔软或模糊 。
+Fades out non-selected areas.;飞出非选区.
+If checked, a single click will select an entire mesh instead of an isolated chunk.  Double-click always selects an entire mesh.;如果选中的话, 点击会选择整个网格而不是孤立块 。 双击总是选择整个网格 。
+Enable dynamics like pressure sensitivity, tilt, or fade over stroke for this setting.;启用动态, 如压力敏感度、 倾斜度、 或此设置的偏移度 。
+Load or replace the brush tip texture.;装入或替换刷尖纹理.
+Determines whether the brush tip texture follows the direction of the brush stroke.;确定刷子尖端纹理是否遵循刷子中风的方向。
+Determines whether flow is regulated by spacing, which can provide more consistent opacity buildup when enabled.;确定流量是否由间距调节,这样在启用时可以提供更一致的不透明累积.
+Sets the mask value, with 0 or black defining transparent areas and 1 or white defining opaque areas.;设置遮罩值, 0 或黑色定义透明区域, 1 或白色定义不透明区域。
+Set how much random variation is applied to this value.;设定该值的随机变化量 。
+Sets how the brush is projected relative to the surface of the mesh.;设定刷子相对于网格表面的投影方式 。
+Sets the unit system that determines how large the brush is in relation to the mesh.;设置决定刷子相对于网格有多大的单位系统。
+Sets whether the brush-stroke will be restricted to the mesh object the brush first comes in contact with.;设定刷图是否将限制在刷图首先接触的网格对象上 。
+Determines whether the brush texture will be stretched to wrap around the mesh geometry.;确定刷子的纹理是否会被拉伸到网格几何周围。
+Determines whether meshes will prevent the brush-stroke from painting on through and other meshes.;确定 meshes 是否会阻止刷子冲刺 画穿和其他 meshes。
+Sets how hard or soft the brush edges are.;设定刷边的硬度或软度 。
+Sets how tight the brush shape is.;设定刷子形状有多紧.
+Sets the rotation of the brush.;设置刷子的旋转。
+Sets the random positional offset of the brush.;设置刷的随机位置偏移。
+Sets how transparent or opaque the brush is.;设定刷子的透明度或不透明度 。
+Sets the distance between each brush splot.;设定每个刷图之间的距离。
+Sets the buildup speed of the brush opacity.;设置刷子不透明的积分速度。
+Sets how large the brush is.;设定刷子有多大 。
+Sets how narrow the brush is.;设定刷子有多窄 。
+Sets the degree of procedural brush shape distortion.;设置程序刷形扭曲的程度。
+Adjusts contrast of the brush tip texture.;调整刷尖纹理的对比度。
+Sets the input smoothing distance. Larger values will result in smoother brush strokes with a longer delay.;设置输入平滑距离。 较大的数值会导致更平滑的刷子中风,而更长时间的延迟.
+Reset the initial source position at the end of the stroke.;重置中风末端初始源位.
+Save the current brush to the asset library.;保存当前刷到资产库 。
+Save the current brush to disk.;保存当前刷入磁盘 。
+Import a brush (.tbtool file) from disk.;从磁盘导入刷子(. tbtool 文件) 。
+Enable symmetry of paint strokes along a given axis.;启用沿指定轴线对称的涂料划线 。
+Enable symmetry of gradients along a given axis.;允许沿给定轴对齐梯度。
+Enable symmetry of vector shapes along a given axis.;启用向量形状沿给定轴对称 。
+Choose the axis or plane of symmetry.;选择对称的轴或平面 。
+Choose between mirror mode, which flips the brush stroke to the other side, or radial mode, which instances the stroke in a circular array.;在镜像模式中选择将刷线向另一侧翻转,或者在圆形阵列中选择射线模式。
+Choose between mirror mode, which flips the gradient to the other side, or radial mode, which instances the gradient in a circular array.;在镜像模式中选择将梯度翻转到另一侧,或者在圆形阵列中显示梯度。
+Choose between mirror mode, which flips each shape to the other side, or radial mode, which instances the shape in a circular array.;在镜像模式中选择,将每个形状翻转到另一侧,或者光圈模式,在圆形阵列中显示形状。
+Sets the number of instances for radial symmetry.;设置射线对称的例数。
+Position of the axis of symmetry.;对称轴的位置。
+Rotation of the axis of symmetry.;对称轴的旋转.
+Quickly align the axis of symmetry with an object or geometry feature.;快速将对称轴与对象或几何特征对齐.
+Adjust the axis of symmetry inside the viewport.;调整视野内的对称轴。
+Reset the position and direction of the axis of symmetry.;重置对称轴的位置和方向.
+Choose the alignment mode. Object snaps the axis to the center of a mesh. Geometry allows you to select a face, edge, or vertex.;选择对齐模式 。 对象将轴向网格中心坐标。 几何可以选择面部,边缘或顶点.
+Invert the stencil coverage area.;颠倒斯滕西尔覆盖区.
+Fade the edges of the stencil.;淡出 s边.
+Opacity of the viewport stencil overlay.;景点层层覆盖不透明.
+When checked, the stencil will repeat to fill the viewport.;检查时, 刻度会重复以填充视图端口 。
+When checked, the stencil overlay will disappear while painting.;检查时, 刻度覆盖在绘画时会消失 。
+Adjust the amount of blur applied to the stencil.;调整应用到表单的模糊度。
+Adjust the tiling frequency of the stencil.;调整刻度的刻度频率。
+Adjust the position of the stencil inside the viewport.;调整景点内天线的位置。
+Rotate the stencil.;旋转天线
+Reset the stencil to its default position.;将速率重置为默认位置 。
+Adjust the stencil's contrast.;调整天线的对比度 。
+Sets the size or intensity of the blur effect.;设置模糊效果的大小或强度。
+Blur across UV seams.;模糊的紫外线缝合。
+Sets the color matching sensitivity.;设置匹配颜色的敏感性。
+Choose the color to sample from.;选择要采样的颜色 。
+Remove this color selection entry.;删除此颜色选择项 。
+Edit the color for this entry.;编辑本条目的颜色。
+Add an additional color selection entry.;添加额外的颜色选择项 。
+Sets the strength of the cellular procedural.;设定细胞程序的强度。
+Inverts the cellular procedural.;倒置细胞程序。
+Sets the detail size of the cellular procedural.;设定细胞程序的细节大小。
+Sets the randomness for the cellular procedural.;设定蜂窝程序的随机性。
+Sets how angular or soft the cellular procedural is.;设定细胞程序的角质或软性。
+Sets the smoothing curve offset, gradually inverting the result as phase reaches 1.;设置平滑曲线抵消,随着相位达到1,结果逐渐反转.
+Sets how distorted the cellular procedural is.;设定细胞程序是如何扭曲的。
+Sets the detail scale of the warp effect.;设置曲速效应的详细尺度。
+Resets the original settings for this effect.;重置此效果的原始设置 。
+Sets the color for the primary checker squares.;设置主检查器方块的颜色。
+Sets the color for the secondary checker squares.;设置二次检查方块的颜色。
+Sets the contrast for the checkered procedural.;设置检查程序对比值。
+Inverts the checkered procedural.;倒置检查程序。
+Sets the number of tiles.;设置牌数。
+Sets how distorted the checkered procedural is.;设定检查程序如何扭曲 。
+Resets the original settings for this layer.;重置此层的原始设置 。
+Sets the strength of the clouds procedural.;设置云程序强度。
+Inverts the clouds procedural.;颠倒云程序.
+Sets the detail size of the clouds procedural.;设置云程序的细节大小。
+Sets how grainy the clouds procedural is.;设定云层程序如何细腻。
+Sets how distorted the clouds procedural is.;设定云程序如何扭曲 。
+Sets the strength of the curvature processor.;设置曲率处理器的强度。
+Inverts the curvature processor.;反转曲率处理器。
+Sets the contrast of the curvature processor.;设置曲率处理器的对比度。
+Sets the middle point of the contrast effect.;设置对比效果的中点。
+Sets how sharp or blurry the details are.;设定细节的锐度或模糊度 。
+Sets the strength of the edges or convex regions.;设置边缘或对流区域的强度。
+Sets the width of the convex regions.;设置对流区域的宽度。
+Sets the strength of the cavities or concave regions.;确定洞穴或洞穴区域的强度。
+Sets the width of the concave regions.;设置集合区域的宽度。
+Resets the selected channel.;重新设置选定频道 。
+Resets all channels.;恢复所有频道
+Sets which axis to process.;设定要处理的轴 。
+Sets the strength of the direction processor.;设置方向处理器的强度。
+Inverts the direction processor.;反转方向处理器。
+Sets the contrast of the direction processor.;设置方向处理器的对比度。
+Sets the strength of the dirt processor.;设置泥土处理器的强度。
+Inverts the dirt processor.;倒置脏腑处理器.
+Sets the global contrast of the dirt processor.;设置泥土处理器的全球对比度。
+Click to load or replace a texture map for the grunge effect.;点击可加载或替换grunge效果的纹理映射 。
+Enable tri-planar mode for seamless texture projection.;为无缝纹理投影启用三平板模式.
+Sets how the grunge map is blended in relation to the other components of the dirt processor.;设置 grunge 映射相对于泥土处理器其他组件的混合方式 。
+Sets the strength for the grunge texture.;设置 grunge 纹理的强度 。
+Inverts the grunge texture.;颠倒甘露纹理.
+Sets the contrast of the grunge texture.;设置 grunge 纹理的对比度。
+Sets the tiling for the grunge texture.;设置 grunge 纹理的衬垫 。
+Sets the rotation for the grunge texture.;设置 grunge 纹理的旋转 。
+Sets the strength of the direction effect, which isolates regions facing up and down.;设定方向效应的强度,将面临上下的区域隔离.
+Inverts the direction effect.;反转方向效应.
+Sets the contrast of the direction effect.;设置方向效果的对比。
+Sets the strength of the crevices or concave areas, which is useful for defining where dirt or grime should appear on the micro scale.;设定断层或凸层区域的强度,这对于确定泥土或灰尘应在微观尺度上出现之处有用。
+Sets the contrast of the crevice effect.;设置剪切效果的对比度。
+Sets the strength of the occluded areas, which is useful for defining where dirt or grime should appear on the macro scale.;确定占地面积的强度,这有助于确定在宏观尺度上应在哪里出现泥土或灰尘。
+Sets the contrast of the occluded areas.;设置占卜区域对比度。
+Evenly spaces all gradient points.;均匀空格所有渐变点 。
+Resets the original layer settings.;重置原层设置 。
+Deletes the selected color from the gradient.;从梯度中删除选定的颜色。
+Deletes the selected grayscale value from the alpha gradient.;从α梯度中删除选定的灰度值。
+Sets the strength of the gradient procedural.;设置梯度程序强度。
+Inverts the gradient procedural.;倒转梯度程序。
+Sets the tiling for the gradient.;设置梯度的跳动。
+Sets the strength of the height processor.;设置高度处理器的强度。
+Inverts the height processor.;反转高度处理器。
+Sets the contrast of the height processor.;设置高度处理器的对比度。
+Shifts the hue around the color wheel.;绕着彩色轮子转
+Sets how vivid or saturated the colors are.;设定颜色如何生动或饱和.
+Sets the brightness.;设诸光明.
+Sets the contrast.;设置对比。
+Resets the original settings for this channel.;重置此频道的原始设置 。
+Resets the original settings for all channels in this layer.;重置此层中所有频道的原始设置 。
+Choose the recolorization mode.;选择重彩化模式 。
+Determines the amount of target colors;确定目标颜色的数量
+Detect how many target colors are necessary.;检测需要多少目标颜色。
+Reset all of the target colors to their original values.;将所有目标颜色重置为原值 。
+Reset the original settings for this layer.;重置此层的原始设置 。
+Toggles the visibility of recolorization for the current target color.;切换当前目标颜色的重彩化可见度。
+Sets the color target.;设置颜色目标。
+Sets the custom color, which determines the area that will be recolored.;设置自定义颜色,以决定将重新显示的区域。
+Reset this color to its original state.;将此颜色重置为原状态 。
+Invert the value of the target color.;倒转目标颜色的值 。
+Sets the strength of the recolorization effect.;设置重彩化效果的强度。
+Add a custom color.;添加自定义颜色 。
+Remove this custom color.;删除此自定义颜色 。
+Move this color up or down.;上下移动此颜色.
+The source colors are not up-to-date, you must update them.;源色不更新,必须更新.
+The source colors are up-to-date.;源色为上.
+Source color (automatically generated).;源色( 自动生成) 。
+You must update your source colors.;您必须更新您的源颜色 。
+Adjusts brightness value of the black region.;调整黑色区域的亮度值。
+Adjusts the gamma curve.;调整伽马曲线。
+Adjusts the brightness value of the white region.;调整白色区域的亮度值。
+Remaps or clamps the black region to a specified value.;重映射或将黑色区域夹到指定值 。
+Remaps or clamps the white region to a specified value..;将白色区域重映射或夹到指定值...
+Sets the active color channel shown in the editor.;设置编辑器中显示的活动颜色通道。
+Resets the original settings for all channels.;重新设置所有频道的原始设置 。
+Sets the strength of the occlusion processor.;设置隔离处理器的强度。
+Inverts the occlusion processor.;倒置隔离处理器.
+Sets the contrast for the occlusion processor.;设置隔离处理器的对比度。
+Sets the strength of the Perlin noise procedural.;设置 Perlin 噪声程序强度 。
+Inverts the Perlin procedural;倒转 Perlin 程序
+Sets the detail size of the Perlin procedural.;设定 Perlin 程序的细节大小。
+Sets the intensity of the large details.;设置大细节的强度。
+Sets the intensity of the fine details.;设置细细节的强度。
+Sets the amount of distortion for the large details.;设定大细节的扭曲量。
+Sets the detail level for the large distortions.;设置大扭曲的细节级别。
+Sets the amount of distortion for the fine details.;设定细节的扭曲量。
+Sets the detail level for the fine distortions.;设置精细扭曲的细节级别。
+Determines whether to create a soft (smooth) or pixelated (hard) effect.;确定要创建软(smooth)还是像素(硬)效应。
+Sets how many times the effect will be generated and overlaid. More passes will mean finer details but lower performance.;设定将产生和覆盖效果的倍数 。 更多的通行证意味着细节更细,但性能更低.
+Sets the strength of the scratch processor.;设置抓取处理器的强度。
+Inverts scratch dirt processor.;颠倒刮土处理器.
+Sets the global contrast of the scratch processor.;设置抓取处理器的全球对比度。
+Sets how the grunge map is blended in relation to the other components of the scratch processor.;设定 grunge 映射相对于抓取处理器其他组件的混合方式 。
+Click to load or replace a texture map for the scratch effect.;单击以加载或替换抓取效果的纹理映射 。
+Sets how the scratch map is blended in relation to the other components of the scratch processor.;设定抓取图相对于抓取处理器其他组件的混合方式 。
+Sets the strength for the scratch texture.;设置抓痕纹理的强度。
+Inverts the scratch texture.;颠倒刮痕纹理.
+Sets the contrast of the scratch texture.;设置抓取纹理的对比度。
+Sets the tiling for the scratch texture.;为刮痕纹理设置平板。
+Sets the rotation for the scratch texture.;设置抓取纹理的旋转。
+Sets the contrast of the convex regions.;设置对流区域的对比。
+Adjusts the visual contrast of the generated curvature map.;调整生成的曲率图的视觉对比。
+Adjusts the size of the curvature filter. Larger scales produce broader, softer gradients.;调整曲率过滤器的大小。 较大的鳞片产生较宽,较软的梯度.
+Adjusts the visual contrast of the generated height map.;调整生成的高度图的视觉对比。
+Higher quality ambient occlusion will exhibit less banding and noise, but takes more time to compute.;质量较高的环境隔离将显示较少的带状和噪音,但计算需要更多的时间。
+Adjusts the visual contrast of the generated ambient occlusion map.;调整生成的环境闭塞图的视觉对比。
+Adjusts the effective height of normal map detail used to compute occlusion. Higher scales provide more pronounced occlusion.;调整用于计算封存的普通地图细节的有效高度。 较高的尺度提供了更明显的隔离。
+Resets sync point settings to their default values.;将同步点设置重置为默认值 。
+Sets the strength of the thickness processor.;设置厚度处理器的强度。
+Inverts the thickness processor.;反转厚度处理器。
+Sets the contrast of the thickness processor;设置厚度处理器的对比度
+Sets the color for the primary tile region.;设置主瓦片区域的颜色。
+Sets the color of the areas between tiles.;设置牌之间的区域颜色。
+Sets the color of the shadowed area immediately beyond the tiles.;设置紧邻瓷砖的阴影区域颜色。
+Sets the strength of the tiles procedural.;设置瓷砖的程序强度。
+Inverts the tiles procedural.;倒置瓷砖的程序。
+Sets the number of tiles in relation to the canvas.;设定与画布相关的牌数。
+Sets how wide each tile will be.;设定每个瓦片的宽度 。
+Sets how tall each tile will be.;设定每块瓷砖的高度。
+Sets how far every consecutive row will be moved.;设定每个连续行将移动多远 。
+Sets how deep the primary areas in relation to the grout and shadow regions.;确定与地沟和阴影区域相关的主要地区有多深。
+Sets how much each tile will be randomly pushed in or out.;设定每个瓦片会随机推入或推出多少 。
+Sets the size of the beveled area along the edges of each tile.;设置每块瓦片边缘的被子区域大小。
+Sets how deep the beveled area is in 3D space.;设定三维空间中的贝区有多深 。
+Sets how smooth or round the beveled areas is.;设定振铃区域是否平滑或圆圆 。
+Sets how beveled or rounded the corners of each tile is.;设定每块砖的圆角是怎样的 。
+Sets how much each tile will be randomly rotated in 3D space.;设定每块瓷片在 3D 空间中随机旋转多少 。
+Sets the size of the area between tiles, which controls the size of the tiles as well.;设置牌之间的区域大小,它也控制牌的大小。
+Sets a secondary, relative width value for the space between tiles.;设置牌间空格的二级相对宽度值。
+Sets a secondary, relative height value for the space between tiles.;为瓦片之间的空格设置次要的相对高度值。
+Sets how deep the area between the tiles is in 3D space.;设定三维空间中瓷砖之间的区域有多深 。
+Sets how deep the area immediately outside the tile regions is in 3D space.;设定紧邻瓷砖区域的区域在3D空间的深度 。
+Sets the size of the area immediately outside the tile regions.;设定紧邻瓦片区域的区域大小。
+Sets the strength of the turbulence procedural.;设定动荡过程的强度 。
+Inverts the turbulence procedural;颠倒动荡
+Sets the detail size of the turbulence procedural.;设置扰动程序的详细大小。
+Sets how rippled the primary waves are.;设定了主波波的波折程度.
+Sets the detail level of the primary ripples.;设置初级波纹的详细级别。
+Sets the contrast for the large details.;设置大细节的对比。
+Sets the contrast for the fine details.;设置细细细节的对比。
+Sets how much the large details are distorted.;设定大细节被扭曲的程度 。
+Sets how much variation is generated for the large distortions.;设定大型扭曲产生多少变化 。
+Sets how much variation is generated for the fine distortions.;设定细曲折产生多少变化 。
+Determines the coordinate space vector shapes are drawn and projected from.;确定坐标空间矢量形状的绘制和投影。
+List of all vector shapes in this layer.;列出此图层中的所有矢量形状 。
+Define a displacement contour (profile) to extrude along vector shape edges.;定义沿矢量形状边缘挤压的移位轮廓( profile) 。
+List of profile presets.;简介预设列表.
+Open profile editor to create a custom displacement contour.;打开配置编辑器以创建自定义的位移轮廓 。
+Remove selected profile from the presets list.;从预设列表中删除选中的配置 。
+Save current profile as a preset.;另存当前配置文件为预设 。
+Sets the height scale of the profile in bump and displacement maps.;在凸起图和移位图中设定剖面的高度尺度。
+Controls tiling of shape-projected materials and alpha masks along the shape edges.;沿形状边缘对形状投影材料和α面罩进行控制。
+Sets the width of the profile along shape edges.;沿形状边缘设置剖面的宽度。
+Adds random variation to the profile width.;在配置宽度中添加随机变量。
+Sets the frequency of random variation in the profile width.;设置配置宽度随机变化的频率。
+Adds random side-to-side wiggle to shape edges.;向形状边缘添加随机侧向扭矩。
+Sets the frequency of side-to-side wiggle on shape edges.;设定形状边缘侧向波动的频率。
+Controls narrowing of contour width at the start and end of shape edges.;在形状边缘的起始和结尾缩小轮廓宽度的控制。
+Controls rounded caps on the start and end of shape edges.;控制在形状边缘的起始和末端为圆形盖.
+Sets the strength of the voronoi procedural.;设定 voronoi 程序的力量 。
+Inverts the voronoi procedural.;倒置voronoi程序。
+Sets the detail size of the voronoi procedural.;设定 voronoi 程序的细节大小。
+Sets how much random angular distortion the fractures have.;设定断裂有多随机角扭曲.
+Sets the softness of the fractured effect.;设置断裂效应的柔软性.
+Sets how distorted the voronoi procedural is.;设定如何扭曲voronoi程序。
+Sets the method for mapping the material properties onto the mesh.;设定将材料属性映射到网格的方法。
+Sets how much the normal map affects the transitions between axes or projection planes.;设定正常映射图对轴或投影平面之间的过渡的影响度 。
+Sets the scale of the material contents on the horizontal axis.;在水平轴上设置材料内容的尺度。
+Sets the scale of the material contents on the vertical axis.;设置垂直轴上物质内容的尺度。
+Sets whether the aspect ratio will be retained when adjusting the tiling settings.;设定调整平板设置时是否保留宽比 。
+Sets how far the material properties are moved on the horizontal axis.;设定材料属性在水平轴上的移动距离。
+Sets how far the material properties are moved on the vertical axis.;设定垂直轴上物质属性的移动范围。
+Sets the angle of the material properties.;设置物质属性的角度。
+Sets whether the projection area will be restricted or if areas outside of the projection will repeat.;设定投影区是否将受到限制,或者投影区以外的区域是否会重复.
+Sets the X axis 3D space position for the projection in relation to the texture project's mesh(es).;设定与纹理工程的网格(s)相关的投影的X轴3D空间位置.
+Sets the Y axis 3D space position for the projection in relation to the texture project's mesh(es).;设置与纹理工程的网格(s)相关的投影的 Y 轴 3D 空间位置。
+Sets the Z axis 3D space position for the projection in relation to the texture project's mesh(es).;设置与纹理工程的网格(s)相关的投影的 Z 轴 3D 空间位置 。
+Sets the X axis 3D space size for the projection in relation to the texture project's mesh(es).;设定相对于纹理工程的网格(s)投影的 X 轴 3D 空间大小 。
+Sets the Y axis 3D space size for the projection in relation to the texture project's mesh(es).;设定与纹理工程的网格(s)相关的投影的 Y 轴 3D 空间大小 。
+Sets the Z axis 3D space size for the projection in relation to the texture project's mesh(es).;设定与纹理工程的网格(s)相关的投影的 Z 轴 3D 空间大小 。
+Sets the X axis 3D space rotation for the projection in relation to the texture project's mesh(es).;设定与纹理工程的网格(s)相关的投影的 X 轴 3D 空间旋转 。
+Sets the Y axis 3D space rotation for the projection in relation to the texture project's mesh(es).;设定与纹理项目网格(s)相关的投影的 Y 轴 3D 空间旋转 。
+Sets the Z axis 3D space rotation for the projection in relation to the texture project's mesh(es).;设定与纹理工程网格(s)相关的投影的 Z 轴 3D 空间旋转 。
+If checked, material texture maps will be treated as a spritesheet with the same frame count as the brush tip.;如果选中的话, 材料纹理图将被当作一个图示表, 其框架计数与刷尖相同 。
+Number of variations (columns) in the tile sheet.;瓦片工作表中的变数(列).
+Number of placeable features (rows minus three) in the tile sheet.;瓦片工作表中可定位特性的数量( 数减去 3) 。
+Randomly place feature tiles in empty spaces.;在空格中随机放置特征牌 。
+Sets the size of the projected plane on the horizontal axis as a ratio of the texture project's mesh(es).;设定横向轴上预计平面的大小为纹理工程网格(s)的比例.
+Sets the size of the projected plane on the vertical axis as a ratio of the texture project's mesh(es).;设定垂直轴上预测平面的大小为纹理工程网格(s)的比例.
+Sets the maximum distance beneath the surface at which the projection will be drawn. Smoothly fades from falloff value.;设定投影投影在表面下的最大距离。 从掉落值中平滑淡出.
+Sets the distance beneath the surface at which the projection will start fading.;设定投影开始消失的表面下方的距离。
+Sets the maximum distance above the surface at which the projection will be drawn. No falloff is applied.;设定绘制投影的表面上的最大距离。 不应用掉落。
+Sets the maximum angle away from the surface normal at which the projection will stop being drawn. No falloff is applied.;设定最大角度与投影停止绘制的表面正常距离。 不采用掉落法。
+Sets the rotation along the X axis for the custom direction effect.;为自定义方向效应设定 X 轴旋转。
+Sets the rotation along the Y axis for the custom direction effect.;设置自定义方向效应的Y轴旋转。
+Sets the rotation along the Z axis for the custom direction effect.;为自定义方向效应设定Z轴的旋转。
+Recolor the shadow element of the output gradient for this map type.;重新显示此映射类型的输出梯度的阴影元素 。
+Recolor the highlight element of the output gradient for this map type.;重新显示此映射类型的输出梯度的亮度元素。
+Invert the output gradient for this map type.;反转此映射类型的输出梯度 。
+Inverts the x value.;倒转 x 值。
+Inverts the normal value.;倒转正常值。
+Inverts the albedo value.;倒置反照率值。
+Inverts the specular value..;反转光谱值...
+Inverts the gloss value..;颠倒光彩值..
+Inverts the roughness value.;反转粗糙值.
+Inverts the metalness value.;反转金属值。
+Inverts the ambient occlusion value.;颠倒环境隔离值。
+Inverts the cavity value.;倒置腔值.
+Inverts the transparency value.;倒置透明度值。
+Inverts the displacement or heightmap value.;倒置移位或高度图值。
+Inverts the albedo (metalness) value.;倒置反照率( 金属) 值 。
+Inverts the bump value.;颠倒颠倒值.
+Inverts the emissive value.;颠倒发遣值.
+Inverts the subsurface scattering value.;反转下表面散射值。
+Inverts the subsurface scattering mask value.;倒置下表层的散射罩值。
+Inverts the aniisotropic direction value.;反转阳极方向值。
+Inverts the fuzz value.;颠倒模糊值.
+Inverts the refraction mask value.;倒置折射罩值。
+Sets the initial seed which can be adjusted to create a unique variation of the effect.;设置可以调整的初始种子,以创建效果的独特变异。
+Sets the maximum angle the tool will paint on relative to the center point of the brush.;设定工具相对于刷子中心点的最大角度。
+Sets how gradually the culling function fades to the maximum value.;设定 culling 函数如何逐渐淡化到最大值 。
+Sets whether the normal map influences the culling function. When on, the surface details in the normal map will be used for culling.;设定普通地图是否影响 culling 函数。 上映时,普通地图中的表层细节将被用于 culling.
+Sets the maximum amount of value difference the tool will fill in relative to value at the sample point.;设定工具相对于样本点值的最大值差。
+Determines whether the fill tool will create a shape with opaque edges or if the edges will fade relative to the value tolerance.;确定填充工具是否将创建一个带有不透明边缘的形状,或者边缘相对于数值容忍度是否逐渐淡出。
+Determines where the edges will be filtered to soften and reduce jaggedness.;确定边将过滤到何处以软化并减少夹痕。
+Determines which mesh elements the tool will fill.;确定工具将填充的网格元素 。
+Determines which elements in the texture project the tool will sample from.;确定工具将采样的纹理项目中的哪些元素。
+Determines how the smudge tool can work across various boundaries.;确定滑动工具如何跨越各种边界。
+Sets the strength of the gradient.;设置梯度的强度。
+Inverts the gradient.;反转梯度。
+Displays guide planes when manipulating decal depth or falloff via the GUI.;在通过GUI操纵解析深度或坠落时显示引导飞机.
+Edit the color value for the selected handle.;编辑选定手柄的颜色值。
+Edit the alpha value for the selected handle.;编辑选定手柄的α值。
+Edit the horizontal position of the selected color handle.;编辑选定颜色控点的横向位置。
+Edit the horizontal position of the selected alpha handle.;编辑选中的α 手柄的横向位置 。
+Toggle fullscreen sampling mode. This allows sampling from any part of the screen, including external applications and secondary monitors.;切换全屏采样模式 。 这样可以从屏幕的任何部分取样,包括外部应用和二级显示器.
+Determines which elements of the selected Texture Project will be sampled; Layers, Groups, or the final composite.;确定选定纹理工程的哪些元素将被采样; 层,组, 或最终复合.
+Selects which texture map type to sample the value from.;选择要从哪个纹理映射类型来样本该值。
+This asset cannot be downloaded with a trial license.;该资产不能凭审判许可证下载。
+The X coordinate in 3D space.;X在3D空间中协调.
+The Y coordinate in 3D space.;Y坐标位于3D空间.
+The Z coordinate in 3D space.;Z坐标在3D空间.
+The scale along the X axis.;沿X轴的尺度.
+The scale along the Y axis.;沿Y轴的尺度.
+The scale along the Z axis.;沿Z轴的尺度.
+Rotation around the X axis.;绕X轴旋转.
+Rotation around the Y axis.;绕Y轴旋转.
+Rotation around the Z axis.;绕Z轴旋转.
+Only allow rotation to change by fixed steps in degrees when interacting with the tool in the viewport.;只允许在与视图端口中的工具互动时,旋转以固定的度级变化.
+Only allow translation to change by fixed steps in world units when interacting with the tool in the viewport.;只允许翻译在与视图端口中的工具交互时,在世界单位中通过固定步骤进行修改.
+Center the pivot to the object bounds.;将枢轴中心到对象边界上。
+Use world space axes instead of local, object axes when interacting with the tool in the viewport.;在视图端与工具交互时使用世界空间轴而不是局部,物体轴.
+Edit the pivot transform.;编辑偏转转换 。
+Edit the object transform.;编辑对象转换 。
+Go to the root folder.;转到根文件夹 。
+Go back to the previous folder.;返回上一个文件夹 。
+Go forward to the next folder.;转到下一个文件夹 。
+Go to the parent folder.;转到父文件夹 。
+Creates a new user folder inside the currently selected folder.;在当前选中的文件夹中创建一个新的用户文件夹 。
+Deletes the currently selected user folder.;删除当前选中的用户文件夹。
+Download the selected asset(s).;下载选中的资产 。
+Open the selected asset(s). If asset(s) do not exist locally, they will be downloaded first.;打开选定的资产。 如果资产在当地不存在,将首先下载。
+Delete the selected asset(s).;删除选中的资产 。
+Show first party Marmoset content.;显示第一党马莫塞特的内容.
+Show custom user-created content.;显示自定义用户创建的内容 。
+Show assets that are stored locally.;显示本地存储的资产 。
+Show assets that are available to download.;显示可供下载的资产 。
+Show assets with available updates to download.;显示可用更新以下载的资产 。
+Show materials, textures, and skies currently used in the scene.;展示现场目前使用的材料,纹理和天空.
+Show assets tagged with this color.;显示标记此颜色的资产 。
+Assign a color to this asset.;为此资产指定颜色 。
+Download the asset.;下载该资产 。
+Save changes to the asset.;保存资产更改 。
+Open the asset.;打开资产。
+Places the Light's specular highlight at the sample point. When disabled, the Light is placed perpendicular to the vertex normal of the sample point.;将光线的光谱亮度放在样本点。 禁用时,将光置于样本点的顶点正常位置。
+Enabling this uses the normal map for sampling light direction, otherwise vertex normals are used.;启用此功能使用正常的映射来取样光线方向,否则会使用顶点常态.
+Download all files which are available from Marmoset's Library server.;从 Marmoset 的库服务器下载所有可用的文件 。
+Select the location on disk to search for lost files.;选择要搜索丢失文件的磁盘位置 。
+Continue loading the scene. Note: skipped file references will be permanently lost when saving the file.;继续装车 注意: 保存文件时跳过的文件引用会永久丢失 。
+Abort loading the scene.;停止装入场景 。
+Download this file from the Library server.;从库服务器下载此文件 。
+Browse to locate this file on disk.;浏览可在磁盘上找到此文件 。
+Sharpens the selected point.;尖锐化选定点。
+Smooths the selected point.;平滑选定点。
+Deletes the selected point.;删除选定的点。
+Mirrors the handles for the selected point.;镜像选定点的手柄。
+Links the length of the handles for the selected point.;链接选定点的手柄长度。
+Prevents moving points to overlapping positions.;防止立场重叠。
+Toggles horizontal mirroring for the whole profile curve.;切换整个剖面曲线的横向镜像。
+When enabled, bezier vertices and tangent handles will snap to a visible grid. Resize the Profile Editor window for a more refined grid.;启用时,贝塞尔顶点和切换手柄会向可见的网格突起. 调整配置编辑器窗口的大小, 以建立更精细的网格 。
+Preview of a computed sync map.;计算同步地图的预览 。
+Allows to build mask effects that blend on top of the layers below.;允许在下面的层上建立混合的面具效果.
+Opens the console window.;打开控制台窗口。
+Clears the currently displayed error.;清除当前显示的错误。
+Bakes all projects in the scene. This button can also pause and resume bakes that are in progress.;把现场的所有项目都烧了 此按钮还可以暂停并恢复正在进行的烘焙.
+Cancels any bakes in progress.;取消任何正在进行的烘焙。
+Undock this window.;解开这个窗口。
+Confirm new key bind.;确认新密钥绑定 。
+Cancel new key bind.;取消新密钥绑定 。
+Ignore conflicted key bind.;忽略冲突密钥绑定 。
+Restore default key bind.;还原默认密钥绑定 。
+Clear key bind.;清除密钥绑定 。
+Transform Tool;变形工具
+Delete Layer;删除图层
+Delete selected layer;删除选中的层

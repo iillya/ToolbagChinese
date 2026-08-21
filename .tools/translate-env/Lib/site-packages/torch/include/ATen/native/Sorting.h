@@ -1,0 +1,33 @@
+#if !defined(TORCH_STABLE_ONLY) && !defined(TORCH_TARGET_VERSION)
+#pragma once
+
+#include <ATen/native/DispatchStub.h>
+#include <cstdint>
+
+namespace at {
+class TensorBase;
+}
+
+namespace at::native {
+
+enum class QUANTILE_INTERPOLATION_MODE : uint8_t {
+  LINEAR,
+  LOWER,
+  HIGHER,
+  MIDPOINT,
+  NEAREST
+};
+
+using sort_fn = void(*)(const TensorBase&, const TensorBase&, const TensorBase&, int64_t, bool, bool);
+using topk_fn = void(*)(const TensorBase&, const TensorBase&, const TensorBase&, int64_t, int64_t, bool, bool);
+
+DECLARE_DISPATCH(sort_fn, sort_stub)
+DECLARE_DISPATCH(topk_fn, topk_stub)
+
+void _fill_indices(const TensorBase &indices, int64_t dim);
+
+} // namespace at::native
+
+#else
+#error "This file should not be included when either TORCH_STABLE_ONLY or TORCH_TARGET_VERSION is defined."
+#endif  // !defined(TORCH_STABLE_ONLY) && !defined(TORCH_TARGET_VERSION)
