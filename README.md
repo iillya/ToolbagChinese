@@ -1,27 +1,31 @@
-﻿# 八猴 Toolbag 5 汉化插件
+# 八猴 Toolbag 5 汉化插件
 
-当前只保留一个版本：
+当前版本采用三层显示翻译，不修改 Toolbag 的资产、路径、搜索索引或配置原文：
 
-- `ToolbagChineseHook.dll`：完整 3-Hook 汉化版
-- `dllmain.cpp`：对应源码
-- `dictionary.txt`：汉化字典
-- `__main__.py`：插件入口
-- `inject_verify.py`：启动注入脚本
+- `Text`：翻译普通控件的主文字和辅助文字，并让布局按中文宽度计算。
+- `MenuItem`：只翻译菜单项标题，不修改命令、回调或快捷键。
+- `Font::CompiledString`：翻译不经过 `Text` 的自绘文字，并参与字形测量与绘制。
 
-## 使用
+三个入口均通过机器码结构特征定位；字典采用完整英文字符串匹配，缺少条目时保留英文。
 
-插件方式：放入 Toolbag 插件目录，运行 ChineseLocalizer。
+## 目录
 
-启动注入方式：
+- `src/`：DLL 与启动器源码。
+- `dist/`：可安装文件、字典与中文字体。
+- `scripts/`：构建、安装、字典维护及逆向分析工具。
+- `build/`：本地编译中间文件。
+- `backups/`、`reports/`：历史备份与分析报告。
 
-```text
-python inject_verify.py
-```
+## 构建与安装
 
-注意：该版本能正常加载并显示中文，但打开纹理界面可能闪退。
+运行 `scripts\build.bat` 构建，再以管理员权限运行 `scripts\install_plugin.ps1` 安装。
+
+安装后请通过插件目录中的 `ToolbagChineseLauncher.exe` 启动 Toolbag。插件菜单入口只负责提示正确的启动方式，不支持运行中注入。
 
 ## 字典格式
 
 ```text
 英文;中文
 ```
+
+运行时追踪默认关闭。如需诊断，在插件安装目录创建 `trace.enabled` 后重新启动 Toolbag。
