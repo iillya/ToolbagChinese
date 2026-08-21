@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# Python / 工具生成物
+__pycache__/
+*.pyc
+work/
+build/
+release/
+.tools/
