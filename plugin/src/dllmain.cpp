@@ -30,45 +30,25 @@
 // Types
 // ---------------------------------------------------------------------------
 using FontCompileFn   = void(__fastcall*)(void*, const char*);
-using StringAssignFn  = void*(__fastcall*)(void*, const char*, size_t);
 
 // ---------------------------------------------------------------------------
 // Global state
 // ---------------------------------------------------------------------------
 static HMODULE          g_hookModule = nullptr;
 static FontCompileFn    g_originalFontCompile = nullptr;
-static StringAssignFn   g_originalStringAssign = nullptr;
-static size_t           g_textStringOffset1 = 0;
-static size_t           g_textStringOffset2 = 0;
 
 
 static BYTE*            g_imageBegin = nullptr;
 static BYTE*            g_imageEnd = nullptr;
-static thread_local uintptr_t g_callsite = 0;
 
 static std::unordered_map<std::string,std::string> g_translationDict;
 static std::unordered_map<std::string,std::string> g_displayCache;
 static std::mutex       g_cacheLock;
 
-static std::unordered_set<std::string> g_loggedMissing;
-static std::mutex       g_missingLock;
 
-static std::string      g_missingLogPath;
-static std::string      g_traceLogPath;
-static bool             g_traceEnabled = false;
 
 static INIT_ONCE        g_initOnce = INIT_ONCE_STATIC_INIT;
 static BOOL             g_hooksInstalled = FALSE;
-
-// ---------------------------------------------------------------------------
-// String helpers
-// ---------------------------------------------------------------------------
-static std::string Trim(const std::string& s) {
-    const size_t first = s.find_first_not_of(" \t\r\n");
-    if (first == std::string::npos) return {};
-    const size_t last = s.find_last_not_of(" \t\r\n");
-    return s.substr(first, last - first + 1);
-}
 
 // ---------------------------------------------------------------------------
 // Dictionary loading
@@ -185,40 +165,6 @@ static bool LoadDictionaries() {
 }
 
 // ---------------------------------------------------------------------------
-// Missing / trace logging
-// ---------------------------------------------------------------------------
-// Records an English string that was shown in the UI but is not in the
-// dictionary, so it can be added later. 'kind' marks the source (CTOR/GDI...).
-static void LogMissingString(const char* kind, const char* text, size_t length) {
-    if (!text || length < 2 || length > 256) return;
-
-    // Only printable ASCII containing at least one letter; skip paths/URLs/etc.
-    bool hasLetter = false;
-    for (size_t i = 0; i < length; i++) {
-        const unsigned char c = text[i];
-        if (c == '/' || c == '\\' || c < 0x20 || c > 0x7e) return;
-        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) hasLetter = true;
-    }
-    if (!hasLetter) return;
-
-    const std::string str(text, length);
-    const std::string dedupKey = std::string(kind) + "\t" + str;
-
-    {
-        std::lock_guard<std::mutex> lock(g_missingLock);
-        if (!g_loggedMissing.insert(dedupKey).second) return;
-    }
-
-    const uintptr_t imageBase = (uintptr_t)GetModuleHandleW(nullptr);
-    FILE* file = nullptr;
-    if (!g_missingLogPath.empty() && !fopen_s(&file, g_missingLogPath.c_str(), "ab") && file) {
-        fprintf(file, "%s\t0x%llX\t%s\r\n",
-                kind, (unsigned long long)(g_callsite - imageBase), str.c_str());
-        fclose(file);
-    }
-}
-
-// ---------------------------------------------------------------------------
 // Translation core
 // ---------------------------------------------------------------------------
 // Some strings are sentinel values, not user-facing text to localize.
@@ -247,10 +193,7 @@ static const char* TranslateImpl(const char* s) {
     const std::string key = whole.substr(first, last - first + 1);
     if (IsSentinelText(key.c_str())) return s;   // keep sentinels as-is
     const auto it = g_translationDict.find(key);
-    if (it == g_translationDict.end()) {
-        LogMissingString("CTOR", key.c_str(), key.size());
-        return s;
-    }
+    if (it == g_translationDict.end()) return s;
 
     {
         std::lock_guard<std::mutex> lock(g_cacheLock);
@@ -274,69 +217,19 @@ static const char* Translate(const char* s) {
 // ---------------------------------------------------------------------------
 // Engine hooks (replacement functions)
 // ---------------------------------------------------------------------------
-// Lightweight per-hook trace (enabled by trace.enabled next to the DLL).
-static void TraceHook(const char* kind, const char* text) {
-    if (!g_traceEnabled || !text) return;
-    void* frames[10] = {};
-    const USHORT count = CaptureStackBackTrace(0, _countof(frames), frames, nullptr);
-    const uintptr_t imageBase = (uintptr_t)GetModuleHandleW(nullptr);
-    FILE* f = nullptr;
-    if (fopen_s(&f, g_traceLogPath.c_str(), "ab") || !f) return;
-    fprintf(f, "HOOK\t%s\t%s\tlen=%zu\t", kind, text, strlen(text));
-    for (USHORT i = 0; i < count; i++) {
-        const uintptr_t p = (uintptr_t)frames[i];
-        if (p >= imageBase && p < (uintptr_t)g_imageEnd)
-            fprintf(f, "+0x%llX,", (unsigned long long)(p - imageBase));
-        else
-            fprintf(f, "@0x%llX,", (unsigned long long)p);
-    }
-    fprintf(f, "\n");
-    fclose(f);
-}
-
 // Font::CompiledString - translate before the compiled result is built/measured.
 static void HandleFontCompile(void* self, const char* text) {
-    g_callsite = (uintptr_t)_ReturnAddress();
-    TraceHook("FONT", text);
     const char* out = Translate(text);
-    TraceHook("FONT->", out);
     g_originalFontCompile(self, out);
 }
 
 // ---------------------------------------------------------------------------
-// GDI / USER32 capture safety-net (IAT hooks)
+// Window title hook (IAT) - appends author signature
 // ---------------------------------------------------------------------------
-static void LogGdiString(const wchar_t* text, size_t length) {
-    if (!text || length == 0 || length > 512) return;
-    char buf[2048];
-    const int len = WideCharToMultiByte(CP_UTF8, 0, text, (int)length,
-                                        buf, (int)sizeof(buf) - 1, nullptr, nullptr);
-    if (len <= 0 || len > 512) return;
-    buf[len] = 0;
-    LogMissingString("GDI", buf, len);
-}
-
-static BOOL (WINAPI* g_origExtTextOutW)(HDC,int,int,UINT,const RECT*,LPCWSTR,UINT,const INT*);
-static BOOL WINAPI HookExtTextOutW(HDC hdc,int x,int y,UINT options,const RECT* rect,
-                                   LPCWSTR text,UINT count,const INT* dx) {
-    g_callsite = (uintptr_t)_ReturnAddress();
-    LogGdiString(text, count);
-    return g_origExtTextOutW(hdc, x, y, options, rect, text, count, dx);
-}
-
-static int (WINAPI* g_origDrawTextW)(HDC,LPCWSTR,int,LPRECT,UINT);
-static int WINAPI HookDrawTextW(HDC hdc,LPCWSTR text,int count,LPRECT rect,UINT format) {
-    g_callsite = (uintptr_t)_ReturnAddress();
-    LogGdiString(text, count < 0 ? wcslen(text) : (size_t)count);
-    return g_origDrawTextW(hdc, text, count, rect, format);
-}
-
 static BOOL (WINAPI* g_origSetWindowTextW)(HWND,LPCWSTR);
 static const wchar_t kAuthorSuffix[] = L" - Bilibili神说要凑数汉化";
 static bool g_titlePatched = false;
 static BOOL WINAPI HookSetWindowTextW(HWND hwnd,LPCWSTR text) {
-    g_callsite = (uintptr_t)_ReturnAddress();
-    LogGdiString(text, wcslen(text));
     // Append author signature to the main Toolbag window title (once).
     // Main window is identified by its title (avoids extra user32 imports).
     if (text && text[0] && !g_titlePatched &&
@@ -351,20 +244,6 @@ static BOOL WINAPI HookSetWindowTextW(HWND hwnd,LPCWSTR text) {
         return g_origSetWindowTextW(hwnd, buf);
     }
     return g_origSetWindowTextW(hwnd, text);
-}
-
-static BOOL (WINAPI* g_origSetWindowTextA)(HWND,LPCSTR);
-static BOOL WINAPI HookSetWindowTextA(HWND hwnd,LPCSTR text) {
-    g_callsite = (uintptr_t)_ReturnAddress();
-    if (text) {
-        const int len = MultiByteToWideChar(CP_UTF8, 0, text, -1, nullptr, 0) - 1;
-        if (len > 0) {
-            wchar_t buf[256];
-            if (MultiByteToWideChar(CP_UTF8, 0, text, len, buf, 256) > 0)
-                LogGdiString(buf, len);
-        }
-    }
-    return g_origSetWindowTextA(hwnd, text);
 }
 
 // Patch the Import Address Table of the target module so only Toolbag's direct
@@ -405,16 +284,10 @@ static bool PatchImport(HMODULE mod, const char* dllName, const char* funcName,
     return false;
 }
 
-static void InstallGdiCaptureHooks(HMODULE mod) {
+static void InstallWindowTitleHook(HMODULE mod) {
     FARPROC original = nullptr;
-    if (PatchImport(mod, "GDI32.dll", "ExtTextOutW",   (void*)HookExtTextOutW,    original))
-        g_origExtTextOutW = (decltype(g_origExtTextOutW))original;
-    if (PatchImport(mod, "USER32.dll", "DrawTextW",    (void*)HookDrawTextW,      original))
-        g_origDrawTextW = (decltype(g_origDrawTextW))original;
     if (PatchImport(mod, "USER32.dll", "SetWindowTextW",(void*)HookSetWindowTextW,original))
         g_origSetWindowTextW = (decltype(g_origSetWindowTextW))original;
-    if (PatchImport(mod, "USER32.dll", "SetWindowTextA",(void*)HookSetWindowTextA,original))
-        g_origSetWindowTextA = (decltype(g_origSetWindowTextA))original;
 }
 
 // ---------------------------------------------------------------------------
@@ -448,7 +321,8 @@ static BYTE* ResolveVtableByName(BYTE* base, const char* rttiName) {
         const DWORD ref = FindU32InImage(base, td, from);
         if (!ref) break;
         from = ref + 1;
-        const DWORD col = ref - 12;                  // CompleteObjectLocator
+        if (ref < 12) continue;                      // CompleteObjectLocator underflow guard
+        const DWORD col = ref - 12;
         BYTE* cp = base + col;
         const DWORD sig = *(DWORD*)(cp + 0x00);
         const DWORD ptd = *(DWORD*)(cp + 0x0C);
@@ -551,38 +425,6 @@ static bool InstallFontHook(BYTE* target) {
 // Installation
 // ---------------------------------------------------------------------------
 static BOOL CALLBACK InstallHooks(PINIT_ONCE, PVOID, PVOID*) {
-    // Resolve log paths under %LOCALAPPDATA%\Marmoset Toolbag 5.
-    char localAppData[MAX_PATH];
-    const DWORD ln = GetEnvironmentVariableA("LOCALAPPDATA", localAppData, MAX_PATH);
-    if (ln && ln < MAX_PATH) {
-        const std::string dir = std::string(localAppData) + "\\Marmoset Toolbag 5";
-        g_missingLogPath = dir + "\\ChineseLocalizer_missing.tsv";
-        g_traceLogPath   = dir + "\\ChineseLocalizer_trace.tsv";
-    }
-
-    // Diagnostics: presence of trace.enabled next to the DLL turns on tracing.
-    char modulePath[MAX_PATH] = {};
-    const DWORD mn = GetModuleFileNameA(g_hookModule, modulePath, MAX_PATH);
-    if (mn && mn < MAX_PATH) {
-        char* slash = strrchr(modulePath, '\\');
-        if (slash) {
-            strcpy_s(slash + 1, MAX_PATH - (slash - modulePath + 1), "trace.enabled");
-            g_traceEnabled = GetFileAttributesA(modulePath) != INVALID_FILE_ATTRIBUTES;
-        }
-    }
-
-    // Also honor trace.enabled under %LOCALAPPDATA%\Marmoset Toolbag 5
-    // (writable without admin) so the marker can be created easily.
-    if (!g_traceEnabled) {
-        char local[MAX_PATH];
-        const DWORD ln = GetEnvironmentVariableA("LOCALAPPDATA", local, MAX_PATH);
-        if (ln && ln < MAX_PATH) {
-            char marker[MAX_PATH];
-            sprintf_s(marker, "%s\\Marmoset Toolbag 5\\trace.enabled", local);
-            g_traceEnabled = GetFileAttributesA(marker) != INVALID_FILE_ATTRIBUTES;
-        }
-    }
-
     if (!LoadDictionaries()) return TRUE;
 
     BYTE* imageBase = (BYTE*)GetModuleHandleW(nullptr);
@@ -610,8 +452,8 @@ static BOOL CALLBACK InstallHooks(PINIT_ONCE, PVOID, PVOID*) {
             g_hooksInstalled = TRUE;
     }
 
-    // 4) GDI / USER32 capture safety-net (system APIs, version independent).
-    InstallGdiCaptureHooks((HMODULE)imageBase);
+    // 2) Window title hook - appends author signature (system API, version independent).
+    InstallWindowTitleHook((HMODULE)imageBase);
 
     return TRUE;
 }
