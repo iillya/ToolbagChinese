@@ -35,7 +35,7 @@ cl /nologo /O2 /EHsc /utf-8 "%~dp0..\src\launcher.cpp" user32.lib /Fo:"%~dp0..\.
 if errorlevel 1 exit /b 1
 
 rem ---- 一键安装器（EXE，带提权清单）----
-cl /nologo /O2 /EHsc /utf-8 "%~dp0..\src\installer.cpp" user32.lib /Fo:"%~dp0..\..\build\installer.obj" /link /SUBSYSTEM:CONSOLE /OUT:"%~dp0..\..\build\ChineseInstaller.exe" /MANIFEST:EMBED /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
+cl /nologo /O2 /EHsc /utf-8 "%~dp0..\src\installer.cpp" user32.lib /Fo:"%~dp0..\..\build\installer.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%~dp0..\..\build\ChineseInstaller.exe" /MANIFEST:EMBED /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
 if errorlevel 1 exit /b 1
 
 echo 构建完成：build\ToolbagChineseHook.dll 与 build\ToolbagChineseLauncher.exe 与 build\ChineseInstaller.exe

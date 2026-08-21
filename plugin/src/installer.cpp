@@ -1,13 +1,13 @@
 // ============================================================================
-//  Toolbag 5 Chinese Localizer - Self-contained one-click installer (EXE)
+//  Toolbag 5 Chinese Localizer - Self-contained one-click installer (GUI EXE)
 // ============================================================================
-//  Everything needed (install.ps1 + dist files: dictionaries, DLL, launcher,
-//  font) is appended to this EXE as embedded data. On launch it:
-//     1. shows an install / uninstall menu
-//     2. extracts the embedded files to a temp folder
-//     3. runs scripts\install.ps1 (or with -Uninstall) from that folder
+//  A GUI (no console) self-contained installer:
+//     1. shows a MessageBox to choose 安装 / 卸载 / 取消
+//     2. extracts embedded files to a temp folder
+//     3. silently runs scripts\install.ps1 (or with -Uninstall)
 //     4. cleans up the temp folder
-//  So the end user only needs this single EXE - nothing else beside it.
+//     5. shows a result MessageBox
+//  All UI is Unicode (MessageBoxW) so Chinese never turns into garbled text.
 //
 //  Embedded payload format (appended after the PE, read via file I/O):
 //      [ file data... ][ entries... ][ manifestSize u32 ][ count u32 ][ magic u64 ]
@@ -23,6 +23,7 @@
 namespace {
 
 constexpr uint64_t kPayloadMagic = 0x314D484254ull; // "TBHM1"
+const wchar_t* kAppTitle = L"八猴 Toolbag 5 汉化插件";
 
 struct EmbeddedFile {
     std::string name;
@@ -71,7 +72,7 @@ bool ReadEmbeddedFiles(std::vector<EmbeddedFile>& files) {
 }
 
 // ---------------------------------------------------------------------------
-// Temp-folder helpers
+// Temp-folder helpers (ASCII paths: temp folder + known file names)
 // ---------------------------------------------------------------------------
 std::string MakeTempFolder() {
     char temp[MAX_PATH];
@@ -122,47 +123,53 @@ bool ExtractAll(const std::vector<EmbeddedFile>& files, const std::string& folde
     return ok;
 }
 
+// Convert an ASCII path to a wide string.
+std::wstring ToWide(const std::string& s) {
+    std::wstring w;
+    for (char c : s) w += static_cast<wchar_t>(static_cast<unsigned char>(c));
+    return w;
+}
+
 } // namespace
 
-int main() {
+int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
     std::vector<EmbeddedFile> files;
     if (!ReadEmbeddedFiles(files)) {
-        MessageBoxA(nullptr,
-                    "此 EXE 缺少嵌入的安装数据，请使用完整的单文件安装版。",
-                    "八猴 Toolbag 5 汉化", MB_OK | MB_ICONERROR);
+        MessageBoxW(nullptr, L"此 EXE 缺少嵌入的安装数据，请使用完整的单文件安装版。",
+                    kAppTitle, MB_OK | MB_ICONERROR);
         return 1;
     }
 
-    printf("============================================\n");
-    printf("   八猴 Toolbag 5 汉化插件（单文件安装）\n");
-    printf("============================================\n");
-    printf("   [1] 安装汉化\n");
-    printf("   [2] 卸载汉化（还原原版）\n");
-    printf("============================================\n");
-    printf("  请输入选择（1 或 2）: ");
-
-    char choice[16] = {};
-    if (!fgets(choice, sizeof choice, stdin)) choice[0] = '1';
-    const bool uninstall = (choice[0] == '2');
+    // GUI menu: 安装 / 卸载 / 取消
+    const int choice = MessageBoxW(
+        nullptr,
+        L"八猴 Toolbag 5 汉化插件\n\n"
+        L"选择要执行的操作：\n\n"
+        L"  是(Y)  ->  安装汉化\n"
+        L"  否(N)  ->  卸载汉化（还原原版）\n"
+        L"  取消    ->  退出",
+        kAppTitle, MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON1);
+    if (choice == IDCANCEL) return 0;
+    const bool uninstall = (choice == IDNO);
 
     const std::string folder = MakeTempFolder();
     if (!ExtractAll(files, folder)) {
-        MessageBoxA(nullptr, "解压安装数据失败。", "八猴 Toolbag 5 汉化", MB_OK | MB_ICONERROR);
+        MessageBoxW(nullptr, L"解压安装数据失败，请重试。", kAppTitle, MB_OK | MB_ICONERROR);
         CleanupTempFolder(folder);
         return 2;
     }
 
-    const std::string ps1 = folder + "scripts\\install.ps1";
-    std::string command =
-        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"" + ps1 + "\"";
-    if (uninstall) command += " -Uninstall";
+    const std::wstring ps1 = ToWide(folder) + L"scripts\\install.ps1";
+    std::wstring cmd =
+        L"powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"" + ps1 + L"\" -Quiet";
+    if (uninstall) cmd += L" -Uninstall";
 
-    STARTUPINFOA startupInfo = {};
+    STARTUPINFOW startupInfo = {};
     startupInfo.cb = sizeof(startupInfo);
     PROCESS_INFORMATION processInfo = {};
 
     int exitCode = 3;
-    if (CreateProcessA(nullptr, &command[0], nullptr, nullptr, TRUE, 0,
+    if (CreateProcessW(nullptr, &cmd[0], nullptr, nullptr, TRUE, CREATE_NO_WINDOW,
                        nullptr, nullptr, &startupInfo, &processInfo)) {
         WaitForSingleObject(processInfo.hProcess, INFINITE);
         DWORD code = 0;
@@ -171,10 +178,28 @@ int main() {
         CloseHandle(processInfo.hThread);
         CloseHandle(processInfo.hProcess);
     } else {
-        MessageBoxA(nullptr, "无法启动 PowerShell，请确认系统已安装。",
-                    "八猴 Toolbag 5 汉化", MB_OK | MB_ICONERROR);
+        MessageBoxW(nullptr, L"无法启动 PowerShell，请确认系统已安装。",
+                    kAppTitle, MB_OK | MB_ICONERROR);
+        CleanupTempFolder(folder);
+        return 3;
     }
 
     CleanupTempFolder(folder);
+
+    // Result
+    if (exitCode == 0) {
+        MessageBoxW(nullptr,
+                    uninstall
+                        ? L"汉化已卸载完成！\n\n插件已删除、原版字体已还原、日志已清理，Toolbag 恢复正常。"
+                        : L"汉化安装完成！\n\n请通过插件目录中的 ToolbagChineseLauncher.exe 启动 Toolbag。",
+                    kAppTitle, MB_OK | MB_ICONINFORMATION);
+        return 0;
+    }
+
+    MessageBoxW(nullptr,
+                uninstall
+                    ? L"卸载未成功完成，请查看上方错误信息后重试。"
+                    : L"安装未成功完成，请查看上方错误信息后重试。",
+                kAppTitle, MB_OK | MB_ICONERROR);
     return exitCode;
 }
