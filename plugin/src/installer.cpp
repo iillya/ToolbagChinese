@@ -89,9 +89,8 @@ std::string MakeTempFolder() {
 }
 
 void CleanupTempFolder(const std::string& folder) {
-    for (const auto* f : {"scripts\\install.ps1", "dist\\__main__.py", "dist\\dictionary.txt",
-                          "dist\\dictionary_assets.txt", "dist\\ToolbagChineseHook.dll",
-                          "dist\\ToolbagChineseLauncher.exe", "dist\\deng_ui.slug"}) {
+    for (const auto* f : {"scripts\\install.ps1", "dist\\dictionary_zh.json", "dist\\ToolbagChineseHook.dll",
+                          "dist\\ToolbagChineseLauncher.exe", "dist\\notosans_chinese.slug"}) {
         DeleteFileA((folder + f).c_str());
     }
     RemoveDirectoryA((folder + "scripts").c_str());

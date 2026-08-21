@@ -215,14 +215,34 @@ def main():
     captured = {}          # text -> set of (source, kind)
     sources = {"exe": EXE.name}
 
-    # 1) executable binary strings
-    data = EXE.read_bytes()
-    for name, rva, raw, size in sections(data):
-        blob = data[raw:raw + size]
-        for s, addr, enc in (*extract_ascii(blob, rva), *extract_utf16(blob, rva)):
-            s = s.strip()
-            if s and s not in known:
-                captured.setdefault(s, set()).add((f"{EXE.name}:{name}", enc))
+    # 1) executable + all related DLLs: binary strings from .rdata/.data
+    BIN_EXTS = {".exe", ".dll"}
+    SKIP_BIN_REL_PREFIXES = ("data/python/",)  # embedded CPython runtime, not UI
+    binaries = [ROOT / "toolbag.exe"]
+    for path in sorted(ROOT.rglob("*")):
+        if not path.is_file() or path.suffix.lower() not in BIN_EXTS:
+            continue
+        rel = str(path.relative_to(ROOT)).replace("\\", "/")
+        if any(rel.startswith(p) for p in SKIP_BIN_REL_PREFIXES):
+            continue
+        if "ChineseLocalizer" in path.parts:
+            continue
+        if path not in binaries:
+            binaries.append(path)
+
+    for bin_path in binaries:
+        try:
+            data = bin_path.read_bytes()
+        except OSError:
+            continue
+        rel = str(bin_path.relative_to(ROOT)).replace("\\", "/")
+        sources[rel] = rel
+        for name, rva, raw, size in sections(data):
+            blob = data[raw:raw + size]
+            for s, addr, enc in (*extract_ascii(blob, rva), *extract_utf16(blob, rva)):
+                s = s.strip()
+                if s and s not in known:
+                    captured.setdefault(s, set()).add((f"{rel}:{name}", enc))
 
     # 2) official language file
     if ENGLISH.exists():
