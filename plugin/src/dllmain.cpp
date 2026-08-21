@@ -243,6 +243,16 @@ static void TraceStringAssign(const char* text, size_t length, uintptr_t site,
 // ---------------------------------------------------------------------------
 // Translation core
 // ---------------------------------------------------------------------------
+// Some strings are sentinel values, not user-facing text to localize.
+// Translating them (e.g. "None" -> "无") breaks controls that use them as a
+// "no selection / NULL" marker (combo boxes drop the text / show blank).
+static bool IsSentinelText(const char* s) {
+    if (!s || !*s) return true;              // empty / null
+    if (_stricmp(s, "None") == 0) return true;
+    if (_stricmp(s, "NULL") == 0) return true;
+    return false;
+}
+
 // Translate 's' using the dictionary. Preserves surrounding whitespace and
 // caches the result so the same string is not rebuilt repeatedly.
 static const char* TranslateImpl(const char* s) {
@@ -254,6 +264,7 @@ static const char* TranslateImpl(const char* s) {
     if (first == std::string::npos) return s;
 
     const std::string key = whole.substr(first, last - first + 1);
+    if (IsSentinelText(key.c_str())) return s;   // keep sentinels as-is
     const auto it = g_translationDict.find(key);
     if (it == g_translationDict.end()) {
         LogMissingString("CTOR", key.c_str(), key.size());
@@ -299,7 +310,8 @@ static void* HandleStringAssign(void* self, const char* text, size_t length) {
     size_t outLen = length;
     bool translated = false;
 
-    if (g_callsite == g_menuLabelAssignSite && it != g_translationDict.end()) {
+    if (g_callsite == g_menuLabelAssignSite && it != g_translationDict.end() &&
+        !IsSentinelText(key.c_str())) {
         out = it->second.c_str();
         outLen = it->second.size();
         translated = true;
