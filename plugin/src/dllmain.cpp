@@ -618,41 +618,53 @@ static BOOL CALLBACK InstallHooks(PINIT_ONCE, PVOID, PVOID*) {
 
     if (!LoadDictionaries()) return TRUE;
 
-    // Locate the three engine entry points by their machine-code signatures.
-    BYTE* assignSite  = FindUniqueSignature(kTextSetterPattern, _countof(kTextSetterPattern));
-    BYTE* menuSite    = FindUniqueSignature(kMenuItemPattern,  _countof(kMenuItemPattern));
-    BYTE* fontSite    = FindUniqueSignature(kFontCompilePattern,_countof(kFontCompilePattern));
-    BYTE* textSetter1 = nullptr;
-    BYTE* textSetter2 = nullptr;
-
-    if (!assignSite || !menuSite || !fontSite || !FindTextSetterPair(textSetter1, textSetter2))
-        return TRUE;
-
     BYTE* imageBase = (BYTE*)GetModuleHandleW(nullptr);
     auto* dos = (IMAGE_DOS_HEADER*)imageBase;
     auto* nt  = (IMAGE_NT_HEADERS64*)(imageBase + dos->e_lfanew);
     g_imageBegin = imageBase;
     g_imageEnd   = imageBase + nt->OptionalHeader.SizeOfImage;
 
-    g_menuLabelAssignSite = (uintptr_t)(menuSite + 9);
-    g_textStringOffset1   = *(DWORD*)(textSetter1 + 29);
-    g_textStringOffset2   = *(DWORD*)(textSetter2 + 29);
+    // ----------------------------------------------------------------------
+    // Self-adaptive hooking: each layer is located & installed independently.
+    // If a newer Toolbag version changes one function's machine-code, only
+    // that layer is skipped - the others still translate. (auto one-click)
+    // ----------------------------------------------------------------------
 
-    if (g_textStringOffset1 < 0x20 || g_textStringOffset2 > 0x1000) return TRUE;
+    // 1) Text::setText (main assign) + menu labels.
+    if (BYTE* assignSite = FindUniqueSignature(kTextSetterPattern, _countof(kTextSetterPattern))) {
+        TextSetterFn trampoline = nullptr;
+        if (InstallTrampolineHook(assignSite, 18, (void*)HandleStringAssign, trampoline)) {
+            g_originalStringAssign = (StringAssignFn)trampoline;
+            g_hooksInstalled = TRUE;
+        }
+        // menu label assignment site (only used by HandleStringAssign above)
+        if (BYTE* menuSite = FindUniqueSignature(kMenuItemPattern, _countof(kMenuItemPattern)))
+            g_menuLabelAssignSite = (uintptr_t)(menuSite + 9);
+    }
 
-    TextSetterFn trampoline = nullptr;
-    if (!InstallTrampolineHook(assignSite, 18, (void*)HandleStringAssign, trampoline))
-        return TRUE;
-    g_originalStringAssign = (StringAssignFn)trampoline;
+    // 2) Text::setText variants (require the assign trampoline above).
+    if (g_originalStringAssign) {
+        BYTE* s1 = nullptr;
+        BYTE* s2 = nullptr;
+        if (FindTextSetterPair(s1, s2)) {
+            g_textStringOffset1 = *(DWORD*)(s1 + 29);
+            g_textStringOffset2 = *(DWORD*)(s2 + 29);
+            if (g_textStringOffset1 >= 0x20 && g_textStringOffset2 <= 0x1000) {
+                const bool ok1 = PatchDirect(s1, 12, (void*)HandleTextSetter1);
+                const bool ok2 = PatchDirect(s2, 12, (void*)HandleTextSetter2);
+                if (ok1 || ok2) g_hooksInstalled = TRUE;
+            }
+        }
+    }
 
-    if (!PatchDirect(textSetter1, 12, (void*)HandleTextSetter1) ||
-        !PatchDirect(textSetter2, 12, (void*)HandleTextSetter2) ||
-        !InstallFontHook(fontSite))
-        return TRUE;
+    // 3) Font::CompiledString (independent layer).
+    if (BYTE* fontSite = FindUniqueSignature(kFontCompilePattern, _countof(kFontCompilePattern))) {
+        if (InstallFontHook(fontSite)) g_hooksInstalled = TRUE;
+    }
 
+    // 4) GDI / USER32 capture safety-net (system APIs, version independent).
     InstallGdiCaptureHooks((HMODULE)imageBase);
 
-    g_hooksInstalled = TRUE;
     return TRUE;
 }
 
