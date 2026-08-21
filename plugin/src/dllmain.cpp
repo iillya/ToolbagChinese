@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 //  Toolbag 5 Chinese Localizer - Hook DLL
 // ============================================================================
 //  Runtime UI translation for Marmoset Toolbag 5.
@@ -647,6 +647,18 @@ static BOOL CALLBACK InstallHooks(PINIT_ONCE, PVOID, PVOID*) {
         }
     }
 
+    // Also honor trace.enabled under %LOCALAPPDATA%\Marmoset Toolbag 5
+    // (writable without admin) so the marker can be created easily.
+    if (!g_traceEnabled) {
+        char local[MAX_PATH];
+        const DWORD ln = GetEnvironmentVariableA("LOCALAPPDATA", local, MAX_PATH);
+        if (ln && ln < MAX_PATH) {
+            char marker[MAX_PATH];
+            sprintf_s(marker, "%s\\Marmoset Toolbag 5\\trace.enabled", local);
+            g_traceEnabled = GetFileAttributesA(marker) != INVALID_FILE_ATTRIBUTES;
+        }
+    }
+
     if (!LoadDictionaries()) return TRUE;
 
     BYTE* imageBase = (BYTE*)GetModuleHandleW(nullptr);
