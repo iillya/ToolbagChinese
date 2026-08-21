@@ -15,10 +15,13 @@
 // ============================================================================
 
 #include <Windows.h>
+#include <CommCtrl.h>
 #include <string>
 #include <vector>
 #include <cstdio>
 #include <cstdint>
+#pragma comment(lib, "Comctl32.lib")
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 namespace {
 
@@ -140,17 +143,25 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
         return 1;
     }
 
-    // GUI menu: 安装 / 卸载 / 取消
-    const int choice = MessageBoxW(
-        nullptr,
-        L"八猴 Toolbag 5 汉化插件\n\n"
-        L"选择要执行的操作：\n\n"
-        L"  是(Y)  ->  安装汉化\n"
-        L"  否(N)  ->  卸载汉化（还原原版）\n"
-        L"  取消    ->  退出",
-        kAppTitle, MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON1);
-    if (choice == IDCANCEL) return 0;
-    const bool uninstall = (choice == IDNO);
+    // GUI menu: 安装汉化 / 拆卸汉化 / 取消（自定义按钮文字）
+    const TASKDIALOG_BUTTON kButtons[] = {
+        { 1001, L"安装汉化" },
+        { 1002, L"拆卸汉化" },
+        { 1003, L"取消" },
+    };
+    TASKDIALOGCONFIG cfg = {};
+    cfg.cbSize = sizeof(cfg);
+    cfg.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION;
+    cfg.pszWindowTitle = L"八猴 Toolbag 5 汉化插件";
+    cfg.pszMainInstruction = L"八猴 Toolbag 5 汉化插件";
+    cfg.pszContent = L"请选择要执行的操作：";
+    cfg.cButtons = 3;
+    cfg.pButtons = kButtons;
+    cfg.nDefaultButton = 1001;
+    int button = 0;
+    const HRESULT hr = TaskDialogIndirect(&cfg, &button, nullptr, nullptr);
+    if (FAILED(hr) || button == 0 || button == 1003) return 0; // 取消/关闭
+    const bool uninstall = (button == 1002);
 
     const std::string folder = MakeTempFolder();
     if (!ExtractAll(files, folder)) {
