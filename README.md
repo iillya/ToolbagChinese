@@ -1,44 +1,62 @@
-# 八猴 Toolbag 5 汉化
+# 八猴5汉化版
 
 Marmoset Toolbag 5 简体中文运行时汉化补丁。
 
-汉化通过 Font-only 内存 Hook 实现，不替换 Toolbag 原程序文件，也不修改其内部英文数据。
+补丁仅在内存中处理字体编译与测量，不修改 `toolbag.exe`，也不改写
+Toolbag 内部的英文命令、枚举值和资源路径。
 
-## 使用
+## 使用方法
 
-从Releases下载运行：
+1. 从 Releases 下载并运行 `安装八猴汉化.exe`。
+2. 选择包含 `toolbag.exe` 的 Toolbag 5 安装目录。
+3. 点击“安装汉化”。
+4. 通过桌面的“八猴5汉化版”快捷方式启动。
 
-```text
-ChineseLocalizer.exe
-```
+安装器需要管理员权限。安装和拆卸始终作用于界面中选择的 Toolbag目录，
+因此也支持非默认安装位置。
 
-安装器启动时会申请管理员权限：
+首次双击 `.tbscene` 时，Windows可能要求确认默认应用。选择“八猴5汉化版”
+并点击“始终”即可；这是 Windows 10/11 的默认应用保护机制。
 
-1. 选择包含 `toolbag.exe` 的 Toolbag 5 安装目录。
-2. 点击“安装汉化”或“拆卸汉化”。
+## 拆卸
 
-安装后可通过桌面的“八猴5汉化版”快捷方式启动，也可以直接双击 `.tbscene` 场景文件。
+重新运行安装器，选择对应的 Toolbag目录，然后点击“拆卸汉化”。拆卸会：
 
-拆卸会删除汉化文件、恢复 `.tbscene` 原版关联，并清理安装器创建的快捷方式和字体。
+- 删除汉化 DLL、启动器、字典和场景图标；
+- 删除安装器创建的快捷方式；
+- 恢复安装前的 `.tbscene` 文件关联；
+- 在替换过字体时恢复原版 `segoeui.slug`。
 
-## 原理
+## 实现原理
 
+启动器以挂起状态创建 Toolbag，注入 Hook DLL，安装成功后再恢复主线程。
 运行时只 Hook 字体相关入口：
 
-- 两个字体编译入口：将即将显示的英文替换为中文。
-- 字体测量入口：按照中文文本计算 UI 宽度。
+- 字体编译入口：把即将显示的英文替换为中文；
+- 字体测量入口：按中文文本重新计算 UI宽度。
 
-Toolbag 内部命令、枚举值和资源路径仍保持英文，避免汉化影响按钮及业务逻辑。
+Hook DLL 使用 RTTI、控制流分析和 Zydis x64 指令解码器定位入口，并按完整
+指令边界生成 trampoline。入口地址、虚表槽和函数序言均不按版本写死。
 
-若目标版本没有 `notosans_chinese.slug`，安装器会备份并替换主字体
-`segoeui.slug`；重复安装不会覆盖原字体备份，拆卸时会自动还原。
+已静态验证 Toolbag `5.0.0`、`5.0.1`、`5.0.2` 和 `5.0.3`。
+
+## 中文字体
+
+如果目标版本包含 `notosans_chinese.slug`，安装器保留原字体配置。
+
+如果缺少该字体，安装器会：
+
+1. 将原版 `segoeui.slug` 备份为 `segoeui.slug.ChineseLocalizer.backup`；
+2. 安装带中文字符的 `segoeui.slug`；
+3. 重复安装时保留第一次创建的备份；
+4. 拆卸时恢复原版字体。
 
 ## 未翻译文本嗅探
 
-在 Toolbag 位于前台时按一次 `F12`：
+Toolbag 位于前台时按一次 `F12`：
 
-- 捕获 1.5 秒内出现的未翻译字体文本。
-- 自动写入并定位：
+- 捕获随后 1.5 秒内经过字体入口的未翻译文本；
+- 自动保存并定位到：
 
 ```text
 Toolbag 5\data\ChineseLocalizer\ChineseLocalizer_sniffer.json
@@ -48,7 +66,7 @@ Toolbag 5\data\ChineseLocalizer\ChineseLocalizer_sniffer.json
 
 ## 从源码构建
 
-需要 Visual Studio 2022 C++ 生成工具和 Python 3：
+需要 Visual Studio 2022 C++生成工具和 Python 3：
 
 ```bat
 plugin\scripts\build.bat
@@ -61,21 +79,22 @@ python plugin\scripts\tools\embed_files.py
 dist\安装八猴汉化.exe
 ```
 
-## 核心目录
+## 目录
 
 ```text
 plugin\src\          Hook DLL、启动器和安装器源码
-plugin\data\         中文字典和字体
-plugin\scripts\      构建、安装及字典维护工具
-plugin\resources\    程序图标
-plugin\third_party\  Zydis x64 指令解码器（MIT）
+plugin\data\         中文字典和兼容字体
+plugin\resources\    程序图标和 .tbscene 文档图标
+plugin\scripts\      构建、安装和字典维护工具
+plugin\third_party\  Zydis x64 指令解码器
 ```
 
-## 项目链接
+## 作者与仓库
 
 - 作者：[Bilibili 神说要凑数](https://space.bilibili.com/281243426)
+- 仓库：[GitHub](https://github.com/iillya/Toolbag)
 
 ## 许可证
 
-本项目许可证见 [LICENSE](LICENSE)，Zydis 许可证见
+本项目许可证见 [LICENSE](LICENSE)。Zydis 使用 MIT许可证，详见
 `plugin/third_party/zydis/LICENSE`。
