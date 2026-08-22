@@ -9,7 +9,7 @@ Marmoset Toolbag 5 简体中文运行时汉化补丁。
 运行：
 
 ```text
-dist\安装八猴汉化.exe
+安装八猴汉化.exe
 ```
 
 安装器启动时会申请管理员权限：
@@ -69,8 +69,7 @@ plugin\resources\    程序图标
 
 ## 项目链接
 
-- 作者：[Bilibili 神说要凑数汉化](https://space.bilibili.com/281243426)
-- 仓库：[GitHub](https://github.com/iillya/Toolbag)
+- 作者：[Bilibili 神说要凑数](https://space.bilibili.com/281243426)
 
 ## 许可证
 
