@@ -17,7 +17,9 @@ if not defined VCVARS (
 call "%VCVARS%" >nul
 rc /nologo /fo "%~dp0..\..\build\app_icon.res" "%~dp0..\resources\app_icon.rc"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 "%~dp0..\src\dllmain.cpp" user32.lib shell32.lib gdi32.lib /Fo:"%~dp0..\..\build\dllmain.obj" /Fe:"%~dp0..\..\build\ToolbagChineseHook.dll" /link /IMPLIB:"%~dp0..\..\build\ToolbagChineseHook.lib"
+cl /nologo /O2 /Gy /Gw /W4 /wd4201 /TC /DZYDIS_STATIC_BUILD /I"%~dp0..\third_party\zydis" /c "%~dp0..\third_party\zydis\Zydis.c" /Fo:"%~dp0..\..\build\zydis.obj"
+if errorlevel 1 exit /b 1
+cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%~dp0..\third_party\zydis" "%~dp0..\src\dllmain.cpp" "%~dp0..\..\build\zydis.obj" user32.lib shell32.lib gdi32.lib /Fo:"%~dp0..\..\build\dllmain.obj" /Fe:"%~dp0..\..\build\ToolbagChineseHook.dll" /link /IMPLIB:"%~dp0..\..\build\ToolbagChineseHook.lib"
 if errorlevel 1 exit /b 1
 cl /nologo /O2 /W4 /EHsc /utf-8 "%~dp0..\src\launcher.cpp" user32.lib "%~dp0..\..\build\app_icon.res" /Fo:"%~dp0..\..\build\launcher.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%~dp0..\..\build\ToolbagChineseLauncher.exe"
 if errorlevel 1 exit /b 1

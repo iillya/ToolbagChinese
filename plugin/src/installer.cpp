@@ -89,6 +89,28 @@ std::wstring GetControlText(HWND control) {
     return copied > 0 ? std::wstring(buffer.data(), copied) : L"";
 }
 
+bool IsX64WindowsExecutable(const std::wstring& path) {
+    HANDLE file = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                              nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
+                              nullptr);
+    if (file == INVALID_HANDLE_VALUE) return false;
+    IMAGE_DOS_HEADER dos{};
+    DWORD read = 0;
+    bool valid = ReadFile(file, &dos, sizeof(dos), &read, nullptr) &&
+                 read == sizeof(dos) && dos.e_magic == IMAGE_DOS_SIGNATURE &&
+                 dos.e_lfanew > 0 &&
+                 SetFilePointer(file, dos.e_lfanew, nullptr, FILE_BEGIN) !=
+                     INVALID_SET_FILE_POINTER;
+    DWORD signature = 0;
+    IMAGE_FILE_HEADER header{};
+    valid = valid && ReadFile(file, &signature, sizeof(signature), &read, nullptr) &&
+            read == sizeof(signature) && signature == IMAGE_NT_SIGNATURE &&
+            ReadFile(file, &header, sizeof(header), &read, nullptr) &&
+            read == sizeof(header) && header.Machine == IMAGE_FILE_MACHINE_AMD64;
+    CloseHandle(file);
+    return valid;
+}
+
 struct PayloadEntry {
     std::string name;
     uint64_t offset = 0;
@@ -179,8 +201,10 @@ std::wstring CreateExtractionDirectory() {
 
 void DeleteExtractionDirectory(const std::wstring& directory) {
     if (directory.empty()) return;
-    for (const auto* f : {L"scripts\\install.ps1", L"dist\\dictionary_zh.json", L"dist\\ToolbagChineseHook.dll",
-                          L"dist\\ToolbagChineseLauncher.exe", L"dist\\notosans_chinese.slug"}) {
+    for (const auto* f : {L"scripts\\install.ps1", L"dist\\dictionary_zh.json",
+                          L"dist\\ToolbagChineseHook.dll",
+                          L"dist\\ToolbagChineseLauncher.exe",
+                          L"dist\\segoeui.slug"}) {
         DeleteFileW((directory + f).c_str());
     }
     RemoveDirectoryW((directory + L"scripts").c_str());
@@ -346,10 +370,11 @@ LRESULT CALLBACK InstallerWindowProcedure(HWND window, UINT message,
             const DWORD attributes = GetFileAttributesW(exe.c_str());
             if (state->toolbagDirectory.empty() ||
                 attributes == INVALID_FILE_ATTRIBUTES ||
-                (attributes & FILE_ATTRIBUTE_DIRECTORY)) {
+                (attributes & FILE_ATTRIBUTE_DIRECTORY) ||
+                !IsX64WindowsExecutable(exe)) {
                 MessageBoxW(window,
-                    L"所选目录中没有找到 toolbag.exe，未执行任何操作。\n\n"
-                    L"请选择 Toolbag 5 的实际安装目录。",
+                    L"所选目录中没有找到有效的 x64 toolbag.exe，"
+                    L"未执行任何操作。\n\n请选择 Toolbag 5 的实际安装目录。",
                     kAppTitle, MB_OK | MB_ICONERROR);
                 SetFocus(state->directoryEdit);
                 return 0;

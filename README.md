@@ -30,6 +30,9 @@ ChineseLocalizer.exe
 
 Toolbag 内部命令、枚举值和资源路径仍保持英文，避免汉化影响按钮及业务逻辑。
 
+若目标版本没有 `notosans_chinese.slug`，安装器会备份并替换主字体
+`segoeui.slug`；重复安装不会覆盖原字体备份，拆卸时会自动还原。
+
 ## 未翻译文本嗅探
 
 在 Toolbag 位于前台时按一次 `F12`：
@@ -65,6 +68,7 @@ plugin\src\          Hook DLL、启动器和安装器源码
 plugin\data\         中文字典和字体
 plugin\scripts\      构建、安装及字典维护工具
 plugin\resources\    程序图标
+plugin\third_party\  Zydis x64 指令解码器（MIT）
 ```
 
 ## 项目链接
@@ -73,4 +77,5 @@ plugin\resources\    程序图标
 
 ## 许可证
 
-见 [LICENSE](LICENSE)。
+本项目许可证见 [LICENSE](LICENSE)，Zydis 许可证见
+`plugin/third_party/zydis/LICENSE`。

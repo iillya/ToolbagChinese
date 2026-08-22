@@ -20,7 +20,7 @@ MAGIC = 0x314D484254  # "TBHM1"
 PAYLOAD_FILES = [
     ("scripts/install.ps1", "plugin/scripts/install.ps1"),
     ("dist/dictionary_zh.json", "plugin/data/dictionary_zh.json"),
-    ("dist/notosans_chinese.slug", "plugin/data/notosans_chinese.slug"),
+    ("dist/segoeui.slug", "plugin/data/segoeui.slug"),
     ("dist/ToolbagChineseHook.dll", "build/ToolbagChineseHook.dll"),
     ("dist/ToolbagChineseLauncher.exe", "build/ToolbagChineseLauncher.exe"),
 ]

@@ -463,10 +463,11 @@ function Remove-DirectoryWithRetry([string]$path, [string]$label) {
 $script:installInProgress = $false
 $script:rollbackPluginDir = ''
 $script:rollbackPluginBackup = ''
-$script:fontAddedByCurrentInstall = ''
+$script:fontBackupCreatedByCurrentInstall = $false
+$script:fontOriginalPath = ''
+$script:fontBackupPath = ''
 $script:hadExistingPlugin = $false
 $script:rollbackToolbag = ''
-$script:previousFontMarker = 0
 
 
 if (-not $OriginalUserSid) { $OriginalUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
@@ -518,8 +519,11 @@ trap {
                 Copy-Item -LiteralPath $script:rollbackPluginBackup -Destination $script:rollbackPluginDir -Recurse -Force
                 Remove-Item -LiteralPath $script:rollbackPluginBackup -Recurse -Force
             }
-            if ($script:fontAddedByCurrentInstall -and (Test-Path -LiteralPath $script:fontAddedByCurrentInstall)) {
-                Remove-Item -LiteralPath $script:fontAddedByCurrentInstall -Force
+            if ($script:fontBackupCreatedByCurrentInstall -and
+                $script:fontBackupPath -and
+                (Test-Path -LiteralPath $script:fontBackupPath)) {
+                Copy-Item -LiteralPath $script:fontBackupPath -Destination $script:fontOriginalPath -Force
+                Remove-Item -LiteralPath $script:fontBackupPath -Force
             }
         } catch {}
     }
@@ -906,7 +910,18 @@ if ($Uninstall) {
     Restore-TbsceneAssociation
 
 
-    # 1) 删除插件目录
+    # 1) 恢复安装前的主字体。备份文件本身就是是否替换过的可靠标记，
+    #    即使旧安装状态注册表丢失也可以正常恢复。
+    $fontDirectory = Join-Path $toolbag 'data\gui\font'
+    $segoeFont = Join-Path $fontDirectory 'segoeui.slug'
+    $segoeFontBackup = Join-Path $fontDirectory 'segoeui.slug.ChineseLocalizer.backup'
+    if (Test-Path -LiteralPath $segoeFontBackup) {
+        Copy-Item -LiteralPath $segoeFontBackup -Destination $segoeFont -Force
+        Remove-Item -LiteralPath $segoeFontBackup -Force
+        Write-Info '已恢复原版 segoeui.slug'
+    }
+
+    # 2) 删除插件目录
 
 
     if (Test-Path -LiteralPath $pluginDir) {
@@ -953,16 +968,9 @@ if ($Uninstall) {
     if (Test-Path -LiteralPath $oldPlugin) { Remove-DirectoryWithRetry $oldPlugin '旧版插件目录'; Write-Info "已清理旧插件目录: $oldPlugin" }
 
     $stateKey = Get-UserRegistryPath 'Software\MarmosetChineseLocalizer'
-    $state = Get-ItemProperty -LiteralPath $stateKey -ErrorAction SilentlyContinue
-    if ($state -and [int]$state.ChineseFontInstalled -eq 1) {
-        $installedFont = Join-Path $toolbag 'data\gui\font\notosans_chinese.slug'
-        if (Test-Path -LiteralPath $installedFont) {
-            Remove-Item -LiteralPath $installedFont -Force
-            Write-Info '已删除汉化安装器添加的中文字体'
-        }
-    }
     Remove-ItemProperty -LiteralPath $stateKey -Name ToolbagDir -ErrorAction SilentlyContinue
     Remove-ItemProperty -LiteralPath $stateKey -Name ChineseFontInstalled -ErrorAction SilentlyContinue
+    Remove-ItemProperty -LiteralPath $stateKey -Name SegoeUiFontReplaced -ErrorAction SilentlyContinue
 
 
     Write-Host "`n======================================================" -ForegroundColor Green
@@ -992,7 +1000,8 @@ if ($Uninstall) {
 # ---------- 3. 确认 dist 产物齐全（默认不编译，零环境依赖） ----------
 
 
-$requiredFiles = @('dictionary_zh.json', 'ToolbagChineseHook.dll', 'ToolbagChineseLauncher.exe')
+$requiredFiles = @('dictionary_zh.json', 'ToolbagChineseHook.dll',
+                   'ToolbagChineseLauncher.exe', 'segoeui.slug')
 
 
 $missing = @($requiredFiles | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
@@ -1091,10 +1100,6 @@ $script:installInProgress = $true
 $script:rollbackPluginDir = $pluginDir
 $script:rollbackToolbag = $toolbag
 $script:hadExistingPlugin = Test-Path -LiteralPath $pluginDir
-$existingState = Get-ItemProperty -LiteralPath (Get-UserRegistryPath 'Software\MarmosetChineseLocalizer') -ErrorAction SilentlyContinue
-if ($existingState -and $null -ne $existingState.ChineseFontInstalled) {
-    $script:previousFontMarker = [int]$existingState.ChineseFontInstalled
-}
 $script:rollbackPluginBackup = Join-Path $env:TEMP ('ChineseLocalizer_backup_' + [Guid]::NewGuid().ToString('N'))
 if ($script:hadExistingPlugin) {
     Copy-Item -LiteralPath $pluginDir -Destination $script:rollbackPluginBackup -Recurse -Force
@@ -1175,15 +1180,31 @@ try {
 
 Write-Step '检查中文字体'
 
-$fontDir = Join-Path $toolbag 'data\gui\font'
-$chFont  = Join-Path $fontDir 'notosans_chinese.slug'
+$fontDirectory = Join-Path $toolbag 'data\gui\font'
+$nativeChineseFont = Join-Path $fontDirectory 'notosans_chinese.slug'
+$segoeFont = Join-Path $fontDirectory 'segoeui.slug'
+$segoeFontBackup = Join-Path $fontDirectory 'segoeui.slug.ChineseLocalizer.backup'
+$script:fontOriginalPath = $segoeFont
+$script:fontBackupPath = $segoeFontBackup
+$segoeFontReplaced = Test-Path -LiteralPath $segoeFontBackup
 
-if (Test-Path -LiteralPath $chFont) {
-    Write-Info 'Toolbag 已自带中文字体（notosans_chinese.slug），无需安装。'
+if (Test-Path -LiteralPath $nativeChineseFont) {
+    Write-Info '已检测到 notosans_chinese.slug，无需替换主字体。'
 } else {
-    Write-Info '当前 Toolbag 没有中文字体，自动安装自带字体...'
-    Copy-PluginFile (Join-Path $Dist 'notosans_chinese.slug') $chFont 'notosans_chinese.slug'
-    $script:fontAddedByCurrentInstall = $chFont
+    if (-not (Test-Path -LiteralPath $segoeFont)) {
+        throw "未找到需要备份的原字体：$segoeFont"
+    }
+    if (-not (Test-Path -LiteralPath $segoeFontBackup)) {
+        Copy-Item -LiteralPath $segoeFont -Destination $segoeFontBackup -Force
+        $script:fontBackupCreatedByCurrentInstall = $true
+        Write-Info "已备份原字体：$segoeFontBackup"
+    } else {
+        Write-Info '已存在原字体备份，保留该备份，不重复覆盖。'
+    }
+    Copy-Item -LiteralPath (Join-Path $Dist 'segoeui.slug') -Destination $segoeFont -Force
+    $segoeFontReplaced = $true
+    $script:installedFiles.Add('segoeui.slug（中文字体）')
+    Write-Info '已用中文字体替换 segoeui.slug'
 }
 
 # ---------- 6. 自检 ----------
@@ -1234,8 +1255,7 @@ Install-TbsceneAssociation -pluginDir $pluginDir -toolbag $toolbag
 
 $stateKey = New-Item -Path (Get-UserRegistryPath 'Software\MarmosetChineseLocalizer') -Force
 New-ItemProperty -LiteralPath $stateKey.PSPath -Name ToolbagDir -Value $toolbag -PropertyType String -Force | Out-Null
-$fontMarker = [int](($script:previousFontMarker -eq 1) -or ($script:fontAddedByCurrentInstall -ne ''))
-New-ItemProperty -LiteralPath $stateKey.PSPath -Name ChineseFontInstalled -Value $fontMarker -PropertyType DWord -Force | Out-Null
+New-ItemProperty -LiteralPath $stateKey.PSPath -Name SegoeUiFontReplaced -Value ([int]$segoeFontReplaced) -PropertyType DWord -Force | Out-Null
 
 $script:installInProgress = $false
 if (Test-Path -LiteralPath $script:rollbackPluginBackup) {
