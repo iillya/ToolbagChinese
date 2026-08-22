@@ -21,6 +21,7 @@ PAYLOAD_FILES = [
     ("scripts/install.ps1", "plugin/scripts/install.ps1"),
     ("dist/dictionary_zh.json", "plugin/data/dictionary_zh.json"),
     ("dist/segoeui.slug", "plugin/data/segoeui.slug"),
+    ("dist/tbscene.ico", "plugin/resources/tbscene.ico"),
     ("dist/ToolbagChineseHook.dll", "build/ToolbagChineseHook.dll"),
     ("dist/ToolbagChineseLauncher.exe", "build/ToolbagChineseLauncher.exe"),
 ]

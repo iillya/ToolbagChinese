@@ -689,25 +689,7 @@ function Install-TbsceneAssociation([string]$pluginDir, [string]$toolbag) {
         New-ItemProperty -LiteralPath $backupKey -Name DefaultValue -Value $defaultValue -PropertyType String -Force | Out-Null
     }
 
-    # Reuse the icon registered by the original Toolbag scene handler. The
-    # executable's icon 0 is the application logo; Toolbag's document icon is
-    # a different resource and must not be replaced by the launcher logo.
-    $savedAssociation = Get-ItemProperty -LiteralPath $backupKey -ErrorAction SilentlyContinue
-    $sourceProgId = if ($savedAssociation) { [string]$savedAssociation.DefaultValue } else { '' }
-    $sceneIcon = ''
-    if ($sourceProgId -and $sourceProgId -ne $progId) {
-        foreach ($iconPath in @(
-            (Get-UserRegistryPath ("Software\Classes\$sourceProgId\DefaultIcon")),
-            ("Registry::HKEY_LOCAL_MACHINE\Software\Classes\$sourceProgId\DefaultIcon"))) {
-            if (Test-Path -LiteralPath $iconPath) {
-                $sceneIcon = [string](Get-Item -LiteralPath $iconPath).GetValue('', '')
-                if ($sceneIcon) { break }
-            }
-        }
-    }
-    if (-not $sceneIcon) {
-        $sceneIcon = ('"' + (Join-Path $toolbag 'toolbag.exe') + '",-102')
-    }
+    $sceneIcon = '"' + (Join-Path $pluginDir 'tbscene.ico') + '"'
 
     New-Item -Path $extensionKey -Force | Out-Null
     Set-Item -LiteralPath $extensionKey -Value $progId
@@ -1021,7 +1003,7 @@ if ($Uninstall) {
 
 
 $requiredFiles = @('dictionary_zh.json', 'ToolbagChineseHook.dll',
-                   'ToolbagChineseLauncher.exe', 'segoeui.slug')
+                   'ToolbagChineseLauncher.exe', 'segoeui.slug', 'tbscene.ico')
 
 
 $missing = @($requiredFiles | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
@@ -1171,7 +1153,8 @@ Write-Step '安装插件文件（含字典）'
 New-Item -ItemType Directory -Path $pluginDir -Force | Out-Null
 
 
-foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll', 'ToolbagChineseLauncher.exe')) {
+foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll',
+                    'ToolbagChineseLauncher.exe', 'tbscene.ico')) {
 
 
     Copy-PluginFile (Join-Path $Dist $name) (Join-Path $pluginDir $name) $name
@@ -1236,7 +1219,8 @@ Write-Step '安装自检'
 $checkOk = $true
 
 
-foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll', 'ToolbagChineseLauncher.exe')) {
+foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll',
+                    'ToolbagChineseLauncher.exe', 'tbscene.ico')) {
 
 
     $p = Join-Path $pluginDir $name

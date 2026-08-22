@@ -204,7 +204,7 @@ void DeleteExtractionDirectory(const std::wstring& directory) {
     for (const auto* f : {L"scripts\\install.ps1", L"dist\\dictionary_zh.json",
                           L"dist\\ToolbagChineseHook.dll",
                           L"dist\\ToolbagChineseLauncher.exe",
-                          L"dist\\segoeui.slug"}) {
+                          L"dist\\segoeui.slug", L"dist\\tbscene.ico"}) {
         DeleteFileW((directory + f).c_str());
     }
     RemoveDirectoryW((directory + L"scripts").c_str());

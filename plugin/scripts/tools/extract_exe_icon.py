@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract the richest RT_GROUP_ICON from a Windows executable."""
+"""Extract an RT_GROUP_ICON from a Windows executable."""
 
 import struct
 import sys
@@ -22,12 +22,19 @@ def main():
     for entry in types[3].directory.entries:  # RT_ICON
         icons[entry.id] = resource_data(pe, entry)
 
+    requested_group = int(sys.argv[3]) if len(sys.argv) > 3 else None
     groups = []
     for entry in types[14].directory.entries:  # RT_GROUP_ICON
         raw = resource_data(pe, entry)
         count = struct.unpack_from("<H", raw, 4)[0]
-        groups.append((count, raw))
-    _, group = max(groups, key=lambda item: item[0])
+        groups.append((entry.id, count, raw))
+    if requested_group is None:
+        _, _, group = max(groups, key=lambda item: item[1])
+    else:
+        matches = [item for item in groups if item[0] == requested_group]
+        if not matches:
+            raise SystemExit(f"RT_GROUP_ICON {requested_group} was not found")
+        _, _, group = matches[0]
     count = struct.unpack_from("<H", group, 4)[0]
     images = []
     entries = []
