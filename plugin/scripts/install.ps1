@@ -52,7 +52,16 @@ param(
     [switch]$Uninstall,    # 卸载模式：移除已安装的汉化并还原字体
 
 
-    [switch]$Quiet
+    [switch]$Quiet,
+
+
+    [string]$OriginalUserSid = '',
+
+
+    [string]$OriginalUserProfile = '',
+
+
+    [string]$OriginalUserAppData = ''
 
 
 )
@@ -68,9 +77,6 @@ $script:ProjectRoot = Split-Path -Parent $PSScriptRoot
 
 
 $script:Dist = Join-Path $script:ProjectRoot 'dist'
-
-
-$script:Scripts = Join-Path $script:ProjectRoot 'scripts'
 
 
 function Write-Step([string]$msg) {
@@ -142,6 +148,15 @@ $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIden
 if (-not $isAdmin) {
 
 
+    if (-not $OriginalUserSid) { $OriginalUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
+
+
+    if (-not $OriginalUserProfile) { $OriginalUserProfile = $env:USERPROFILE }
+
+
+    if (-not $OriginalUserAppData) { $OriginalUserAppData = $env:APPDATA }
+
+
     Write-Host '需要管理员权限，正在重新以管理员身份启动...' -ForegroundColor Yellow
 
 
@@ -154,16 +169,28 @@ if (-not $isAdmin) {
     if ($Build) { $argList += ' -Build' }
 
 
+    if ($Uninstall) { $argList += ' -Uninstall' }
+
+
     if ($Quiet) { $argList += ' -Quiet' }
+
+
+    $argList += ' -OriginalUserSid "' + $OriginalUserSid + '"'
+
+
+    $argList += ' -OriginalUserProfile "' + $OriginalUserProfile + '"'
+
+
+    $argList += ' -OriginalUserAppData "' + $OriginalUserAppData + '"'
 
 
     try {
 
 
-        Start-Process powershell.exe -Verb RunAs -ArgumentList $argList -Wait
+        $elevated = Start-Process powershell.exe -Verb RunAs -ArgumentList $argList -Wait -PassThru
 
 
-        exit
+        exit $elevated.ExitCode
 
 
     } catch {
@@ -184,7 +211,7 @@ if (-not $isAdmin) {
 # ---------- 2. 定位 Toolbag 安装目录 ----------
 
 
-function Find-Toolbag([string]$Override) {
+function Find-ToolbagDirectory([string]$Override) {
 
 
     if ($Override) {
@@ -202,6 +229,18 @@ function Find-Toolbag([string]$Override) {
     }
 
 
+    $stateKey = Get-UserRegistryPath 'Software\MarmosetChineseLocalizer'
+    if (Test-Path -LiteralPath $stateKey) {
+        $savedToolbag = (Get-ItemProperty -LiteralPath $stateKey -ErrorAction SilentlyContinue).ToolbagDir
+        if ($savedToolbag -and (Test-Path -LiteralPath (Join-Path $savedToolbag 'toolbag.exe'))) {
+            return (Resolve-Path -LiteralPath $savedToolbag).Path
+        }
+    }
+
+
+    $originalLocalAppData = Join-Path (Split-Path -Parent $OriginalUserAppData) 'Local'
+
+
     $candidates = @(
 
 
@@ -211,7 +250,7 @@ function Find-Toolbag([string]$Override) {
         "${env:ProgramFiles(x86)}\Marmoset\Toolbag 5",
 
 
-        "$env:LOCALAPPDATA\Marmoset Toolbag 5",
+        "$originalLocalAppData\Marmoset Toolbag 5",
 
 
         'C:\Program Files\Marmoset\Toolbag 5'
@@ -247,7 +286,7 @@ function Find-Toolbag([string]$Override) {
         'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*',
 
 
-        'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*'
+        ((Get-UserRegistryPath 'Software\Microsoft\Windows\CurrentVersion\Uninstall') + '\*')
 
 
     )
@@ -259,10 +298,16 @@ function Find-Toolbag([string]$Override) {
         foreach ($key in Get-ItemProperty $root -ErrorAction SilentlyContinue) {
 
 
+            if ([string]$key.DisplayName -notmatch '(?i)(Marmoset\s*)?Toolbag\s*5') { continue }
+
+
             $loc = $key.InstallLocation
 
 
-            if (-not $loc -and $key.DisplayIcon) { $loc = Split-Path $key.DisplayIcon -Parent }
+            if (-not $loc -and $key.DisplayIcon) {
+                $displayIcon = ([string]$key.DisplayIcon -replace ',\s*-?\d+$', '').Trim('"')
+                $loc = Split-Path $displayIcon -Parent
+            }
 
 
             if ($loc -and (Test-Path -LiteralPath (Join-Path $loc 'toolbag.exe'))) {
@@ -300,15 +345,15 @@ function New-Shortcuts {
 
         $icon = Join-Path $toolbag 'toolbag.exe'
 
-        $name = '八猴Toolbag5汉化'
+        $name = '八猴5汉化版'
 
         $lnks = @()
 
-        $desktop = Join-Path $env:USERPROFILE 'Desktop'
+        $desktop = Join-Path $OriginalUserProfile 'Desktop'
 
         if (Test-Path -LiteralPath $desktop) { $lnks += (Join-Path $desktop ($name + '.lnk')) }
 
-        $startMenu = "$env:APPDATA\Microsoft\Windows\Start Menu\Programs"
+        $startMenu = Join-Path $OriginalUserAppData 'Microsoft\Windows\Start Menu\Programs'
 
         if (Test-Path -LiteralPath $startMenu) { $lnks += (Join-Path $startMenu ($name + '.lnk')) }
 
@@ -322,7 +367,7 @@ function New-Shortcuts {
 
             $sc.IconLocation = "$icon, 0"
 
-            $sc.Description = '八猴 Toolbag 5 汉化版'
+            $sc.Description = '八猴5汉化版'
 
             $sc.Save()
 
@@ -340,23 +385,460 @@ function New-Shortcuts {
 
 function Remove-Shortcuts {
 
-    $name = '八猴Toolbag5汉化'
+    $names = @('八猴5汉化版', '八猴Toolbag5汉化')
 
-    foreach ($d in @((Join-Path $env:USERPROFILE 'Desktop'), "$env:APPDATA\Microsoft\Windows\Start Menu\Programs")) {
+    foreach ($d in @((Join-Path $OriginalUserProfile 'Desktop'), (Join-Path $OriginalUserAppData 'Microsoft\Windows\Start Menu\Programs'))) {
 
-        $lnk = Join-Path $d ($name + '.lnk')
-
-        if (Test-Path -LiteralPath $lnk) { Remove-Item -LiteralPath $lnk -Force; Write-Info "已删除快捷方式: $lnk" }
+        foreach ($name in $names) {
+            $lnk = Join-Path $d ($name + '.lnk')
+            if (Test-Path -LiteralPath $lnk) { Remove-Item -LiteralPath $lnk -Force; Write-Info "已删除快捷方式: $lnk" }
+        }
 
     }
 
+}
+
+function Get-ToolbagRelatedProcesses([string]$toolbagRoot) {
+
+    $paths = @(
+        (Join-Path $toolbagRoot 'toolbag.exe'),
+        (Join-Path $toolbagRoot 'data\ChineseLocalizer\ToolbagChineseLauncher.exe'),
+        (Join-Path $toolbagRoot 'data\plugin\ChineseLocalizer\ToolbagChineseLauncher.exe')
+    ) | ForEach-Object {
+        try { [IO.Path]::GetFullPath($_).TrimEnd('\') } catch { $_ }
+    }
+
+    return @(Get-Process -Name 'toolbag','ToolbagChineseLauncher' -ErrorAction SilentlyContinue | Where-Object {
+        try {
+            $processPath = [IO.Path]::GetFullPath($_.Path).TrimEnd('\')
+            $paths -contains $processPath
+        } catch { $false }
+    })
+}
+
+function Stop-ToolbagRelatedProcesses([string]$toolbagRoot) {
+
+    $running = @(Get-ToolbagRelatedProcesses $toolbagRoot)
+    if (-not $running) { return }
+
+    foreach ($process in $running) {
+        try { $null = $process.CloseMainWindow() } catch {}
+    }
+    Start-Sleep -Milliseconds 500
+
+    foreach ($process in $running) {
+        try {
+            if (-not $process.HasExited) { $process.Kill() }
+            if (-not $process.WaitForExit(5000)) {
+                throw "进程未能退出: $($process.ProcessName) (PID $($process.Id))"
+            }
+        } catch {
+            throw "无法关闭占用汉化文件的进程 $($process.ProcessName) (PID $($process.Id))：$($_.Exception.Message)"
+        }
+    }
+
+    # 进程退出后，给系统外壳、杀毒软件和映像映射一点释放时间。
+    Start-Sleep -Milliseconds 500
+}
+
+function Remove-DirectoryWithRetry([string]$path, [string]$label) {
+
+    if (-not (Test-Path -LiteralPath $path)) { return }
+    $lastError = $null
+    for ($attempt = 1; $attempt -le 12; $attempt++) {
+        try {
+            Get-ChildItem -LiteralPath $path -Force -Recurse -ErrorAction SilentlyContinue |
+                ForEach-Object { try { $_.Attributes = 'Normal' } catch {} }
+            Remove-Item -LiteralPath $path -Recurse -Force -ErrorAction Stop
+            if (-not (Test-Path -LiteralPath $path)) { return }
+        } catch {
+            $lastError = $_
+        }
+        Start-Sleep -Milliseconds 250
+    }
+    $reason = if ($lastError) { $lastError.Exception.Message } else { '目录仍然存在' }
+    throw "$label 无法删除，文件仍被其他程序占用。请关闭 Toolbag、旧汉化启动器或安全软件后重试。`n路径：$path`n原因：$reason"
+}
+
+$script:installInProgress = $false
+$script:rollbackPluginDir = ''
+$script:rollbackPluginBackup = ''
+$script:fontAddedByCurrentInstall = ''
+$script:hadExistingPlugin = $false
+$script:rollbackToolbag = ''
+$script:previousFontMarker = 0
+
+
+if (-not $OriginalUserSid) { $OriginalUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
+
+
+if (-not $OriginalUserProfile) { $OriginalUserProfile = $env:USERPROFILE }
+
+
+if (-not $OriginalUserAppData) { $OriginalUserAppData = $env:APPDATA }
+
+
+$script:UserRegistryHive = [Microsoft.Win32.Registry]::Users.OpenSubKey($OriginalUserSid, $true)
+
+
+if (-not $script:UserRegistryHive) { throw "无法打开原始用户注册表配置单元: $OriginalUserSid" }
+
+
+function Get-UserRegistryPath([string]$relativePath) {
+
+
+    return "Registry::HKEY_USERS\$OriginalUserSid\$relativePath"
+
+
+}
+
+# The self-contained GUI installer has no console. Surface every terminating
+# PowerShell error with its real line number and keep a diagnostic log so an
+# association failure never degrades into an unhelpful generic message.
+trap {
+    if ($script:installInProgress) {
+        try {
+            if ($script:hadExistingPlugin) {
+                Install-TbsceneAssociation -pluginDir $script:rollbackPluginDir -toolbag $script:rollbackToolbag
+            } else {
+                Restore-TbsceneAssociation
+            }
+        } catch {}
+        try {
+            Remove-Shortcuts
+            if ($script:hadExistingPlugin) {
+                New-Shortcuts -pluginDir $script:rollbackPluginDir -toolbag $script:rollbackToolbag
+            }
+        } catch {}
+        try {
+            if ($script:rollbackPluginDir -and (Test-Path -LiteralPath $script:rollbackPluginDir)) {
+                Remove-Item -LiteralPath $script:rollbackPluginDir -Recurse -Force
+            }
+            if ($script:rollbackPluginBackup -and (Test-Path -LiteralPath $script:rollbackPluginBackup)) {
+                Copy-Item -LiteralPath $script:rollbackPluginBackup -Destination $script:rollbackPluginDir -Recurse -Force
+                Remove-Item -LiteralPath $script:rollbackPluginBackup -Recurse -Force
+            }
+            if ($script:fontAddedByCurrentInstall -and (Test-Path -LiteralPath $script:fontAddedByCurrentInstall)) {
+                Remove-Item -LiteralPath $script:fontAddedByCurrentInstall -Force
+            }
+        } catch {}
+    }
+    $detail = $_.Exception.Message + "`n`n" + $_.InvocationInfo.PositionMessage
+    $logPath = Join-Path $env:TEMP '八猴5汉化版_安装错误.log'
+    try { $detail | Set-Content -LiteralPath $logPath -Encoding UTF8 } catch {}
+    try {
+        [System.Windows.Forms.MessageBox]::Show(
+            "安装过程发生错误：`n`n$detail`n`n错误日志：$logPath",
+            '八猴5汉化版', 'OK', 'Error') | Out-Null
+    } catch {}
+    exit 1
+}
+
+function Update-ShellAssociations {
+    try {
+        if (-not ('ChineseLocalizer.ShellNotify' -as [type])) {
+            Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+namespace ChineseLocalizer {
+    public static class ShellNotify {
+        [DllImport("shell32.dll")]
+        public static extern void SHChangeNotify(uint eventId, uint flags, IntPtr item1, IntPtr item2);
+    }
+}
+'@
+        }
+        [ChineseLocalizer.ShellNotify]::SHChangeNotify(0x08000000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
+    } catch {
+        Write-Info ('刷新文件关联失败: ' + $_.Exception.Message)
+    }
+}
+
+function Install-HandlerProxy([int]$index, [string]$rootPath,
+                              [string]$openCommand, [string]$backupKey) {
+    $root = $script:UserRegistryHive
+    $commandPath = $rootPath + '\shell\open\command'
+    $savedName = "Handler${index}Saved"
+    $backup = Get-ItemProperty -LiteralPath $backupKey
+    if (-not ($backup.PSObject.Properties.Name -contains $savedName)) {
+        $rootKey = $root.OpenSubKey($rootPath, $false)
+        $hadRoot = $null -ne $rootKey
+        if ($rootKey) { $rootKey.Close() }
+        $commandKey = $root.OpenSubKey($commandPath, $false)
+        $hadCommand = $null -ne $commandKey
+        $oldValue = ''
+        $hadDefault = $false
+        if ($commandKey) {
+            $hadDefault = $null -ne $commandKey.GetValue('', $null)
+            if ($hadDefault) { $oldValue = [string]$commandKey.GetValue('', '') }
+            $commandKey.Close()
+        }
+        New-ItemProperty -LiteralPath $backupKey -Name $savedName -Value 1 -PropertyType DWord -Force | Out-Null
+        New-ItemProperty -LiteralPath $backupKey -Name "Handler${index}HadRoot" -Value ([int]$hadRoot) -PropertyType DWord -Force | Out-Null
+        New-ItemProperty -LiteralPath $backupKey -Name "Handler${index}HadCommand" -Value ([int]$hadCommand) -PropertyType DWord -Force | Out-Null
+        New-ItemProperty -LiteralPath $backupKey -Name "Handler${index}HadDefault" -Value ([int]$hadDefault) -PropertyType DWord -Force | Out-Null
+        New-ItemProperty -LiteralPath $backupKey -Name "Handler${index}Value" -Value $oldValue -PropertyType String -Force | Out-Null
+    }
+    $commandKey = $root.CreateSubKey($commandPath)
+    $commandKey.SetValue('', $openCommand, [Microsoft.Win32.RegistryValueKind]::String)
+    $commandKey.Close()
+}
+
+function Restore-HandlerProxy([int]$index, [string]$rootPath, $backup) {
+    $savedName = "Handler${index}Saved"
+    if (-not ($backup.PSObject.Properties.Name -contains $savedName)) { return }
+    $root = $script:UserRegistryHive
+    if ([int]$backup.("Handler${index}HadRoot") -eq 0) {
+        $root.DeleteSubKeyTree($rootPath, $false)
+        return
+    }
+    $commandPath = $rootPath + '\shell\open\command'
+    if ([int]$backup.("Handler${index}HadCommand") -eq 1) {
+        $commandKey = $root.CreateSubKey($commandPath)
+        if ([int]$backup.("Handler${index}HadDefault") -eq 1) {
+            $commandKey.SetValue('', [string]$backup.("Handler${index}Value"), [Microsoft.Win32.RegistryValueKind]::String)
+        } else {
+            $commandKey.DeleteValue('', $false)
+        }
+        $commandKey.Close()
+    } else {
+        $root.DeleteSubKeyTree($commandPath, $false)
+    }
+}
+
+function Remove-StaleHandlerProxy([string]$rootPath) {
+    $commandPath = $rootPath + '\shell\open\command'
+    $commandKey = $script:UserRegistryHive.OpenSubKey($commandPath, $false)
+    if (-not $commandKey) { return }
+    $command = [string]$commandKey.GetValue('', '')
+    $commandKey.Close()
+    if ($command -notmatch '(?i)ToolbagChineseLauncher\.exe') { return }
+
+    # The backup may be absent after an interrupted older uninstall. Remove
+    # only a handler that still explicitly invokes our launcher; HKCR will then
+    # expose Toolbag's machine-wide registration again.
+    $script:UserRegistryHive.DeleteSubKeyTree($rootPath, $false)
+    Write-Info "已清理残留的汉化处理器: $rootPath"
+}
+
+function Remove-LocalizedOpenWithEntries {
+    $fileExtPath = 'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.tbscene'
+    $openWithListPath = $fileExtPath + '\OpenWithList'
+    $openWithList = $script:UserRegistryHive.OpenSubKey($openWithListPath, $true)
+    if ($openWithList) {
+        $removedNames = @()
+        foreach ($name in $openWithList.GetValueNames()) {
+            if ($name -eq 'MRUList') { continue }
+            if ([string]$openWithList.GetValue($name, '') -ieq 'ToolbagChineseLauncher.exe') {
+                $openWithList.DeleteValue($name, $false)
+                $removedNames += $name
+            }
+        }
+        if ($removedNames.Count -gt 0) {
+            $mru = [string]$openWithList.GetValue('MRUList', '')
+            foreach ($name in $removedNames) { $mru = $mru.Replace($name, '') }
+            $openWithList.SetValue('MRUList', $mru, [Microsoft.Win32.RegistryValueKind]::String)
+        }
+        $openWithList.Close()
+    }
+
+    foreach ($choiceName in @('UserChoice', 'UserChoiceLatest')) {
+        $choicePath = $fileExtPath + '\' + $choiceName
+        $choiceKey = $script:UserRegistryHive.OpenSubKey($choicePath, $false)
+        $selectedProgId = if ($choiceKey) { [string]$choiceKey.GetValue('ProgId', '') } else { '' }
+        if ($choiceKey) { $choiceKey.Close() }
+        $progIdKey = $script:UserRegistryHive.OpenSubKey($choicePath + '\ProgId', $false)
+        if (-not $selectedProgId -and $progIdKey) {
+            $selectedProgId = [string]$progIdKey.GetValue('ProgId', '')
+        }
+        if ($progIdKey) { $progIdKey.Close() }
+        if ($selectedProgId -eq 'ChineseLocalizer.tbscene') {
+            $script:UserRegistryHive.DeleteSubKeyTree($choicePath, $false)
+            Write-Info "已清理残留的 $choiceName 汉化关联"
+        }
+    }
+}
+
+function Install-TbsceneAssociation([string]$pluginDir, [string]$toolbag) {
+    $classesRoot = Get-UserRegistryPath 'Software\Classes'
+    $extensionKey = Join-Path $classesRoot '.tbscene'
+    $progId = 'ChineseLocalizer.tbscene'
+    $progIdKey = Join-Path $classesRoot $progId
+    $applicationKey = Join-Path $classesRoot 'Applications\ToolbagChineseLauncher.exe'
+    $capabilitiesKey = Get-UserRegistryPath 'Software\MarmosetChineseLocalizer\Capabilities'
+    $backupKey = Get-UserRegistryPath 'Software\MarmosetChineseLocalizer\FileAssociationBackup'
+
+    # Save the original per-user default once. Reinstallation must never turn
+    # our own association into the value that uninstall later restores.
+    if (-not (Test-Path -LiteralPath $backupKey)) {
+        New-Item -Path $backupKey -Force | Out-Null
+        $hadKey = Test-Path -LiteralPath $extensionKey
+        $hadDefault = $false
+        $defaultValue = ''
+        if ($hadKey) {
+            $key = Get-Item -LiteralPath $extensionKey
+            $hadDefault = $null -ne $key.GetValue('', $null)
+            if ($hadDefault) { $defaultValue = [string]$key.GetValue('', '') }
+        }
+        New-ItemProperty -LiteralPath $backupKey -Name HadKey -Value ([int]$hadKey) -PropertyType DWord -Force | Out-Null
+        New-ItemProperty -LiteralPath $backupKey -Name HadDefault -Value ([int]$hadDefault) -PropertyType DWord -Force | Out-Null
+        New-ItemProperty -LiteralPath $backupKey -Name DefaultValue -Value $defaultValue -PropertyType String -Force | Out-Null
+    }
+
+    New-Item -Path $extensionKey -Force | Out-Null
+    Set-Item -LiteralPath $extensionKey -Value $progId
+    New-Item -Path $progIdKey -Force | Out-Null
+    Set-Item -LiteralPath $progIdKey -Value 'Toolbag 5 场景（八猴5汉化版）'
+    $iconKey = New-Item -Path (Join-Path $progIdKey 'DefaultIcon') -Force
+    Set-Item -LiteralPath $iconKey.PSPath -Value ('"' + (Join-Path $toolbag 'toolbag.exe') + '",0')
+    $commandKey = New-Item -Path (Join-Path $progIdKey 'shell\open\command') -Force
+    $launcher = Join-Path $pluginDir 'ToolbagChineseLauncher.exe'
+    $openCommand = '"' + $launcher + '" "%1"'
+    Set-Item -LiteralPath $commandKey.PSPath -Value $openCommand
+
+    # Proxy every handler that existing Windows/Toolbag installations are
+    # known to cache. This leaves toolbag.exe untouched and only redirects
+    # Explorer/Shell opens through the localized launcher.
+    Install-HandlerProxy 0 'Software\Classes\MarmosetToolbag5.Scene' $openCommand $backupKey
+    Install-HandlerProxy 1 'Software\Classes\MarmosetToolbag.Scene' $openCommand $backupKey
+    Install-HandlerProxy 2 'Software\Classes\Applications\toolbag.exe' $openCommand $backupKey
+
+    # Register the launcher as a complete Shell application. Merely changing
+    # the extension's default ProgID is not sufficient on current Windows;
+    # Explorer may continue using the executable cached in OpenWithList.
+    New-Item -Path $applicationKey -Force | Out-Null
+    New-ItemProperty -LiteralPath $applicationKey -Name FriendlyAppName -Value '八猴5汉化版' -PropertyType String -Force | Out-Null
+    $applicationCommand = New-Item -Path (Join-Path $applicationKey 'shell\open\command') -Force
+    Set-Item -LiteralPath $applicationCommand.PSPath -Value $openCommand
+    $supportedTypes = New-Item -Path (Join-Path $applicationKey 'SupportedTypes') -Force
+    New-ItemProperty -LiteralPath $supportedTypes.PSPath -Name '.tbscene' -Value '' -PropertyType String -Force | Out-Null
+
+    New-Item -Path $capabilitiesKey -Force | Out-Null
+    New-ItemProperty -LiteralPath $capabilitiesKey -Name ApplicationName -Value '八猴5汉化版' -PropertyType String -Force | Out-Null
+    New-ItemProperty -LiteralPath $capabilitiesKey -Name ApplicationDescription -Value '通过八猴5汉化版打开 Toolbag 5 场景' -PropertyType String -Force | Out-Null
+    $fileAssociations = New-Item -Path (Join-Path $capabilitiesKey 'FileAssociations') -Force
+    New-ItemProperty -LiteralPath $fileAssociations.PSPath -Name '.tbscene' -Value $progId -PropertyType String -Force | Out-Null
+    $registeredApps = New-Item -Path (Get-UserRegistryPath 'Software\RegisteredApplications') -Force
+    New-ItemProperty -LiteralPath $registeredApps.PSPath -Name '八猴5汉化版' -Value 'Software\MarmosetChineseLocalizer\Capabilities' -PropertyType String -Force | Out-Null
+
+    $openWithProgidsPath = 'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.tbscene\OpenWithProgids'
+    $openWithProgids = $script:UserRegistryHive.CreateSubKey($openWithProgidsPath)
+    $openWithProgids.SetValue($progId, [byte[]]@(), [Microsoft.Win32.RegistryValueKind]::None)
+    $openWithProgids.Close()
+    Update-ShellAssociations
+    Write-Info '.tbscene 已关联到八猴5汉化版'
+}
+
+function Restore-TbsceneAssociation {
+    $classesRoot = Get-UserRegistryPath 'Software\Classes'
+    $extensionKey = Join-Path $classesRoot '.tbscene'
+    $progId = 'ChineseLocalizer.tbscene'
+    $progIdKey = Join-Path $classesRoot $progId
+    $applicationKey = Join-Path $classesRoot 'Applications\ToolbagChineseLauncher.exe'
+    $capabilitiesKey = Get-UserRegistryPath 'Software\MarmosetChineseLocalizer\Capabilities'
+    $backupKey = Get-UserRegistryPath 'Software\MarmosetChineseLocalizer\FileAssociationBackup'
+
+    $originalProgId = ''
+    if (Test-Path -LiteralPath $backupKey) {
+        $savedAssociation = Get-ItemProperty -LiteralPath $backupKey
+        if ([int]$savedAssociation.HadDefault -eq 1 -and
+            [string]$savedAssociation.DefaultValue -ne $progId) {
+            $originalProgId = [string]$savedAssociation.DefaultValue
+        }
+    }
+    if (-not $originalProgId) {
+        $machineExtension = Get-Item -LiteralPath 'Registry::HKEY_LOCAL_MACHINE\Software\Classes\.tbscene' -ErrorAction SilentlyContinue
+        if ($machineExtension) { $originalProgId = [string]$machineExtension.GetValue('', '') }
+    }
+
+    if (Test-Path -LiteralPath $backupKey) {
+        $backup = Get-ItemProperty -LiteralPath $backupKey
+        if ($originalProgId) {
+            New-Item -Path $extensionKey -Force | Out-Null
+            Set-Item -LiteralPath $extensionKey -Value $originalProgId
+        } elseif (Test-Path -LiteralPath $extensionKey) {
+            $key = $script:UserRegistryHive.OpenSubKey('Software\Classes\.tbscene', $true)
+            $key.DeleteValue('', $false)
+            $isEmpty = $key.SubKeyCount -eq 0 -and $key.ValueCount -eq 0
+            $key.Close()
+            if ([int]$backup.HadKey -eq 0 -and $isEmpty) {
+                Remove-Item -LiteralPath $extensionKey -Force
+            }
+        }
+    } elseif ($originalProgId) {
+        New-Item -Path $extensionKey -Force | Out-Null
+        Set-Item -LiteralPath $extensionKey -Value $originalProgId
+    } elseif (Test-Path -LiteralPath $extensionKey) {
+        $key = Get-Item -LiteralPath $extensionKey
+        if ([string]$key.GetValue('', '') -eq $progId) {
+            $key = $script:UserRegistryHive.OpenSubKey('Software\Classes\.tbscene', $true)
+            $key.DeleteValue('', $false)
+            $key.Close()
+        }
+    }
+    if (Test-Path -LiteralPath $progIdKey) { Remove-Item -LiteralPath $progIdKey -Recurse -Force }
+    if (Test-Path -LiteralPath $applicationKey) { Remove-Item -LiteralPath $applicationKey -Recurse -Force }
+    if (Test-Path -LiteralPath $capabilitiesKey) { Remove-Item -LiteralPath $capabilitiesKey -Recurse -Force }
+    Remove-ItemProperty -LiteralPath (Get-UserRegistryPath 'Software\RegisteredApplications') -Name '八猴5汉化版' -ErrorAction SilentlyContinue
+    $openWithProgidsPath = 'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.tbscene\OpenWithProgids'
+    $openWithProgids = $script:UserRegistryHive.OpenSubKey($openWithProgidsPath, $true)
+    if ($openWithProgids) {
+        $openWithProgids.DeleteValue($progId, $false)
+        $openWithProgids.Close()
+    }
+    if (Test-Path -LiteralPath $backupKey) {
+        $backup = Get-ItemProperty -LiteralPath $backupKey
+        Restore-HandlerProxy 0 'Software\Classes\MarmosetToolbag5.Scene' $backup
+        Restore-HandlerProxy 1 'Software\Classes\MarmosetToolbag.Scene' $backup
+        Restore-HandlerProxy 2 'Software\Classes\Applications\toolbag.exe' $backup
+        Remove-Item -LiteralPath $backupKey -Recurse -Force
+    }
+    foreach ($handlerPath in @(
+        'Software\Classes\MarmosetToolbag5.Scene',
+        'Software\Classes\MarmosetToolbag.Scene',
+        'Software\Classes\Applications\toolbag.exe')) {
+        Remove-StaleHandlerProxy $handlerPath
+    }
+    Remove-LocalizedOpenWithEntries
+    Update-ShellAssociations
+    Write-Info '.tbscene 已恢复为安装汉化前的关联'
 }
 
 
 Write-Step '定位 Toolbag 安装目录'
 
 
-$toolbag = Find-Toolbag -Override $ToolbagDir
+$toolbag = Find-ToolbagDirectory -Override $ToolbagDir
+
+
+if ($ToolbagDir -and -not $toolbag) {
+
+
+    Show-Error '汉化安装' "指定目录中没有找到 toolbag.exe，未执行安装。`n`n$ToolbagDir"
+
+
+    exit 1
+
+
+}
+
+
+if ($toolbag -and -not $ToolbagDir) {
+
+
+    $operationName = if ($Uninstall) { '拆卸' } else { '安装' }
+
+
+    if (-not (Ask-YesNo '八猴5汉化版' "检测到 Toolbag 目录：`n`n$toolbag`n`n是否在此目录执行$operationName？`n选择“否”可手动选择其他 toolbag.exe。")) {
+
+
+        $toolbag = $null
+
+
+    }
+
+
+}
 
 
 if (-not $toolbag) {
@@ -413,31 +895,15 @@ if ($Uninstall) {
     Write-Step '卸载汉化插件'
 
 
-    $pluginDir = Join-Path $toolbag 'data\plugin\ChineseLocalizer'
+    $pluginDir = Join-Path $toolbag 'data\ChineseLocalizer'
 
-
-    # 关闭正在运行的 Toolbag
-
-
-    $running = Get-Process -Name 'toolbag' -ErrorAction SilentlyContinue
-
-
+    $running = @(Get-ToolbagRelatedProcesses $toolbag)
     if ($running) {
-
-
-        Write-Info '正在关闭 Toolbag...'
-
-
-        $running | Stop-Process -Force
-
-
-        Start-Sleep -Seconds 2
-
-
+        Write-Info '正在关闭 Toolbag 和旧汉化启动器...'
+        Stop-ToolbagRelatedProcesses $toolbag
     }
 
-
-    $ok = $true
+    Restore-TbsceneAssociation
 
 
     # 1) 删除插件目录
@@ -445,8 +911,7 @@ if ($Uninstall) {
 
     if (Test-Path -LiteralPath $pluginDir) {
 
-
-        Remove-Item -LiteralPath $pluginDir -Recurse -Force
+        Remove-DirectoryWithRetry $pluginDir '汉化插件目录'
 
 
         Write-Info "已删除插件目录: $pluginDir"
@@ -469,10 +934,10 @@ if ($Uninstall) {
     # 3) 清理运行时日志
 
 
-    $logDir = Join-Path $env:LOCALAPPDATA 'Marmoset Toolbag 5'
+    $logDir = Join-Path (Join-Path (Split-Path -Parent $OriginalUserAppData) 'Local') 'Marmoset Toolbag 5'
 
 
-    foreach ($log in @('ChineseLocalizer_missing.tsv','ChineseLocalizer_trace.tsv')) {
+    foreach ($log in @('ChineseLocalizer_missing.tsv','ChineseLocalizer_trace.tsv','ChineseLocalizer_sniffer.tsv','ChineseLocalizer_sniffer.json')) {
 
 
         $lf = Join-Path $logDir $log
@@ -482,6 +947,22 @@ if ($Uninstall) {
 
 
     }
+
+    # 清理旧版插件目录（关闭进程后再删除，避免旧 DLL 被占用）
+    $oldPlugin = Join-Path $toolbag 'data\plugin\ChineseLocalizer'
+    if (Test-Path -LiteralPath $oldPlugin) { Remove-DirectoryWithRetry $oldPlugin '旧版插件目录'; Write-Info "已清理旧插件目录: $oldPlugin" }
+
+    $stateKey = Get-UserRegistryPath 'Software\MarmosetChineseLocalizer'
+    $state = Get-ItemProperty -LiteralPath $stateKey -ErrorAction SilentlyContinue
+    if ($state -and [int]$state.ChineseFontInstalled -eq 1) {
+        $installedFont = Join-Path $toolbag 'data\gui\font\notosans_chinese.slug'
+        if (Test-Path -LiteralPath $installedFont) {
+            Remove-Item -LiteralPath $installedFont -Force
+            Write-Info '已删除汉化安装器添加的中文字体'
+        }
+    }
+    Remove-ItemProperty -LiteralPath $stateKey -Name ToolbagDir -ErrorAction SilentlyContinue
+    Remove-ItemProperty -LiteralPath $stateKey -Name ChineseFontInstalled -ErrorAction SilentlyContinue
 
 
     Write-Host "`n======================================================" -ForegroundColor Green
@@ -493,7 +974,7 @@ if ($Uninstall) {
     Write-Host "======================================================" -ForegroundColor Green
 
 
-    Write-Info "字体已还原，插件目录已删除，原版 Toolbag 恢复正常。"
+    Write-Info "插件目录、快捷方式和文件关联已清理，Toolbag 已恢复原启动方式。"
 
 
     Write-Host ""
@@ -511,10 +992,10 @@ if ($Uninstall) {
 # ---------- 3. 确认 dist 产物齐全（默认不编译，零环境依赖） ----------
 
 
-$needed = @('dictionary_zh.json', 'ToolbagChineseHook.dll', 'ToolbagChineseLauncher.exe')
+$requiredFiles = @('dictionary_zh.json', 'ToolbagChineseHook.dll', 'ToolbagChineseLauncher.exe')
 
 
-$missing = @($needed | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
+$missing = @($requiredFiles | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
 
 
 if ($missing.Count -gt 0) {
@@ -544,7 +1025,7 @@ if ($missing.Count -gt 0) {
         } finally { Pop-Location }
 
 
-        $missing = @($needed | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
+        $missing = @($requiredFiles | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
 
 
     }
@@ -568,7 +1049,7 @@ if ($missing.Count -gt 0) {
 # ---------- 4. 若 Toolbag 正在运行，先处理（避免文件占用） ----------
 
 
-$running = Get-Process -Name 'toolbag' -ErrorAction SilentlyContinue
+$running = @(Get-ToolbagRelatedProcesses $toolbag)
 
 
 if ($running) {
@@ -577,13 +1058,10 @@ if ($running) {
     Write-Step '检测到 Toolbag 正在运行'
 
 
-    if (Ask-YesNo '汉化安装' "检测到 Toolbag 正在运行。安装需要覆盖程序目录里的文件，建议先关闭。`n是否自动关闭 Toolbag？`n（选“否”则取消安装）") {
+    if (Ask-YesNo '汉化安装' "检测到 Toolbag 或旧汉化启动器正在运行。安装需要替换汉化文件。`n是否自动关闭相关程序？`n（选“否”则取消安装）") {
 
 
-        $running | Stop-Process -Force
-
-
-        Start-Sleep -Seconds 2
+        Stop-ToolbagRelatedProcesses $toolbag
 
 
         Write-Info '已关闭 Toolbag'
@@ -604,25 +1082,38 @@ if ($running) {
 }
 
 
-# ---------- 5. 安装（每次都先备份） ----------
+# ---------- 5. 安装（失败时整体回滚插件目录） ----------
 
 
-$pluginDir = Join-Path $toolbag 'data\plugin\ChineseLocalizer'
+$pluginDir = Join-Path $toolbag 'data\ChineseLocalizer'
+
+$script:installInProgress = $true
+$script:rollbackPluginDir = $pluginDir
+$script:rollbackToolbag = $toolbag
+$script:hadExistingPlugin = Test-Path -LiteralPath $pluginDir
+$existingState = Get-ItemProperty -LiteralPath (Get-UserRegistryPath 'Software\MarmosetChineseLocalizer') -ErrorAction SilentlyContinue
+if ($existingState -and $null -ne $existingState.ChineseFontInstalled) {
+    $script:previousFontMarker = [int]$existingState.ChineseFontInstalled
+}
+$script:rollbackPluginBackup = Join-Path $env:TEMP ('ChineseLocalizer_backup_' + [Guid]::NewGuid().ToString('N'))
+if ($script:hadExistingPlugin) {
+    Copy-Item -LiteralPath $pluginDir -Destination $script:rollbackPluginBackup -Recurse -Force
+}
+
+# 清理旧版插件目录（不再使用 data\plugin 下的位置，避免残留菜单项）
+$oldPlugin = Join-Path $toolbag 'data\plugin\ChineseLocalizer'
+if (Test-Path -LiteralPath $oldPlugin) { Remove-DirectoryWithRetry $oldPlugin '旧版插件目录'; Write-Info "已清理旧插件目录: $oldPlugin" }
+
+$script:installedFiles = New-Object System.Collections.Generic.List[string]
 
 
-$stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+function Copy-PluginFile([string]$source, [string]$destination, [string]$label) {
 
 
-$script:installed = New-Object System.Collections.Generic.List[string]
+    if (-not (Test-Path -LiteralPath $source)) {
 
 
-function Install-WithBackup([string]$src, [string]$dst, [string]$label) {
-
-
-    if (-not (Test-Path -LiteralPath $src)) {
-
-
-        Write-Info "跳过 $label（源文件不存在: $src）"
+        Write-Info "跳过 $label（源文件不存在: $source）"
 
 
         return
@@ -631,31 +1122,16 @@ function Install-WithBackup([string]$src, [string]$dst, [string]$label) {
     }
 
 
-    $parent = Split-Path -Parent $dst
+    $parent = Split-Path -Parent $destination
 
 
     New-Item -ItemType Directory -Path $parent -Force | Out-Null
 
 
-    if (Test-Path -LiteralPath $dst) {
+    Copy-Item -LiteralPath $source -Destination $destination -Force
 
 
-        # Back up the ORIGINAL file only once (first install). The original font
-        # must be preserved so uninstall can restore it; re-installs must NOT
-        # overwrite/accumulate backups.
-        $hasBackup = @(Get-ChildItem -LiteralPath $parent -Filter ((Split-Path -Leaf $dst) + ".bak-*") -File -ErrorAction SilentlyContinue).Count -gt 0
-        if (-not $hasBackup) {
-            Copy-Item -LiteralPath $dst -Destination ($dst + ".bak-$stamp") -Force
-        }
-
-
-    }
-
-
-    Copy-Item -LiteralPath $src -Destination $dst -Force
-
-
-    $script:installed.Add($label)
+    $script:installedFiles.Add($label)
 
 
     Write-Info "已安装 $label"
@@ -673,51 +1149,27 @@ New-Item -ItemType Directory -Path $pluginDir -Force | Out-Null
 foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll', 'ToolbagChineseLauncher.exe')) {
 
 
-    Install-WithBackup (Join-Path $Dist $name) (Join-Path $pluginDir $name) $name
+    Copy-PluginFile (Join-Path $Dist $name) (Join-Path $pluginDir $name) $name
 
 
 }
 
-
-$traceMarker = Join-Path $pluginDir 'trace.enabled'
-
-
-if (Test-Path -LiteralPath $traceMarker) {
-
-
-    Remove-Item -LiteralPath $traceMarker -Force
-
-
-    Write-Info '已清理 trace.enabled（运行时追踪默认关闭）'
-
-
+# F12 sniffer output lives beside the plugin. Program Files is normally
+# read-only for standard users, so grant only the installing user access to
+# this one pre-created log file (not to the plugin directory or binaries).
+$oldSnifferLog = Join-Path $pluginDir 'ChineseLocalizer_sniffer.tsv'
+if (Test-Path -LiteralPath $oldSnifferLog) {
+    Remove-Item -LiteralPath $oldSnifferLog -Force
 }
-
-
-Write-Step '清理历史备份'
-
-
-$bakFiles = @(Get-ChildItem -LiteralPath $pluginDir -File -ErrorAction SilentlyContinue |
-
-
-              Where-Object { $_.Name -like '*.bak-*' -or $_.Name -like '*.before-static-merge' })
-
-
-if ($bakFiles.Count -gt 0) {
-
-
-    $bakFiles | Remove-Item -Force
-
-
-    Write-Info "已删除 $($bakFiles.Count) 个历史备份/旧文件"
-
-
-} else {
-
-
-    Write-Info '目录已干净，无需清理'
-
-
+$snifferLog = Join-Path $pluginDir 'ChineseLocalizer_sniffer.json'
+if (-not (Test-Path -LiteralPath $snifferLog)) {
+    '{"captured_at": null, "duration_ms": 1500, "entries": []}' | Set-Content -LiteralPath $snifferLog -Encoding UTF8
+}
+try {
+    & icacls.exe $snifferLog /grant:r "*${OriginalUserSid}:(M)" /c | Out-Null
+    Write-Info '已配置 F12 嗅探日志写入权限'
+} catch {
+    Write-Info ('配置嗅探日志权限失败: ' + $_.Exception.Message)
 }
 
 
@@ -730,7 +1182,8 @@ if (Test-Path -LiteralPath $chFont) {
     Write-Info 'Toolbag 已自带中文字体（notosans_chinese.slug），无需安装。'
 } else {
     Write-Info '当前 Toolbag 没有中文字体，自动安装自带字体...'
-    Install-WithBackup (Join-Path $Dist 'notosans_chinese.slug') $chFont 'notosans_chinese.slug'
+    Copy-PluginFile (Join-Path $Dist 'notosans_chinese.slug') $chFont 'notosans_chinese.slug'
+    $script:fontAddedByCurrentInstall = $chFont
 }
 
 # ---------- 6. 自检 ----------
@@ -771,7 +1224,23 @@ if (-not $checkOk) {
 
 Write-Step '创建桌面 / 开始菜单快捷方式'
 
+Remove-Shortcuts
+
 New-Shortcuts -pluginDir $pluginDir -toolbag $toolbag
+
+Write-Step '关联 Toolbag 场景文件'
+
+Install-TbsceneAssociation -pluginDir $pluginDir -toolbag $toolbag
+
+$stateKey = New-Item -Path (Get-UserRegistryPath 'Software\MarmosetChineseLocalizer') -Force
+New-ItemProperty -LiteralPath $stateKey.PSPath -Name ToolbagDir -Value $toolbag -PropertyType String -Force | Out-Null
+$fontMarker = [int](($script:previousFontMarker -eq 1) -or ($script:fontAddedByCurrentInstall -ne ''))
+New-ItemProperty -LiteralPath $stateKey.PSPath -Name ChineseFontInstalled -Value $fontMarker -PropertyType DWord -Force | Out-Null
+
+$script:installInProgress = $false
+if (Test-Path -LiteralPath $script:rollbackPluginBackup) {
+    Remove-Item -LiteralPath $script:rollbackPluginBackup -Recurse -Force
+}
 
 
 # ---------- 7. 完成提示 ----------
@@ -789,7 +1258,7 @@ Write-Host "======================================================" -ForegroundC
 Write-Info "安装位置: $pluginDir"
 
 
-Write-Info "已安装: $($script:installed -join ', ')"
+Write-Info "已安装: $($script:installedFiles -join ', ')"
 
 
 Write-Host "`n如何启动："

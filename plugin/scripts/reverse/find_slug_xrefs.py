@@ -1,9 +1,10 @@
 from pathlib import Path
+import os
 import struct
 from capstone import Cs, CS_ARCH_X86, CS_MODE_64
 from capstone.x86 import X86_OP_MEM, X86_REG_RIP
 
-EXE = Path(r"C:\Program Files\Marmoset\Toolbag 5\toolbag.exe")
+EXE = Path(os.environ.get("TOOLBAG_DIR", r"C:\Program Files\Marmoset\Toolbag 5")) / "toolbag.exe"
 data = EXE.read_bytes()
 pe = struct.unpack_from("<I", data, 0x3C)[0]
 sections_count = struct.unpack_from("<H", data, pe + 6)[0]

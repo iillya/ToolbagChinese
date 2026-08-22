@@ -6,12 +6,13 @@ list. This closes the "no-omission" loop:
 
   static scan        reports/all_captured.tsv             (is_ui == yes)
   runtime UI dump    reports/ui_runtime_dump.txt          (dump_ui_text.ps1)
-  runtime missing    %LOCALAPPDATA%\\Marmoset Toolbag 5\\ChineseLocalizer_missing.tsv
-                     (written by the hook's logMissing/GDI capture)
+  runtime sniffer    %TOOLBAG_DIR%\\data\\ChineseLocalizer\\ChineseLocalizer_sniffer.json
+                     (written by the Font-only F12 capture)
 
 Output:
   reports/captured_to_translate.txt   (English;)  -> feed to translate_merge.py
 """
+import json
 import os
 import sys
 from pathlib import Path
@@ -21,10 +22,11 @@ from scan_all_text import is_ui_confident  # noqa: E402
 
 PROJECT = Path(__file__).resolve().parent.parent.parent.parent
 REPORTS = PROJECT / "reports"
-DICT = PROJECT / "plugin" / "data" / "dictionary.txt"
+DICT = PROJECT / "plugin" / "data" / "dictionary_zh.json"
 TSV = REPORTS / "all_captured.tsv"
 RUNTIME = REPORTS / "ui_runtime_dump.txt"
-MISSING = Path(os.environ.get("LOCALAPPDATA", "")) / "Marmoset Toolbag 5" / "ChineseLocalizer_missing.tsv"
+TOOLBAG = Path(os.environ.get("TOOLBAG_DIR", r"C:\Program Files\Marmoset\Toolbag 5"))
+MISSING = TOOLBAG / "data" / "ChineseLocalizer" / "ChineseLocalizer_sniffer.json"
 OUT = REPORTS / "captured_to_translate.txt"
 
 
@@ -32,15 +34,7 @@ def existing_keys():
     keys = set()
     if not DICT.exists():
         return keys
-    for raw in DICT.read_text(encoding="utf-8", errors="replace").splitlines():
-        s = raw.strip()
-        if not s or s.startswith("#"):
-            continue
-        if ";" in s:
-            keys.add(s.split(";", 1)[0].strip())
-        elif "\t" in s:
-            keys.add(s.split("\t", 1)[0].strip())
-    return keys
+    return set(json.loads(DICT.read_text(encoding="utf-8-sig")).get("translations", {}))
 
 
 def main():
@@ -65,16 +59,17 @@ def main():
 
     # 3) runtime missing log
     if MISSING.exists():
-        for raw in MISSING.read_text(encoding="utf-8", errors="replace").splitlines():
-            parts = raw.split("\t", 2)
-            if len(parts) == 3:
-                captured.setdefault(parts[2].strip(), set()).add(f"missing:{parts[0]}")
+        data = json.loads(MISSING.read_text(encoding="utf-8-sig"))
+        for entry in data.get("entries", []):
+            text = str(entry.get("text", "")).strip()
+            if text:
+                captured.setdefault(text, set()).add(f"sniffer:{entry.get('source', 'FONT')}")
 
     items = [(s, sources) for s, sources in captured.items() if is_ui_confident(s) and s not in known]
     items.sort(key=lambda x: (x[0].lower(), x[0]))
 
     with OUT.open("w", encoding="utf-8", newline="") as f:
-        f.write("# Unified capture list (static + runtime + GDI missing)\n")
+        f.write("# Unified capture list (static + runtime + Font sniffer)\n")
         f.write("# Format: English;    # source1, source2 ...\n")
         f.write("\n")
         for s, sources in items:

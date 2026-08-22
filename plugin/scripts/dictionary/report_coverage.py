@@ -5,10 +5,10 @@ Coverage / gap report: how much of the captured Toolbag UI text is already in
 the dictionary, and what is still untranslated.
 
 Reads:
-  dist/dictionary.txt                        (translated keys)
+  plugin/data/dictionary_zh.json             (translated keys)
   reports/all_captured.tsv                   (static scanner, ui tier)
   reports/ui_runtime_dump.txt                (UI Automation dump, if present)
-  %LOCALAPPDATA%\\Marmoset Toolbag 5\\ChineseLocalizer_missing.tsv  (runtime log)
+  %TOOLBAG_DIR%\\data\\ChineseLocalizer\\ChineseLocalizer_sniffer.json
 
 Writes:
   reports/coverage_report.txt                (summary + gap list)
@@ -17,6 +17,7 @@ Writes:
 This is the final quality gate: when the gap list stops growing / reaches the
 strings you care about, the localization is effectively "no omission" at runtime.
 """
+import json
 import os
 import sys
 from pathlib import Path
@@ -27,10 +28,11 @@ from scan_all_text import is_ui_confident  # noqa: E402
 
 PROJECT = Path(__file__).resolve().parent.parent.parent.parent
 REPORTS = PROJECT / "reports"
-DICT = PROJECT / "plugin" / "data" / "dictionary.txt"
+DICT = PROJECT / "plugin" / "data" / "dictionary_zh.json"
 TSV = REPORTS / "all_captured.tsv"
 RUNTIME = REPORTS / "ui_runtime_dump.txt"
-MISSING = Path(os.environ.get("LOCALAPPDATA", "")) / "Marmoset Toolbag 5" / "ChineseLocalizer_missing.tsv"
+TOOLBAG = Path(os.environ.get("TOOLBAG_DIR", r"C:\Program Files\Marmoset\Toolbag 5"))
+MISSING = TOOLBAG / "data" / "ChineseLocalizer" / "ChineseLocalizer_sniffer.json"
 OUT = REPORTS / "coverage_report.txt"
 GAP = REPORTS / "dictionary_gap_candidates.txt"
 
@@ -38,15 +40,7 @@ def dict_keys():
     keys = set()
     if not DICT.exists():
         return keys
-    for raw in DICT.read_text(encoding="utf-8", errors="replace").splitlines():
-        s = raw.strip()
-        if not s or s.startswith("#"):
-            continue
-        if ";" in s:
-            keys.add(s.split(";", 1)[0].strip())
-        elif "\t" in s:
-            keys.add(s.split("\t", 1)[0].strip())
-    return keys
+    return set(json.loads(DICT.read_text(encoding="utf-8-sig")).get("translations", {}))
 
 
 def main():
@@ -68,10 +62,11 @@ def main():
                 captured.setdefault(s, set()).add("ui_runtime_dump")
 
     if MISSING.exists():
-        for raw in MISSING.read_text(encoding="utf-8", errors="replace").splitlines():
-            p = raw.split("\t", 2)
-            if len(p) == 3:
-                captured.setdefault(p[2].strip(), set()).add(f"missing:{p[0]}")
+        data = json.loads(MISSING.read_text(encoding="utf-8-sig"))
+        for entry in data.get("entries", []):
+            text = str(entry.get("text", "")).strip()
+            if text:
+                captured.setdefault(text, set()).add(f"sniffer:{entry.get('source', 'FONT')}")
 
     # only count strings that pass the confident-UI filter
     all_ui = {s for s in captured if is_ui_confident(s)}

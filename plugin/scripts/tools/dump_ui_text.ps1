@@ -7,7 +7,7 @@
 #
 # This catches text that is currently displayed, even if it never went through
 # the static sources (e.g. dynamic/preset/script-provided strings). Combined
-# with the GDI capture hooks (ChineseLocalizer_missing.tsv) it forms a complete
+# with the Font-only F12 capture (ChineseLocalizer_sniffer.json) it forms a complete
 # runtime "no-omission" net.
 #
 # Usage:
@@ -95,13 +95,13 @@ if (-not $proc) {
 
 $root = [System.Windows.Automation.AutomationElement]::RootElement
 $pids = $proc.Id | Select-Object -Unique
-foreach ($pid in $pids) {
+foreach ($processId in $pids) {
     $cond = New-Object System.Windows.Automation.PropertyCondition(
-        [System.Windows.Automation.AutomationElement]::ProcessIdProperty, $pid)
+        [System.Windows.Automation.AutomationElement]::ProcessIdProperty, $processId)
     $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $cond)
     foreach ($w in $windows) {
         try {
-            Write-Host ("Window: {0}  (pid {1})" -f $w.Current.Name, $pid)
+            Write-Host ("Window: {0}  (pid {1})" -f $w.Current.Name, $processId)
             Walk $w 0
         } catch {}
     }

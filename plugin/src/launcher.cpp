@@ -11,34 +11,80 @@
 
 #include <Windows.h>
 #include <string>
+#include <vector>
 
 namespace {
 
 // Returns the directory component of a path (everything before the last \ or /).
-std::wstring GetDirectory(const std::wstring& path) {
+std::wstring GetParentDirectory(const std::wstring& path) {
     const size_t slash = path.find_last_of(L"\\/");
     return slash == std::wstring::npos ? L"" : path.substr(0, slash);
 }
 
-void ShowError(const wchar_t* message) {
-    MessageBoxW(nullptr, message, L"八猴 Toolbag 5 汉化启动器", MB_OK | MB_ICONERROR);
+void ShowLauncherError(const wchar_t* message) {
+    MessageBoxW(nullptr, message, L"八猴5汉化版", MB_OK | MB_ICONERROR);
+}
+
+LPTHREAD_START_ROUTINE ResolveLoadLibraryEntryPoint() {
+    HMODULE localKernel = GetModuleHandleW(L"kernel32.dll");
+    if (!localKernel) return nullptr;
+    FARPROC localFunction = GetProcAddress(localKernel, "LoadLibraryW");
+    if (!localFunction) return nullptr;
+
+    // Windows maps system DLLs at the same address in processes within one
+    // boot/session.  This is also the only reliable option before the child
+    // main thread has ever run: module snapshots of a CREATE_SUSPENDED child
+    // can fail with ERROR_ACCESS_DENIED even though remote memory operations
+    // are permitted. Both launcher and Toolbag are x64 processes.
+    return reinterpret_cast<LPTHREAD_START_ROUTINE>(localFunction);
+}
+
+std::wstring GetExecutablePath() {
+    std::vector<wchar_t> buffer(1024);
+    while (buffer.size() <= 32768) {
+        const DWORD length = GetModuleFileNameW(nullptr, buffer.data(),
+                                                (DWORD)buffer.size());
+        if (!length) return L"";
+        if (length < buffer.size() - 1) return std::wstring(buffer.data(), length);
+        buffer.resize(buffer.size() * 2);
+    }
+    return L"";
+}
+
+bool IsRegularFile(const std::wstring& path) {
+    const DWORD attributes = GetFileAttributesW(path.c_str());
+    return attributes != INVALID_FILE_ATTRIBUTES &&
+           !(attributes & FILE_ATTRIBUTE_DIRECTORY);
+}
+
+std::wstring FindToolbagRoot(const std::wstring& startDirectory) {
+    std::wstring directory = startDirectory;
+    for (int depth = 0; depth < 10; ++depth) {
+        if (IsRegularFile(directory + L"\\toolbag.exe")) return directory;
+        const std::wstring parent = GetParentDirectory(directory);
+        if (parent.empty() || parent == directory) break;
+        directory = parent;
+    }
+    return L"";
 }
 
 } // namespace
 
-int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
+int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE,
+                      _In_ PWSTR commandLine, _In_ int) {
     // --- Locate files -------------------------------------------------------
-    wchar_t ownPath[MAX_PATH];
-    GetModuleFileNameW(nullptr, ownPath, MAX_PATH);
-
-    const std::wstring pluginDir = GetDirectory(ownPath);
+    const std::wstring ownPath = GetExecutablePath();
+    const std::wstring pluginDir = GetParentDirectory(ownPath);
     const std::wstring dllPath   = pluginDir + L"\\ToolbagChineseHook.dll";
-    const std::wstring toolbagRoot = GetDirectory(GetDirectory(GetDirectory(pluginDir)));
-    const std::wstring exePath   = toolbagRoot + L"\\toolbag.exe";
 
-    if (GetFileAttributesW(exePath.c_str()) == INVALID_FILE_ATTRIBUTES ||
-        GetFileAttributesW(dllPath.c_str()) == INVALID_FILE_ATTRIBUTES) {
-        ShowError(L"找不到 Toolbag 或汉化 DLL，请重新安装汉化插件。");
+    // Find Toolbag's root by walking up from the launcher's own folder until
+    // toolbag.exe is found.  The launcher is no longer tied to data\plugin\,
+    // so it can live anywhere (and no longer creates a plugin-menu entry).
+    const std::wstring toolbagRoot = FindToolbagRoot(pluginDir);
+    const std::wstring exePath = toolbagRoot + L"\\toolbag.exe";
+
+    if (toolbagRoot.empty() || !IsRegularFile(dllPath)) {
+        ShowLauncherError(L"找不到 Toolbag 或汉化 DLL，请重新安装汉化插件。");
         return 1;
     }
 
@@ -47,10 +93,23 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
     startupInfo.cb = sizeof(startupInfo);
     PROCESS_INFORMATION processInfo = {};
 
-    if (!CreateProcessW(exePath.c_str(), nullptr, nullptr, nullptr, FALSE,
+    // Preserve file paths and any other arguments handed to this launcher.
+    // This is required when Windows opens a .tbscene through the localized
+    // launcher: Toolbag must receive the original scene path unchanged.
+    std::wstring childCommandLine = L"\"" + exePath + L"\"";
+    if (commandLine && *commandLine) {
+        childCommandLine += L" ";
+        childCommandLine += commandLine;
+    }
+    std::vector<wchar_t> mutableCommandLine(childCommandLine.begin(),
+                                             childCommandLine.end());
+    mutableCommandLine.push_back(L'\0');
+
+    if (!CreateProcessW(exePath.c_str(), mutableCommandLine.data(),
+                        nullptr, nullptr, FALSE,
                         CREATE_SUSPENDED, nullptr, toolbagRoot.c_str(),
                         &startupInfo, &processInfo)) {
-        ShowError(L"无法启动 Toolbag。");
+        ShowLauncherError(L"无法启动 Toolbag。");
         return 2;
     }
 
@@ -65,31 +124,52 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
                                          MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
     SIZE_T written = 0;
-    const bool injected = readyEvent && remoteDllPath &&
+    const bool dllPathWritten = readyEvent && remoteDllPath &&
         WriteProcessMemory(processInfo.hProcess, remoteDllPath, dllPath.c_str(),
-                           dllPathBytes, &written);
+                           dllPathBytes, &written) && written == dllPathBytes;
 
-    const auto loadLibrary =
-        (LPTHREAD_START_ROUTINE)GetProcAddress(GetModuleHandleW(L"kernel32.dll"),
-                                               "LoadLibraryW");
-    HANDLE remoteThread = injected
-        ? CreateRemoteThread(processInfo.hProcess, nullptr, 0, loadLibrary,
-                             remoteDllPath, 0, nullptr)
-        : nullptr;
+    const auto loadLibrary = ResolveLoadLibraryEntryPoint();
+    HANDLE remoteThread = nullptr;
+    if (dllPathWritten && loadLibrary) {
+        remoteThread = CreateRemoteThread(processInfo.hProcess, nullptr, 0,
+                                          loadLibrary, remoteDllPath, 0, nullptr);
+    }
+    const bool remoteThreadCreated = remoteThread != nullptr;
 
     bool hookReady = false;
+    DWORD remoteLoadResult = 0;
+    DWORD remoteWaitResult = WAIT_FAILED;
+    DWORD readyWaitResult = WAIT_FAILED;
     if (remoteThread) {
-        WaitForSingleObject(remoteThread, 10000);
+        remoteWaitResult = WaitForSingleObject(remoteThread, 10000);
+        if (remoteWaitResult == WAIT_OBJECT_0)
+            GetExitCodeThread(remoteThread, &remoteLoadResult);
         CloseHandle(remoteThread);
-        hookReady = WaitForSingleObject(readyEvent, 10000) == WAIT_OBJECT_0;
+        if (remoteWaitResult == WAIT_OBJECT_0 && remoteLoadResult != 0) {
+            readyWaitResult = WaitForSingleObject(readyEvent, 10000);
+            hookReady = readyWaitResult == WAIT_OBJECT_0;
+        }
     }
 
     // --- Finish: resume or abort --------------------------------------------
-    if (hookReady) {
-        ResumeThread(processInfo.hThread);
+    if (hookReady && ResumeThread(processInfo.hThread) != static_cast<DWORD>(-1)) {
+        hookReady = true;
     } else {
+        hookReady = false;
         TerminateProcess(processInfo.hProcess, 3);
-        ShowError(L"汉化 Hook 安装失败。Toolbag 未启动，原程序文件未受影响。");
+        WaitForSingleObject(processInfo.hProcess, 5000);
+        wchar_t detail[512] = {};
+        swprintf_s(detail,
+            L"汉化 Hook 安装失败。Toolbag 未启动，原程序文件未受影响。\n\n"
+            L"诊断：事件=%s，内存=%s，写入=%s，远程地址=%s，远程线程=%s，"
+            L"远程等待=0x%08lX，加载结果=0x%08lX，Hook等待=0x%08lX",
+            readyEvent ? L"成功" : L"失败",
+            remoteDllPath ? L"成功" : L"失败",
+            dllPathWritten ? L"成功" : L"失败",
+            loadLibrary ? L"成功" : L"失败",
+            remoteThreadCreated ? L"成功" : L"失败",
+            remoteWaitResult, remoteLoadResult, readyWaitResult);
+        ShowLauncherError(detail);
     }
 
     if (remoteDllPath) VirtualFreeEx(processInfo.hProcess, remoteDllPath, 0, MEM_RELEASE);

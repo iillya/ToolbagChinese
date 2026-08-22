@@ -19,15 +19,16 @@ Outputs (under reports/):
   dictionary_other_candidates.txt  everything not marked as UI
 """
 import json
+import os
 import re
 import struct
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parent.parent.parent.parent
-ROOT = Path(r"C:\Program Files\Marmoset\Toolbag 5")
+ROOT = Path(os.environ.get("TOOLBAG_DIR", r"C:\Program Files\Marmoset\Toolbag 5"))
 EXE = ROOT / "toolbag.exe"
 DATA = ROOT / "data"
-DICT = PROJECT / "plugin" / "data" / "dictionary.txt"
+DICT = PROJECT / "plugin" / "data" / "dictionary_zh.json"
 TSV = PROJECT / "reports" / "all_captured.tsv"
 FULL = PROJECT / "reports" / "dictionary_all_candidates.txt"
 UI = PROJECT / "reports" / "dictionary_ui_candidates.txt"
@@ -56,16 +57,9 @@ HAS_LETTER = re.compile(r"[A-Za-z]")
 
 
 def existing_keys():
-    keys = set()
-    for raw in DICT.read_text(encoding="utf-8", errors="replace").splitlines():
-        s = raw.strip()
-        if not s or s.startswith("#"):
-            continue
-        if ";" in s:
-            keys.add(s.split(";", 1)[0].strip())
-        elif "\t" in s:
-            keys.add(s.split("\t", 1)[0].strip())
-    return keys
+    if not DICT.exists():
+        return set()
+    return set(json.loads(DICT.read_text(encoding="utf-8-sig")).get("translations", {}))
 
 
 def sections(data):

@@ -1,9 +1,9 @@
 from pathlib import Path
-import struct,sys
+import os,struct,sys
 from capstone import Cs,CS_ARCH_X86,CS_MODE_64
 from capstone.x86 import X86_OP_MEM,X86_REG_RIP
 
-p=Path(r"C:\Program Files\Marmoset\Toolbag 5\toolbag.exe");d=p.read_bytes();pe=struct.unpack_from('<I',d,0x3c)[0]
+p=Path(os.environ.get("TOOLBAG_DIR", r"C:\Program Files\Marmoset\Toolbag 5"))/"toolbag.exe";d=p.read_bytes();pe=struct.unpack_from('<I',d,0x3c)[0]
 n=struct.unpack_from('<H',d,pe+6)[0];os=struct.unpack_from('<H',d,pe+20)[0];base=struct.unpack_from('<Q',d,pe+48)[0];st=pe+24+os
 secs=[]
 for i in range(n):
