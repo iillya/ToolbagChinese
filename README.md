@@ -6,10 +6,10 @@ Marmoset Toolbag 5 简体中文运行时汉化补丁。
 
 ## 使用
 
-运行：
+从Releases下载运行：
 
 ```text
-安装八猴汉化.exe
+ChineseLocalizer.exe
 ```
 
 安装器启动时会申请管理员权限：
