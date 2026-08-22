@@ -689,12 +689,32 @@ function Install-TbsceneAssociation([string]$pluginDir, [string]$toolbag) {
         New-ItemProperty -LiteralPath $backupKey -Name DefaultValue -Value $defaultValue -PropertyType String -Force | Out-Null
     }
 
+    # Reuse the icon registered by the original Toolbag scene handler. The
+    # executable's icon 0 is the application logo; Toolbag's document icon is
+    # a different resource and must not be replaced by the launcher logo.
+    $savedAssociation = Get-ItemProperty -LiteralPath $backupKey -ErrorAction SilentlyContinue
+    $sourceProgId = if ($savedAssociation) { [string]$savedAssociation.DefaultValue } else { '' }
+    $sceneIcon = ''
+    if ($sourceProgId -and $sourceProgId -ne $progId) {
+        foreach ($iconPath in @(
+            (Get-UserRegistryPath ("Software\Classes\$sourceProgId\DefaultIcon")),
+            ("Registry::HKEY_LOCAL_MACHINE\Software\Classes\$sourceProgId\DefaultIcon"))) {
+            if (Test-Path -LiteralPath $iconPath) {
+                $sceneIcon = [string](Get-Item -LiteralPath $iconPath).GetValue('', '')
+                if ($sceneIcon) { break }
+            }
+        }
+    }
+    if (-not $sceneIcon) {
+        $sceneIcon = ('"' + (Join-Path $toolbag 'toolbag.exe') + '",-102')
+    }
+
     New-Item -Path $extensionKey -Force | Out-Null
     Set-Item -LiteralPath $extensionKey -Value $progId
     New-Item -Path $progIdKey -Force | Out-Null
     Set-Item -LiteralPath $progIdKey -Value 'Toolbag 5 场景（八猴5汉化版）'
     $iconKey = New-Item -Path (Join-Path $progIdKey 'DefaultIcon') -Force
-    Set-Item -LiteralPath $iconKey.PSPath -Value ('"' + (Join-Path $toolbag 'toolbag.exe') + '",0')
+    Set-Item -LiteralPath $iconKey.PSPath -Value $sceneIcon
     $commandKey = New-Item -Path (Join-Path $progIdKey 'shell\open\command') -Force
     $launcher = Join-Path $pluginDir 'ToolbagChineseLauncher.exe'
     $openCommand = '"' + $launcher + '" "%1"'
