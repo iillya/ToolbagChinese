@@ -316,7 +316,7 @@ LRESULT CALLBACK InstallerWindowProcedure(HWND window, UINT message,
             FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
             CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH,
             L"Microsoft YaHei UI");
-        HWND label = CreateWindowExW(0, L"STATIC", L"八猴目录",
+        HWND label = CreateWindowExW(0, L"STATIC", L"Toolbag 目录",
             WS_CHILD | WS_VISIBLE, s(24), s(20), s(120), s(22),
             window, nullptr, nullptr, nullptr);
         state->directoryEdit = CreateWindowExW(
@@ -325,7 +325,7 @@ LRESULT CALLBACK InstallerWindowProcedure(HWND window, UINT message,
             s(24), s(45), s(455), s(31), window,
             reinterpret_cast<HMENU>(static_cast<INT_PTR>(kDirectoryEditId)),
             nullptr, nullptr);
-        HWND browse = CreateWindowExW(0, L"BUTTON", L"选择目录",
+        HWND browse = CreateWindowExW(0, L"BUTTON", L"浏览…",
             WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
             s(489), s(44), s(87), s(33), window,
             reinterpret_cast<HMENU>(static_cast<INT_PTR>(kBrowseButtonId)),
@@ -373,8 +373,8 @@ LRESULT CALLBACK InstallerWindowProcedure(HWND window, UINT message,
                 (attributes & FILE_ATTRIBUTE_DIRECTORY) ||
                 !IsX64WindowsExecutable(exe)) {
                 MessageBoxW(window,
-                    L"所选目录中没有找到有效的 x64 toolbag.exe，"
-                    L"未执行任何操作。\n\n请选择 Toolbag 5 的实际安装目录。",
+                    L"所选目录不是有效的 Toolbag 5 安装目录。\n\n"
+                    L"请选择包含 toolbag.exe 的目录。",
                     kAppTitle, MB_OK | MB_ICONERROR);
                 SetFocus(state->directoryEdit);
                 return 0;
@@ -446,7 +446,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE,
     ComApartment comApartment;
     std::vector<PayloadEntry> payloadEntries;
     if (!ReadPayloadManifest(payloadEntries)) {
-        MessageBoxW(nullptr, L"此 EXE 缺少嵌入的安装数据，请使用完整的单文件安装版。",
+        MessageBoxW(nullptr, L"安装程序缺少必要数据，请重新下载完整版本。",
                     kAppTitle, MB_OK | MB_ICONERROR);
         return 1;
     }
@@ -502,8 +502,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE,
     if (exitCode == 0) {
         MessageBoxW(nullptr,
                     uninstall
-                        ? L"拆卸完成。\n\n插件文件、快捷方式和文件关联均已恢复或清理。"
-                        : L"安装完成。\n\n现在可以通过“八猴5汉化版”快捷方式启动，也可以双击 .tbscene 场景。",
+                        ? L"拆卸完成。\n\n插件文件和快捷方式已删除，字体及文件关联已恢复。"
+                        : L"安装完成。\n\n请通过“八猴5汉化版”快捷方式启动。\n\n"
+                          L"首次双击 .tbscene 时，请选择“八猴5汉化版”并点击“始终”。",
                     kAppTitle, MB_OK | MB_ICONINFORMATION);
         return 0;
     }

@@ -196,7 +196,7 @@ if (-not $isAdmin) {
     } catch {
 
 
-        Show-Error '汉化安装' "无法获取管理员权限，安装已取消。`n请右键“一键安装汉化.bat”选择“以管理员身份运行”。"
+        Show-Error '八猴5汉化版安装程序' '无法获取管理员权限，操作已取消。请重新运行安装程序并允许管理员权限。'
 
 
         exit 1
@@ -398,27 +398,28 @@ function Remove-Shortcuts {
 
 }
 
-function Get-ToolbagRelatedProcesses([string]$toolbagRoot) {
+function Get-RunningToolbagProcesses([string]$toolbagRoot) {
 
-    $paths = @(
-        (Join-Path $toolbagRoot 'toolbag.exe'),
-        (Join-Path $toolbagRoot 'data\ChineseLocalizer\ToolbagChineseLauncher.exe'),
-        (Join-Path $toolbagRoot 'data\plugin\ChineseLocalizer\ToolbagChineseLauncher.exe')
-    ) | ForEach-Object {
-        try { [IO.Path]::GetFullPath($_).TrimEnd('\') } catch { $_ }
+    $toolbagExecutable = Join-Path $toolbagRoot 'toolbag.exe'
+    try {
+        $toolbagExecutable = [IO.Path]::GetFullPath($toolbagExecutable).TrimEnd('\')
+    } catch {
+        return @()
     }
 
-    return @(Get-Process -Name 'toolbag','ToolbagChineseLauncher' -ErrorAction SilentlyContinue | Where-Object {
+    return @(Get-Process -Name 'toolbag' -ErrorAction SilentlyContinue | Where-Object {
+        if ($_.Id -eq $PID) { return $false }
         try {
             $processPath = [IO.Path]::GetFullPath($_.Path).TrimEnd('\')
-            $paths -contains $processPath
+            [string]::Equals($processPath, $toolbagExecutable,
+                             [StringComparison]::OrdinalIgnoreCase)
         } catch { $false }
     })
 }
 
-function Stop-ToolbagRelatedProcesses([string]$toolbagRoot) {
+function Stop-RunningToolbagProcesses([string]$toolbagRoot) {
 
-    $running = @(Get-ToolbagRelatedProcesses $toolbagRoot)
+    $running = @(Get-RunningToolbagProcesses $toolbagRoot)
     if (-not $running) { return }
 
     foreach ($process in $running) {
@@ -437,7 +438,7 @@ function Stop-ToolbagRelatedProcesses([string]$toolbagRoot) {
         }
     }
 
-    # 进程退出后，给系统外壳、杀毒软件和映像映射一点释放时间。
+    # Toolbag 退出后，给系统外壳、杀毒软件和映像映射一点释放时间。
     Start-Sleep -Milliseconds 500
 }
 
@@ -457,7 +458,7 @@ function Remove-DirectoryWithRetry([string]$path, [string]$label) {
         Start-Sleep -Milliseconds 250
     }
     $reason = if ($lastError) { $lastError.Exception.Message } else { '目录仍然存在' }
-    throw "$label 无法删除，文件仍被其他程序占用。请关闭 Toolbag、旧汉化启动器或安全软件后重试。`n路径：$path`n原因：$reason"
+    throw "$label 无法删除，文件仍被其他程序占用。请关闭 Toolbag 或安全软件后重试。`n路径：$path`n原因：$reason"
 }
 
 $script:installInProgress = $false
@@ -820,7 +821,7 @@ $toolbag = Find-ToolbagDirectory -Override $ToolbagDir
 if ($ToolbagDir -and -not $toolbag) {
 
 
-    Show-Error '汉化安装' "指定目录中没有找到 toolbag.exe，未执行安装。`n`n$ToolbagDir"
+    Show-Error '八猴5汉化版安装程序' "所选目录不是有效的 Toolbag 5 安装目录。`n`n$ToolbagDir"
 
 
     exit 1
@@ -835,7 +836,7 @@ if ($toolbag -and -not $ToolbagDir) {
     $operationName = if ($Uninstall) { '拆卸' } else { '安装' }
 
 
-    if (-not (Ask-YesNo '八猴5汉化版' "检测到 Toolbag 目录：`n`n$toolbag`n`n是否在此目录执行$operationName？`n选择“否”可手动选择其他 toolbag.exe。")) {
+    if (-not (Ask-YesNo '八猴5汉化版安装程序' "检测到 Toolbag 目录：`n`n$toolbag`n`n是否在此目录执行$operationName？`n选择“否”可手动选择其他目录。")) {
 
 
         $toolbag = $null
@@ -880,7 +881,7 @@ if (-not $toolbag) {
 if (-not $toolbag) {
 
 
-    Show-Error '汉化安装' "没有找到 Toolbag 5。`n请确认已安装，或用 -ToolbagDir 指定安装目录。"
+    Show-Error '八猴5汉化版安装程序' '没有找到 Toolbag 5。请选择包含 toolbag.exe 的安装目录。'
 
 
     exit 1
@@ -898,15 +899,15 @@ Write-Info "Toolbag 目录: $toolbag"
 if ($Uninstall) {
 
 
-    Write-Step '卸载汉化插件'
+    Write-Step '拆卸汉化'
 
 
     $pluginDir = Join-Path $toolbag 'data\ChineseLocalizer'
 
-    $running = @(Get-ToolbagRelatedProcesses $toolbag)
+    $running = @(Get-RunningToolbagProcesses $toolbag)
     if ($running) {
-        Write-Info '正在关闭 Toolbag 和旧汉化启动器...'
-        Stop-ToolbagRelatedProcesses $toolbag
+        Write-Info '正在关闭 Toolbag...'
+        Stop-RunningToolbagProcesses $toolbag
     }
 
     Restore-TbsceneAssociation
@@ -978,7 +979,7 @@ if ($Uninstall) {
     Write-Host "`n======================================================" -ForegroundColor Green
 
 
-    Write-Host "  汉化已卸载完成！" -ForegroundColor Green
+    Write-Host "  汉化已拆卸完成！" -ForegroundColor Green
 
 
     Write-Host "======================================================" -ForegroundColor Green
@@ -1045,7 +1046,7 @@ if ($missing.Count -gt 0) {
     if ($missing.Count -gt 0) {
 
 
-        Show-Error '汉化安装' "dist 目录缺少文件: $($missing -join ', ')`n`n请使用包含 dist（预编译产物）的完整版本，无需安装任何编译环境。`n（开发者如需从源码重新编译，可加 -Build 参数，但需要 Visual Studio C++ 生成工具。）"
+        Show-Error '八猴5汉化版安装程序' "安装数据不完整，缺少：$($missing -join ', ')"
 
 
         exit 1
@@ -1060,7 +1061,7 @@ if ($missing.Count -gt 0) {
 # ---------- 4. 若 Toolbag 正在运行，先处理（避免文件占用） ----------
 
 
-$running = @(Get-ToolbagRelatedProcesses $toolbag)
+$running = @(Get-RunningToolbagProcesses $toolbag)
 
 
 if ($running) {
@@ -1069,10 +1070,10 @@ if ($running) {
     Write-Step '检测到 Toolbag 正在运行'
 
 
-    if (Ask-YesNo '汉化安装' "检测到 Toolbag 或旧汉化启动器正在运行。安装需要替换汉化文件。`n是否自动关闭相关程序？`n（选“否”则取消安装）") {
+    if (Ask-YesNo '八猴5汉化版安装程序' "Toolbag 正在运行，安装前需要将其关闭。`n`n是否现在自动关闭 Toolbag？") {
 
 
-        Stop-ToolbagRelatedProcesses $toolbag
+        Stop-RunningToolbagProcesses $toolbag
 
 
         Write-Info '已关闭 Toolbag'
@@ -1081,7 +1082,7 @@ if ($running) {
     } else {
 
 
-        Show-Error '汉化安装' '已取消安装，请先关闭 Toolbag 再重试。'
+        Show-Error '八猴5汉化版安装程序' '安装已取消。请关闭 Toolbag 后重试。'
 
 
         exit 1
@@ -1238,7 +1239,7 @@ foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll',
 if (-not $checkOk) {
 
 
-    Show-Error '汉化安装' '安装自检未通过，有文件缺失。请检查上方输出。'
+    Show-Error '八猴5汉化版安装程序' '安装自检未通过，部分文件缺失。请重新运行安装程序。'
 
 
     exit 1
@@ -1285,13 +1286,7 @@ Write-Info "安装位置: $pluginDir"
 Write-Info "已安装: $($script:installedFiles -join ', ')"
 
 
-Write-Host "`n如何启动："
-
-
-Write-Host "  1. 打开插件目录：$pluginDir"
-
-
-Write-Host "  2. 双击 ToolbagChineseLauncher.exe 启动 Toolbag（必须用它启动才有汉化）"
+Write-Host "`n请通过桌面或开始菜单中的“八猴5汉化版”快捷方式启动。"
 
 
 Write-Host ""
