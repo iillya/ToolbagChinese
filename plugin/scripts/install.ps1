@@ -72,6 +72,11 @@ $ErrorActionPreference = 'Stop'
 
 Add-Type -AssemblyName System.Windows.Forms
 
+# PowerShell does not enable the common-controls visual style by default.
+# Enable it before creating any dialog so script-owned prompts match the
+# native installer instead of falling back to the classic Windows look.
+[System.Windows.Forms.Application]::EnableVisualStyles()
+
 
 $script:ProjectRoot = Split-Path -Parent $PSScriptRoot
 
