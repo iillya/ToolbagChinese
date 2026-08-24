@@ -59,7 +59,7 @@ Toolbag 位于前台时按一次 `F12`：
 - 自动保存并定位到：
 
 ```text
-Toolbag 5\data\ChineseLocalizer\ChineseLocalizer_sniffer.json
+Toolbag 5\ChineseLauncher\ChineseLocalizer_sniffer.json
 ```
 
 未按 F12 时不会持续记录或写入磁盘。

@@ -984,7 +984,7 @@ if ($Uninstall) {
     Write-Step '拆卸汉化'
 
 
-    $pluginDir = Join-Path $toolbag 'data\ChineseLocalizer'
+    $pluginDir = Join-Path $toolbag 'ChineseLauncher'
 
     $running = @(Get-RunningToolbagProcesses $toolbag)
     if ($running) {
@@ -1023,6 +1023,13 @@ if ($Uninstall) {
         Write-Info '未发现插件目录（可能未安装汉化）'
 
 
+    }
+
+    # 清理旧版安装位置。
+    $legacyPlugin = Join-Path $toolbag 'data\ChineseLocalizer'
+    if (Test-Path -LiteralPath $legacyPlugin) {
+        Remove-DirectoryWithRetry $legacyPlugin '旧版汉化目录'
+        Write-Info "已清理旧版汉化目录: $legacyPlugin"
     }
 
 
@@ -1179,7 +1186,7 @@ if ($running) {
 # ---------- 5. 安装（失败时整体回滚插件目录） ----------
 
 
-$pluginDir = Join-Path $toolbag 'data\ChineseLocalizer'
+$pluginDir = Join-Path $toolbag 'ChineseLauncher'
 
 $script:installInProgress = $true
 $script:rollbackPluginDir = $pluginDir
@@ -1193,6 +1200,8 @@ if ($script:hadExistingPlugin) {
 # 清理旧版插件目录（不再使用 data\plugin 下的位置，避免残留菜单项）
 $oldPlugin = Join-Path $toolbag 'data\plugin\ChineseLocalizer'
 if (Test-Path -LiteralPath $oldPlugin) { Remove-DirectoryWithRetry $oldPlugin '旧版插件目录'; Write-Info "已清理旧插件目录: $oldPlugin" }
+$legacyPlugin = Join-Path $toolbag 'data\ChineseLocalizer'
+if (Test-Path -LiteralPath $legacyPlugin) { Remove-DirectoryWithRetry $legacyPlugin '旧版汉化目录'; Write-Info "已清理旧版汉化目录: $legacyPlugin" }
 
 $script:installedFiles = New-Object System.Collections.Generic.List[string]
 
