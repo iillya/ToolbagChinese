@@ -77,6 +77,39 @@ Add-Type -AssemblyName System.Windows.Forms
 # native installer instead of falling back to the classic Windows look.
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
+# ----------------------------------------------------------------------------
+# Resolve the interactive (console) user.
+#
+# The installer runs elevated, so the process identity is an administrator
+# account and NOT necessarily the person who will actually run Toolbag. If we
+# build shortcuts against $env:USERPROFILE / $env:APPDATA we can write them into
+# the wrong user's Desktop (the user then reports "no shortcut was created").
+# Resolve the account that owns explorer.exe in the current session and place
+# shortcuts in *that* user's real folders, honouring Desktop / Start Menu
+# redirection (e.g. OneDrive).
+# ----------------------------------------------------------------------------
+function Get-InteractiveShellSid {
+    $sessionId = (Get-Process -Id $PID).SessionId
+    $explorer = Get-Process explorer -ErrorAction SilentlyContinue |
+        Where-Object { $_.SessionId -eq $sessionId } |
+        Select-Object -First 1
+    if (-not $explorer) { return '' }
+    try {
+        $owner = Invoke-CimMethod -Query "SELECT * FROM Win32_Process WHERE ProcessId=$($explorer.Id)" -MethodName GetOwner
+        $account = New-Object System.Security.Principal.NTAccount($owner.Domain, $owner.User)
+        return $account.Translate([System.Security.Principal.SecurityIdentifier]).Value
+    } catch { return '' }
+}
+
+function Get-InteractiveUserShellFolder([string]$valueName) {
+    $sid = Get-InteractiveShellSid
+    if (-not $sid) { return '' }
+    $key = "Registry::HKEY_USERS\$sid\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+    if (-not (Test-Path -LiteralPath $key)) { return '' }
+    $raw = (Get-ItemProperty -LiteralPath $key).$valueName
+    if (-not $raw) { return '' }
+    return [System.Environment]::ExpandEnvironmentVariables([string]$raw)
+}
 
 $script:ProjectRoot = Split-Path -Parent $PSScriptRoot
 
@@ -354,12 +387,15 @@ function New-Shortcuts {
 
         $lnks = @()
 
-        $desktop = Join-Path $OriginalUserProfile 'Desktop'
-
+        # The installer may be running as an elevated admin, so resolve the real
+        # interactive user's Desktop / Start Menu to avoid writing shortcuts to
+        # the wrong account (and to honour OneDrive redirection).
+        $desktop = Get-InteractiveUserShellFolder 'Desktop'
+        if (-not $desktop) { $desktop = Join-Path $OriginalUserProfile 'Desktop' }
         if (Test-Path -LiteralPath $desktop) { $lnks += (Join-Path $desktop ($name + '.lnk')) }
 
-        $startMenu = Join-Path $OriginalUserAppData 'Microsoft\Windows\Start Menu\Programs'
-
+        $startMenu = Get-InteractiveUserShellFolder 'Programs'
+        if (-not $startMenu) { $startMenu = Join-Path $OriginalUserAppData 'Microsoft\Windows\Start Menu\Programs' }
         if (Test-Path -LiteralPath $startMenu) { $lnks += (Join-Path $startMenu ($name + '.lnk')) }
 
         foreach ($lnk in $lnks) {
@@ -376,9 +412,33 @@ function New-Shortcuts {
 
             $sc.Save()
 
+            # The installer runs elevated, so the .lnk it writes is owned by the
+            # elevated account. Guarantee the real (target) user can always open
+            # it, otherwise double-clicking reports "cannot access / no permission".
+            if ($OriginalUserSid) {
+                & icacls.exe $lnk /setowner "*${OriginalUserSid}" /c | Out-Null
+                & icacls.exe $lnk /grant:r "*${OriginalUserSid}:(F)" /c | Out-Null
+            }
+
             Write-Info "已创建快捷方式: $lnk"
 
         }
+
+        # Ask the shell to refresh immediately so the shortcut is visible without
+        # waiting for an Explorer restart. (SHCNE_ASSOCCHANGED / SHCNF_IDLIST)
+        try {
+            Add-Type @'
+using System;
+using System.Runtime.InteropServices;
+namespace ChineseLocalizer {
+    public static class ShellNotifyShortcut {
+        [DllImport("shell32.dll")]
+        public static extern void SHChangeNotify(uint eventId, uint flags, IntPtr item1, IntPtr item2);
+    }
+}
+'@ -ErrorAction SilentlyContinue
+            [ChineseLocalizer.ShellNotifyShortcut]::SHChangeNotify(0x08000000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
+        } catch {}
 
     } catch {
 
@@ -476,13 +536,30 @@ $script:hadExistingPlugin = $false
 $script:rollbackToolbag = ''
 
 
-if (-not $OriginalUserSid) { $OriginalUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
+if (-not $OriginalUserSid) {
+    $OriginalUserSid = Get-InteractiveShellSid
+    if (-not $OriginalUserSid) { $OriginalUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
+}
 
 
-if (-not $OriginalUserProfile) { $OriginalUserProfile = $env:USERPROFILE }
+if (-not $OriginalUserProfile) {
+    $desktop = Get-InteractiveUserShellFolder 'Desktop'
+    if ($desktop) {
+        $OriginalUserProfile = Split-Path -Parent $desktop
+    } else {
+        $OriginalUserProfile = $env:USERPROFILE
+    }
+}
 
 
-if (-not $OriginalUserAppData) { $OriginalUserAppData = $env:APPDATA }
+if (-not $OriginalUserAppData) {
+    $startMenu = Get-InteractiveUserShellFolder 'Programs'
+    if ($startMenu) {
+        $OriginalUserAppData = Split-Path -Parent (Split-Path -Parent $startMenu)
+    } else {
+        $OriginalUserAppData = $env:APPDATA
+    }
+}
 
 
 $script:UserRegistryHive = [Microsoft.Win32.Registry]::Users.OpenSubKey($OriginalUserSid, $true)
