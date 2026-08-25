@@ -49,7 +49,7 @@ def build_payload(root: Path, raw_len: int) -> bytes:
 def main():
     root = Path(__file__).resolve().parent.parent
     raw = root / "build" / "out" / "ChineseInstaller.exe"
-    out = root / "dist" / "安装八猴汉化.exe"
+    out = root / "dist" / "ToolbagChineseInstaller.exe"
 
     if not raw.exists():
         raise SystemExit("缺少 build/out/ChineseInstaller.exe，请先运行 source\\build.bat")

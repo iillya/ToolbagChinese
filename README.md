@@ -4,7 +4,7 @@
 
 ## 下载与安装
 
-普通用户只需下载 Releases 中的 `安装八猴汉化.exe`。
+普通用户只需下载 Releases 中的 `ToolbagChineseInstaller.exe`。
 
 1. 保存工程并关闭 Toolbag。
 2. 运行安装器；出现系统权限提示时选择“是”。
@@ -122,7 +122,7 @@ Toolbag安装目录\ChineseLauncher\ToolbagChineseLauncher.exe
 source\build.bat
 ```
 
-生成的单文件安装器位于 `dist\安装八猴汉化.exe`。
+生成的单文件安装器位于 `dist\ToolbagChineseInstaller.exe`。
 
 ```text
 source\          Hook DLL、启动器、安装器和构建入口
