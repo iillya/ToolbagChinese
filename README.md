@@ -85,7 +85,7 @@ source\               Hook DLL、启动器、安装器和正式构建入口
 translations\         正式中文字典
 fonts\                兼容字体
 icon\                 程序图标和 .tbscene 文档图标
-scripts\              安装、字典维护和逆向辅助工具
+scripts\              安装器运行脚本
 third_party\          Zydis x64 指令解码器
 ```
 
