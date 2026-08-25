@@ -51,9 +51,11 @@ LPTHREAD_START_ROUTINE ResolveLoadLibraryEntryPoint(DWORD processId) {
         }
         CloseHandle(snapshot);
     }
-    // A suspended process can deny module snapshots on some Windows builds;
-    // shared system DLL mappings are the safe compatibility fallback.
-    return reinterpret_cast<LPTHREAD_START_ROUTINE>(localFunction);
+    // Never pass a function address from this process to another process.
+    // ASLR normally keeps system DLL bases aligned, but that is not an API
+    // guarantee; failing cleanly is safer than starting a thread at an
+    // unverified address.
+    return nullptr;
 }
 
 std::wstring GetExecutablePath() {
@@ -205,7 +207,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE,
         ShowLauncherError(detail);
     }
 
-    if (remoteDllPath) VirtualFreeEx(processInfo.hProcess, remoteDllPath, 0, MEM_RELEASE);
+    // The remote thread can still be reading this path after a timeout.  The
+    // failure path terminates the child, so let process teardown reclaim it.
+    if (remoteDllPath && remoteWaitResult == WAIT_OBJECT_0)
+        VirtualFreeEx(processInfo.hProcess, remoteDllPath, 0, MEM_RELEASE);
     if (sharedMainThreadId) UnmapViewOfFile(sharedMainThreadId);
     if (startupMapping) CloseHandle(startupMapping);
     if (readyEvent) CloseHandle(readyEvent);

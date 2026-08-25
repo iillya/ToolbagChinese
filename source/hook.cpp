@@ -8,9 +8,6 @@
 //    * Font::CompiledString     -> self-drawn text (Slug)
 //    * Font measurement         -> Chinese glyph bounds during layout
 //
-//  Pressing F12 opens a short diagnostic capture window. Outside that window
-//  the sniffer performs only an atomic branch and does no allocation or I/O.
-//
 //  Dictionary loaded next to this DLL:
 //    * dictionary_zh.json  -> merged UI + asset translations (sp-translation-v1)
 // ============================================================================
@@ -22,7 +19,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <mutex>
-#include <atomic>
 #include <vector>
 #include <algorithm>
 #include <utility>
@@ -30,7 +26,6 @@
 #include <cstdio>
 #include <cstring>
 #include <wchar.h>
-#include <intrin.h>
 #include "Zydis.h"
 
 // ---------------------------------------------------------------------------
@@ -50,8 +45,6 @@ static HMODULE          g_hookModule = nullptr;
 static FontCompileFn    g_originalFontCompile[2] = {};
 static FontMeasureFn    g_originalFontMeasure = nullptr;
 
-
-static thread_local uintptr_t g_captureCallsite = 0;
 
 struct TransparentStringHash {
     using is_transparent = void;
@@ -74,10 +67,6 @@ static StringMap        g_translations;
 static StringMap        g_paddedTranslationCache;
 static std::mutex       g_translationCacheMutex;
 
-static std::unordered_set<std::string> g_capturedStrings;
-static std::mutex       g_captureMutex;
-static std::wstring     g_captureLogPath;
-static std::atomic_bool g_captureActive{false};
 static HWND             g_authorWindow = nullptr;
 static HWND             g_gitHubWindow = nullptr;
 static HWND             g_toolbagWindow = nullptr;
@@ -235,32 +224,6 @@ static bool LoadDictionary() {
     return LoadTranslationDictionary(L"dictionary_zh.json");
 }
 
-// Records untranslated, printable English UI strings once per process.
-static void CaptureMissingString(const char* source, const char* text, size_t length) {
-    if (!g_captureActive.load(std::memory_order_relaxed)) return;
-    if (!text || length < 2 || length > 256) return;
-    bool hasLetter = false;
-    for (size_t i = 0; i < length; i++) {
-        const unsigned char c = text[i];
-        if (c == '/' || c == '\\' || c < 0x20 || c > 0x7e) return;
-        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) hasLetter = true;
-    }
-    if (!hasLetter) return;
-
-    const std::string value(text, length);
-    if (g_translations.find(value) != g_translations.end()) return;
-    const uintptr_t imageBase = (uintptr_t)GetModuleHandleW(nullptr);
-    char row[768];
-    sprintf_s(row, "%s\t0x%llX\t%s", source,
-              (unsigned long long)(g_captureCallsite - imageBase), value.c_str());
-    {
-        std::lock_guard<std::mutex> lock(g_captureMutex);
-        // Close the race with F12 ending while this string was being filtered.
-        if (!g_captureActive.load(std::memory_order_relaxed)) return;
-        if (g_capturedStrings.size() < 10000) g_capturedStrings.insert(row);
-    }
-}
-
 // ---------------------------------------------------------------------------
 // Translation core
 // ---------------------------------------------------------------------------
@@ -284,10 +247,7 @@ static const char* TranslateText(const char* text) {
     if ((key.size() == 4 && _strnicmp(key.data(), "None", 4) == 0) ||
         (key.size() == 4 && _strnicmp(key.data(), "NULL", 4) == 0)) return text;
     const auto translation = g_translations.find(key);
-    if (translation == g_translations.end()) {
-        CaptureMissingString("FONT", key.data(), key.size());
-        return text;
-    }
+    if (translation == g_translations.end()) return text;
 
     // The common case needs no allocation or lock. Dictionary nodes are never
     // modified after startup, so value pointers remain stable for the process.
@@ -323,17 +283,15 @@ static const char* TranslateSafely(const char* text) {
 // ---------------------------------------------------------------------------
 // Font::CompiledString - translate before the compiled result is built/measured.
 static void InvokeTranslatedFontCompile(int hookIndex, void* instance,
-                                        const char* text, uintptr_t callsite) {
-    if (g_captureActive.load(std::memory_order_relaxed))
-        g_captureCallsite = callsite;
+                                        const char* text) {
     const char* translated = TranslateSafely(text);
     g_originalFontCompile[hookIndex](instance, translated);
 }
 static void HookPrimaryFontCompile(void* instance, const char* text) {
-    InvokeTranslatedFontCompile(0, instance, text, (uintptr_t)_ReturnAddress());
+    InvokeTranslatedFontCompile(0, instance, text);
 }
 static void HookSecondaryFontCompile(void* instance, const char* text) {
-    InvokeTranslatedFontCompile(1, instance, text, (uintptr_t)_ReturnAddress());
+    InvokeTranslatedFontCompile(1, instance, text);
 }
 
 // Measure exactly the same translated string that the compile/draw path sees.
@@ -342,31 +300,9 @@ static void HookSecondaryFontCompile(void* instance, const char* text) {
 static void HookFontMeasure(void* instance, float* width, float* height,
                             const char* text, int characterLimit,
                             bool singleLine) {
-    if (g_captureActive.load(std::memory_order_relaxed))
-        g_captureCallsite = (uintptr_t)_ReturnAddress();
     const char* translated = TranslateSafely(text);
     g_originalFontMeasure(instance, width, height, translated,
                           characterLimit, singleLine);
-}
-
-static BOOL CALLBACK RedrawToolbagWindow(HWND window, LPARAM processIdValue) {
-    DWORD processId = 0;
-    GetWindowThreadProcessId(window, &processId);
-    if (processId == (DWORD)processIdValue) {
-        RedrawWindow(window, nullptr, nullptr,
-                     RDW_INVALIDATE | RDW_ERASE | RDW_FRAME |
-                     RDW_ALLCHILDREN | RDW_UPDATENOW);
-    }
-    return TRUE;
-}
-
-static void RevealCaptureLog() {
-    if (g_captureLogPath.empty() ||
-        GetFileAttributesW(g_captureLogPath.c_str()) == INVALID_FILE_ATTRIBUTES)
-        return;
-    const std::wstring parameters = L"/select,\"" + g_captureLogPath + L"\"";
-    ShellExecuteW(nullptr, L"open", L"explorer.exe", parameters.c_str(),
-                  nullptr, SW_SHOWNORMAL);
 }
 
 static void PositionLinkWindows() {
@@ -693,79 +629,6 @@ static DWORD WINAPI RunLinkWindowThread(LPVOID) {
     if (g_minimizeEventHook) UnhookWinEvent(g_minimizeEventHook);
     if (g_visibilityEventHook) UnhookWinEvent(g_visibilityEventHook);
     return 0;
-}
-
-static DWORD WINAPI MonitorCaptureHotkeyThread(LPVOID) {
-    bool wasDown = false;
-    while (true) {
-        DWORD foregroundProcess = 0;
-        GetWindowThreadProcessId(GetForegroundWindow(), &foregroundProcess);
-        const bool down = foregroundProcess == GetCurrentProcessId() &&
-                          (GetAsyncKeyState(VK_F12) & 0x8000) != 0;
-        if (down && !wasDown) {
-            {
-                std::lock_guard<std::mutex> lock(g_captureMutex);
-                g_capturedStrings.clear();
-            }
-            g_captureActive.store(true, std::memory_order_release);
-            EnumWindows(RedrawToolbagWindow, (LPARAM)GetCurrentProcessId());
-            Sleep(1500);
-            g_captureActive.store(false, std::memory_order_release);
-
-            std::vector<std::string> rows;
-            {
-                std::lock_guard<std::mutex> lock(g_captureMutex);
-                rows.assign(g_capturedStrings.begin(), g_capturedStrings.end());
-                g_capturedStrings.clear();
-            }
-            std::sort(rows.begin(), rows.end());
-            FILE* file = nullptr;
-            bool saved = false;
-            if (!g_captureLogPath.empty() &&
-                !_wfopen_s(&file, g_captureLogPath.c_str(), L"wb") && file) {
-                SYSTEMTIME now = {};
-                GetLocalTime(&now);
-                fprintf(file,
-                    "{\r\n  \"captured_at\": \"%04u-%02u-%02uT%02u:%02u:%02u\","
-                    "\r\n  \"duration_ms\": 1500,\r\n  \"entries\": [\r\n",
-                    now.wYear, now.wMonth, now.wDay,
-                    now.wHour, now.wMinute, now.wSecond);
-                for (size_t i = 0; i < rows.size(); i++) {
-                    const std::string& row = rows[i];
-                    const size_t firstTab = row.find('\t');
-                    const size_t secondTab = firstTab == std::string::npos
-                        ? std::string::npos : row.find('\t', firstTab + 1);
-                    const std::string source = row.substr(0, firstTab);
-                    const std::string callsite = firstTab == std::string::npos ? "" :
-                        row.substr(firstTab + 1, secondTab - firstTab - 1);
-                    const std::string value = secondTab == std::string::npos ? "" :
-                        row.substr(secondTab + 1);
-                    auto writeJsonString = [file](const std::string& text) {
-                        fputc('"', file);
-                        for (unsigned char c : text) {
-                            if (c == '"' || c == '\\') { fputc('\\', file); fputc(c, file); }
-                            else if (c == '\n') fputs("\\n", file);
-                            else if (c == '\r') fputs("\\r", file);
-                            else if (c == '\t') fputs("\\t", file);
-                            else fputc(c, file);
-                        }
-                        fputc('"', file);
-                    };
-                    fputs("    {\"source\": ", file); writeJsonString(source);
-                    fputs(", \"callsite\": ", file); writeJsonString(callsite);
-                    fputs(", \"text\": ", file); writeJsonString(value);
-                    fputs(i + 1 < rows.size() ? "},\r\n" : "}\r\n", file);
-                }
-                fputs("  ]\r\n}\r\n", file);
-                fclose(file);
-                saved = true;
-            }
-            MessageBeep(saved ? MB_ICONASTERISK : MB_ICONHAND);
-            if (saved) RevealCaptureLog();
-        }
-        wasDown = down;
-        Sleep(50);
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -1380,14 +1243,6 @@ static BOOL CALLBACK InitializeHooks(PINIT_ONCE, PVOID, PVOID*) {
         }
         CloseHandle(startupMapping);
     }
-    std::wstring logPath = GetModulePath(g_hookModule);
-    const size_t slash = logPath.find_last_of(L"\\/");
-    if (slash != std::wstring::npos) {
-        logPath.replace(slash + 1, std::wstring::npos,
-                        L"ChineseLocalizer_sniffer.json");
-        g_captureLogPath = std::move(logPath);
-    }
-
     if (!LoadDictionary()) return TRUE;
 
     BYTE* imageBase = (BYTE*)GetModuleHandleW(nullptr);
@@ -1424,10 +1279,6 @@ static BOOL CALLBACK InitializeHooks(PINIT_ONCE, PVOID, PVOID*) {
             (void)measureReady;
         }
     }
-
-    HANDLE monitor = CreateThread(nullptr, 0, MonitorCaptureHotkeyThread,
-                                  nullptr, 0, nullptr);
-    if (monitor) CloseHandle(monitor);
 
     HANDLE linkWindows = CreateThread(nullptr, 0, RunLinkWindowThread,
                                       nullptr, 0, nullptr);

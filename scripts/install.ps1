@@ -1254,25 +1254,6 @@ foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll',
 
 }
 
-# F12 sniffer output lives beside the plugin. Program Files is normally
-# read-only for standard users, so grant only the installing user access to
-# this one pre-created log file (not to the plugin directory or binaries).
-$oldSnifferLog = Join-Path $pluginDir 'ChineseLocalizer_sniffer.tsv'
-if (Test-Path -LiteralPath $oldSnifferLog) {
-    Remove-Item -LiteralPath $oldSnifferLog -Force
-}
-$snifferLog = Join-Path $pluginDir 'ChineseLocalizer_sniffer.json'
-if (-not (Test-Path -LiteralPath $snifferLog)) {
-    '{"captured_at": null, "duration_ms": 1500, "entries": []}' | Set-Content -LiteralPath $snifferLog -Encoding UTF8
-}
-try {
-    & icacls.exe $snifferLog /grant:r "*${OriginalUserSid}:(M)" /c | Out-Null
-    Write-Info '已配置 F12 嗅探日志写入权限'
-} catch {
-    Write-Info ('配置嗅探日志权限失败: ' + $_.Exception.Message)
-}
-
-
 Write-Step '检查中文字体'
 
 $fontDirectory = Join-Path $toolbag 'data\gui\font'
