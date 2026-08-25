@@ -22,8 +22,8 @@ PAYLOAD_FILES = [
     ("dist/dictionary_zh.json", "translations/dictionary_zh.json"),
     ("dist/segoeui.slug", "fonts/segoeui.slug"),
     ("dist/tbscene.ico", "icon/tbscene.ico"),
-    ("dist/ToolbagChineseHook.dll", "build/ToolbagChineseHook.dll"),
-    ("dist/ToolbagChineseLauncher.exe", "build/ToolbagChineseLauncher.exe"),
+    ("dist/ToolbagChineseHook.dll", "build/out/ToolbagChineseHook.dll"),
+    ("dist/ToolbagChineseLauncher.exe", "build/out/ToolbagChineseLauncher.exe"),
 ]
 
 
@@ -48,11 +48,11 @@ def build_payload(root: Path, raw_len: int) -> bytes:
 
 def main():
     root = Path(__file__).resolve().parent.parent
-    raw = root / "build" / "ChineseInstaller.exe"
+    raw = root / "build" / "out" / "ChineseInstaller.exe"
     out = root / "dist" / "安装八猴汉化.exe"
 
     if not raw.exists():
-        raise SystemExit("缺少 build/ChineseInstaller.exe，请先运行 source\\build.bat")
+        raise SystemExit("缺少 build/out/ChineseInstaller.exe，请先运行 source\\build.bat")
 
     for _, rel in PAYLOAD_FILES:
         if not (root / rel).exists():

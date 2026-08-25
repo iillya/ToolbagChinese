@@ -3,10 +3,13 @@ setlocal
 set "ROOT=%~dp0.."
 set "SOURCE=%ROOT%\source"
 set "BUILD=%ROOT%\build"
+set "OUT=%BUILD%\out"
+set "OBJ=%BUILD%\obj"
 set "DIST=%ROOT%\dist"
 set "ICON=%ROOT%\icon"
 set "THIRD_PARTY=%ROOT%\third_party"
-if not exist "%BUILD%" mkdir "%BUILD%"
+if not exist "%OUT%" mkdir "%OUT%"
+if not exist "%OBJ%" mkdir "%OBJ%"
 if not exist "%DIST%" mkdir "%DIST%"
 set "VCVARS="
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
@@ -21,15 +24,15 @@ if not defined VCVARS (
     exit /b 1
 )
 call "%VCVARS%" >nul
-rc /nologo /fo "%BUILD%\app_icon.res" "%ICON%\app_icon.rc"
+rc /nologo /fo "%OBJ%\app_icon.res" "%ICON%\app_icon.rc"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /Gy /Gw /W4 /wd4201 /TC /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" /c "%THIRD_PARTY%\zydis\Zydis.c" /Fo:"%BUILD%\zydis.obj"
+cl /nologo /O2 /Gy /Gw /W4 /wd4201 /TC /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" /c "%THIRD_PARTY%\zydis\Zydis.c" /Fo:"%OBJ%\zydis.obj"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" "%SOURCE%\hook.cpp" "%BUILD%\zydis.obj" user32.lib shell32.lib gdi32.lib /Fo:"%BUILD%\hook.obj" /Fe:"%BUILD%\ToolbagChineseHook.dll" /link /IMPLIB:"%BUILD%\ToolbagChineseHook.lib"
+cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" "%SOURCE%\hook.cpp" "%OBJ%\zydis.obj" user32.lib shell32.lib gdi32.lib /Fo:"%OBJ%\hook.obj" /Fe:"%OUT%\ToolbagChineseHook.dll" /link /IMPLIB:"%OBJ%\ToolbagChineseHook.lib"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\launcher.cpp" user32.lib "%BUILD%\app_icon.res" /Fo:"%BUILD%\launcher.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%BUILD%\ToolbagChineseLauncher.exe"
+cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\launcher.cpp" user32.lib "%OBJ%\app_icon.res" /Fo:"%OBJ%\launcher.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%OUT%\ToolbagChineseLauncher.exe"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\installer.cpp" user32.lib gdi32.lib ole32.lib shell32.lib "%BUILD%\app_icon.res" /Fo:"%BUILD%\installer.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%BUILD%\ChineseInstaller.exe" /MANIFEST:EMBED /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
+cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\installer.cpp" user32.lib gdi32.lib ole32.lib shell32.lib "%OBJ%\app_icon.res" /Fo:"%OBJ%\installer.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%OUT%\ChineseInstaller.exe" /MANIFEST:EMBED /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
 if errorlevel 1 exit /b 1
 python "%SOURCE%\embed_files.py"
 if errorlevel 1 exit /b 1
