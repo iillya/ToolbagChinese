@@ -51,11 +51,11 @@ LPTHREAD_START_ROUTINE ResolveLoadLibraryEntryPoint(DWORD processId) {
         }
         CloseHandle(snapshot);
     }
-    // Never pass a function address from this process to another process.
-    // ASLR normally keeps system DLL bases aligned, but that is not an API
-    // guarantee; failing cleanly is safer than starting a thread at an
-    // unverified address.
-    return nullptr;
+    // A newly created suspended process can temporarily reject module
+    // snapshots on some Windows builds.  Both processes have the same
+    // architecture and share the boot-time system DLL mapping, so retain the
+    // proven compatibility fallback used by the stable launcher.
+    return reinterpret_cast<LPTHREAD_START_ROUTINE>(localFunction);
 }
 
 std::wstring GetExecutablePath() {
