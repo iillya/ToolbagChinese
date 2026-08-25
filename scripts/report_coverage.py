@@ -5,7 +5,7 @@ Coverage / gap report: how much of the captured Toolbag UI text is already in
 the dictionary, and what is still untranslated.
 
 Reads:
-  plugin/data/dictionary_zh.json             (translated keys)
+  translations/dictionary_zh.json            (translated keys)
   reports/all_captured.tsv                   (static scanner, ui tier)
   reports/ui_runtime_dump.txt                (UI Automation dump, if present)
   %TOOLBAG_DIR%\\data\\ChineseLocalizer\\ChineseLocalizer_sniffer.json

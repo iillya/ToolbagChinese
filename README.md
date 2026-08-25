@@ -69,8 +69,7 @@ Toolbag 5\ChineseLauncher\ChineseLocalizer_sniffer.json
 需要 Visual Studio 2022 C++生成工具和 Python 3：
 
 ```bat
-plugin\scripts\build.bat
-python plugin\scripts\tools\embed_files.py
+source\build.bat
 ```
 
 生成文件：
@@ -82,11 +81,12 @@ dist\安装八猴汉化.exe
 ## 目录
 
 ```text
-plugin\src\          Hook DLL、启动器和安装器源码
-plugin\data\         中文字典和兼容字体
-plugin\resources\    程序图标和 .tbscene 文档图标
-plugin\scripts\      构建、安装和字典维护工具
-plugin\third_party\  Zydis x64 指令解码器
+source\               Hook DLL、启动器、安装器和正式构建入口
+translations\         正式中文字典
+fonts\                兼容字体
+icon\                 程序图标和 .tbscene 文档图标
+scripts\              安装、字典维护和逆向辅助工具
+third_party\          Zydis x64 指令解码器
 ```
 
 ## 作者与仓库
@@ -97,4 +97,4 @@ plugin\third_party\  Zydis x64 指令解码器
 ## 许可证
 
 本项目许可证见 [LICENSE](LICENSE)。Zydis 使用 MIT许可证，详见
-`plugin/third_party/zydis/LICENSE`。
+`third_party/zydis/LICENSE`。

@@ -1,7 +1,13 @@
 @echo off
 setlocal
-if not exist "%~dp0..\..\build" mkdir "%~dp0..\..\build"
-if not exist "%~dp0..\..\dist" mkdir "%~dp0..\..\dist"
+set "ROOT=%~dp0.."
+set "SOURCE=%ROOT%\source"
+set "BUILD=%ROOT%\build"
+set "DIST=%ROOT%\dist"
+set "ICON=%ROOT%\icon"
+set "THIRD_PARTY=%ROOT%\third_party"
+if not exist "%BUILD%" mkdir "%BUILD%"
+if not exist "%DIST%" mkdir "%DIST%"
 set "VCVARS="
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if exist "%VSWHERE%" (
@@ -15,15 +21,17 @@ if not defined VCVARS (
     exit /b 1
 )
 call "%VCVARS%" >nul
-rc /nologo /fo "%~dp0..\..\build\app_icon.res" "%~dp0..\resources\app_icon.rc"
+rc /nologo /fo "%BUILD%\app_icon.res" "%ICON%\app_icon.rc"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /Gy /Gw /W4 /wd4201 /TC /DZYDIS_STATIC_BUILD /I"%~dp0..\third_party\zydis" /c "%~dp0..\third_party\zydis\Zydis.c" /Fo:"%~dp0..\..\build\zydis.obj"
+cl /nologo /O2 /Gy /Gw /W4 /wd4201 /TC /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" /c "%THIRD_PARTY%\zydis\Zydis.c" /Fo:"%BUILD%\zydis.obj"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%~dp0..\third_party\zydis" "%~dp0..\src\dllmain.cpp" "%~dp0..\..\build\zydis.obj" user32.lib shell32.lib gdi32.lib /Fo:"%~dp0..\..\build\dllmain.obj" /Fe:"%~dp0..\..\build\ToolbagChineseHook.dll" /link /IMPLIB:"%~dp0..\..\build\ToolbagChineseHook.lib"
+cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" "%SOURCE%\hook.cpp" "%BUILD%\zydis.obj" user32.lib shell32.lib gdi32.lib /Fo:"%BUILD%\hook.obj" /Fe:"%BUILD%\ToolbagChineseHook.dll" /link /IMPLIB:"%BUILD%\ToolbagChineseHook.lib"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /EHsc /utf-8 "%~dp0..\src\launcher.cpp" user32.lib "%~dp0..\..\build\app_icon.res" /Fo:"%~dp0..\..\build\launcher.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%~dp0..\..\build\ToolbagChineseLauncher.exe"
+cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\launcher.cpp" user32.lib "%BUILD%\app_icon.res" /Fo:"%BUILD%\launcher.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%BUILD%\ToolbagChineseLauncher.exe"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /EHsc /utf-8 "%~dp0..\src\installer.cpp" user32.lib gdi32.lib ole32.lib shell32.lib "%~dp0..\..\build\app_icon.res" /Fo:"%~dp0..\..\build\installer.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%~dp0..\..\build\ChineseInstaller.exe" /MANIFEST:EMBED /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
+cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\installer.cpp" user32.lib gdi32.lib ole32.lib shell32.lib "%BUILD%\app_icon.res" /Fo:"%BUILD%\installer.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%BUILD%\ChineseInstaller.exe" /MANIFEST:EMBED /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
+if errorlevel 1 exit /b 1
+python "%SOURCE%\embed_files.py"
 if errorlevel 1 exit /b 1
 echo Build complete.
 endlocal

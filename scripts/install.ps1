@@ -1117,7 +1117,7 @@ if ($missing.Count -gt 0) {
         try {
 
 
-            & cmd /c "scripts\build.bat"
+            & cmd /c "source\build.bat"
 
 
             if ($LASTEXITCODE -ne 0) { throw "build.bat 返回错误码 $LASTEXITCODE" }

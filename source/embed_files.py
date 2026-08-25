@@ -7,7 +7,7 @@ The payload is appended after the PE image:
     [ file data... ][ entries... ][ manifestSize u32 ][ count u32 ][ magic u64 ]
 Each entry: [ nameLen u32 ][ name bytes ][ offset u64 ][ size u64 ][ sha256 32 bytes ]
 
-The C++ launcher (src/installer.cpp) reads this payload at runtime, extracts
+The C++ installer (source/installer.cpp) reads this payload at runtime, extracts
 the files to a temp folder and runs scripts\\install.ps1.
 """
 import struct
@@ -18,10 +18,10 @@ MAGIC = 0x314D484254  # "TBHM1"
 
 # logical name (as extracted) -> source path relative to repo root
 PAYLOAD_FILES = [
-    ("scripts/install.ps1", "plugin/scripts/install.ps1"),
-    ("dist/dictionary_zh.json", "plugin/data/dictionary_zh.json"),
-    ("dist/segoeui.slug", "plugin/data/segoeui.slug"),
-    ("dist/tbscene.ico", "plugin/resources/tbscene.ico"),
+    ("scripts/install.ps1", "scripts/install.ps1"),
+    ("dist/dictionary_zh.json", "translations/dictionary_zh.json"),
+    ("dist/segoeui.slug", "fonts/segoeui.slug"),
+    ("dist/tbscene.ico", "icon/tbscene.ico"),
     ("dist/ToolbagChineseHook.dll", "build/ToolbagChineseHook.dll"),
     ("dist/ToolbagChineseLauncher.exe", "build/ToolbagChineseLauncher.exe"),
 ]
@@ -47,12 +47,12 @@ def build_payload(root: Path, raw_len: int) -> bytes:
 
 
 def main():
-    root = Path(__file__).resolve().parent.parent.parent.parent
+    root = Path(__file__).resolve().parent.parent
     raw = root / "build" / "ChineseInstaller.exe"
     out = root / "dist" / "安装八猴汉化.exe"
 
     if not raw.exists():
-        raise SystemExit("缺少 build/ChineseInstaller.exe，请先运行 plugin\\scripts\\build.bat")
+        raise SystemExit("缺少 build/ChineseInstaller.exe，请先运行 source\\build.bat")
 
     for _, rel in PAYLOAD_FILES:
         if not (root / rel).exists():
