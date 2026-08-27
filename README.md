@@ -51,7 +51,7 @@ Toolbag安装目录\ChineseLauncher\ToolbagChineseLauncher.exe
 
 ## 中文字体
 
-所有受支持的 Toolbag 版本统一使用补丁内置的阿里巴巴普惠体 2.0 Regular Slug 字体。安装器会先备份 Toolbag 原来的 `segoeui.slug`，再安装中文字体；即使目标版本另有中文字体，也不会走不同分支。重复安装不会覆盖第一次生成的原版备份，拆卸汉化时会自动恢复原字体。
+所有受支持的 Toolbag 版本统一使用补丁内置的简体中文字体（阿里巴巴普惠体 2.0 Regular Slug，补丁内文件名为 `ToolbagChineseFont.slug`）。安装器会替换 Toolbag 的字体目录里以下三个字体（哪个存在就替换哪个，并备份原字体）：`notosans_chinese.slug`、`segoeui.slug`、`selawik.slug`。替换前会备份原字体，重复安装不会覆盖上一次备份，拆卸汉化时会自动恢复原字体。
 
 ## 更新汉化
 

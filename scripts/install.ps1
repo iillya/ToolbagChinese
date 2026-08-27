@@ -529,11 +529,15 @@ function Remove-DirectoryWithRetry([string]$path, [string]$label) {
 $script:installInProgress = $false
 $script:rollbackPluginDir = ''
 $script:rollbackPluginBackup = ''
-$script:fontBackupCreatedByCurrentInstall = $false
-$script:fontOriginalPath = ''
-$script:fontBackupPath = ''
 $script:hadExistingPlugin = $false
 $script:rollbackToolbag = ''
+
+
+# 一次安装中创建的字体备份（Original/Backup 对），用于失败时整体回滚。
+$script:fontRollbackPairs = @()
+
+# 本次被替换成中文字体的字体文件名，用于安装自检。
+$script:replacedFonts = @()
 
 
 if (-not $OriginalUserSid) {
@@ -602,11 +606,12 @@ trap {
                 Copy-Item -LiteralPath $script:rollbackPluginBackup -Destination $script:rollbackPluginDir -Recurse -Force
                 Remove-Item -LiteralPath $script:rollbackPluginBackup -Recurse -Force
             }
-            if ($script:fontBackupCreatedByCurrentInstall -and
-                $script:fontBackupPath -and
-                (Test-Path -LiteralPath $script:fontBackupPath)) {
-                Copy-Item -LiteralPath $script:fontBackupPath -Destination $script:fontOriginalPath -Force
-                Remove-Item -LiteralPath $script:fontBackupPath -Force
+            # 回滚本次安装替换过的字体：用备份恢复原字体。
+            foreach ($pair in $script:fontRollbackPairs) {
+                if ($pair.Backup -and (Test-Path -LiteralPath $pair.Backup)) {
+                    Copy-Item -LiteralPath $pair.Backup -Destination $pair.Original -Force
+                    Remove-Item -LiteralPath $pair.Backup -Force
+                }
             }
         } catch {}
     }
@@ -998,12 +1003,23 @@ if ($Uninstall) {
     # 1) 恢复安装前的主字体。备份文件本身就是是否替换过的可靠标记，
     #    即使旧安装状态注册表丢失也可以正常恢复。
     $fontDirectory = Join-Path $toolbag 'data\gui\font'
-    $segoeFont = Join-Path $fontDirectory 'segoeui.slug'
-    $segoeFontBackup = Join-Path $fontDirectory 'segoeui.slug.ChineseLocalizer.backup'
-    if (Test-Path -LiteralPath $segoeFontBackup) {
-        Copy-Item -LiteralPath $segoeFontBackup -Destination $segoeFont -Force
-        Remove-Item -LiteralPath $segoeFontBackup -Force
-        Write-Info '已恢复原版 segoeui.slug'
+    $ourFontSource = Join-Path $Dist 'ToolbagChineseFont.slug'
+    $ourFontHash = if (Test-Path -LiteralPath $ourFontSource) {
+        (Get-FileHash -LiteralPath $ourFontSource -Algorithm SHA256).Hash
+    } else { '' }
+    foreach ($candidate in @('notosans_chinese.slug', 'segoeui.slug', 'selawik.slug')) {
+        $fontPath = Join-Path $fontDirectory $candidate
+        $fontBackup = Join-Path $fontDirectory "$candidate.ChineseLocalizer.backup"
+        if (Test-Path -LiteralPath $fontBackup) {
+            Copy-Item -LiteralPath $fontBackup -Destination $fontPath -Force
+            Remove-Item -LiteralPath $fontBackup -Force
+            Write-Info "已恢复原版 $candidate"
+        } elseif ($ourFontHash -and (Test-Path -LiteralPath $fontPath) -and
+                  ((Get-FileHash -LiteralPath $fontPath -Algorithm SHA256).Hash -eq $ourFontHash)) {
+            # 替换后但备份缺失（异常残留）时，删除残留的中文字体。
+            Remove-Item -LiteralPath $fontPath -Force
+            Write-Info "已移除异常残留的中文字体 $candidate"
+        }
     }
 
     # 2) 删除插件目录
@@ -1093,7 +1109,7 @@ if ($Uninstall) {
 
 
 $requiredFiles = @('dictionary_zh.json', 'ToolbagChineseHook.dll',
-                   'ToolbagChineseLauncher.exe', 'alibaba_puhuiti.slug', 'tbscene.ico')
+                   'ToolbagChineseLauncher.exe', 'ToolbagChineseFont.slug', 'tbscene.ico')
 
 
 $missing = @($requiredFiles | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
@@ -1257,37 +1273,51 @@ foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll',
 Write-Step '检查中文字体'
 
 $fontDirectory = Join-Path $toolbag 'data\gui\font'
-$segoeFont = Join-Path $fontDirectory 'segoeui.slug'
-$segoeFontBackup = Join-Path $fontDirectory 'segoeui.slug.ChineseLocalizer.backup'
-$script:fontOriginalPath = $segoeFont
-$script:fontBackupPath = $segoeFontBackup
-$segoeFontReplaced = Test-Path -LiteralPath $segoeFontBackup
+$script:fontRollbackPairs = @()
+$script:replacedFonts = @()
 
-if (-not (Test-Path -LiteralPath $segoeFont)) {
-    throw "未找到需要备份的原字体：$segoeFont"
+# 默认要替换的字体：覆盖界面默认字体（selawik）、中文字体（notosans_chinese）
+# 以及老版本可能用到的 segoeui。哪个存在就替换哪个，并全部备份原字体。
+$fontCandidates = @('notosans_chinese.slug', 'segoeui.slug', 'selawik.slug')
+
+$ourFontSource = Join-Path $Dist 'ToolbagChineseFont.slug'
+if (-not (Test-Path -LiteralPath $ourFontSource)) {
+    throw "未能找到内置中文字体：$ourFontSource"
+}
+$ourFontHash = (Get-FileHash -LiteralPath $ourFontSource -Algorithm SHA256).Hash
+
+$fontReplaced = $false
+$fontFound = $false
+foreach ($name in $fontCandidates) {
+    $targetFont = Join-Path $fontDirectory $name
+    if (-not (Test-Path -LiteralPath $targetFont)) { continue }
+    $fontFound = $true
+
+    $targetBackup = Join-Path $fontDirectory "$name.ChineseLocalizer.backup"
+    $targetIsOurFont = ((Get-FileHash -LiteralPath $targetFont -Algorithm SHA256).Hash -eq $ourFontHash)
+    if ($targetIsOurFont) {
+        Write-Info "  [OK] 字体已安装  $name"
+        continue
+    }
+
+    if (-not (Test-Path -LiteralPath $targetBackup)) {
+        Copy-Item -LiteralPath $targetFont -Destination $targetBackup -Force
+        $script:fontRollbackPairs += @{ Original = $targetFont; Backup = $targetBackup }
+        Write-Info "已备份原字体：$targetBackup"
+    } else {
+        Write-Info "已存在原字体备份，保留该备份，不重复覆盖。$targetBackup"
+    }
+
+    Copy-Item -LiteralPath $ourFontSource -Destination $targetFont -Force
+    $fontReplaced = $true
+    $script:replacedFonts += $name
+    $script:installedFiles.Add("$name（中文字体）")
+    Write-Info "已安装中文字体：$name"
 }
 
-$sourceFontHash = (Get-FileHash -LiteralPath (Join-Path $Dist 'alibaba_puhuiti.slug') -Algorithm SHA256).Hash
-$installedFontHash = if (Test-Path -LiteralPath $segoeFont) {
-    (Get-FileHash -LiteralPath $segoeFont -Algorithm SHA256).Hash
-} else { '' }
-if ($sourceFontHash -eq $installedFontHash) {
-    Write-Info '  [OK] 字体  阿里巴巴普惠体 2.0 Regular'
-} else {
-    Write-Info '  [错] 字体文件未正确安装'
-    $checkOk = $false
+if (-not $fontFound) {
+    Write-Info "  [提示] 未找到需要替换的字体（已检查：$($fontCandidates -join ', ')），请确认 Toolbag 安装目录正确。"
 }
-if (-not (Test-Path -LiteralPath $segoeFontBackup)) {
-    Copy-Item -LiteralPath $segoeFont -Destination $segoeFontBackup -Force
-    $script:fontBackupCreatedByCurrentInstall = $true
-    Write-Info "已备份原字体：$segoeFontBackup"
-} else {
-    Write-Info '已存在原字体备份，保留该备份，不重复覆盖。'
-}
-Copy-Item -LiteralPath (Join-Path $Dist 'alibaba_puhuiti.slug') -Destination $segoeFont -Force
-$segoeFontReplaced = $true
-$script:installedFiles.Add('segoeui.slug（阿里巴巴普惠体中文字体）')
-Write-Info '已统一安装阿里巴巴普惠体中文字体'
 
 # ---------- 6. 自检 ----------
 
@@ -1311,6 +1341,16 @@ foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll',
     else { Write-Info "  [缺] 插件  $name"; $checkOk = $false }
 
 
+}
+
+
+# 检查中文字体是否已正确安装到各目标位置（存在的字体都要是咱们的字体）。
+foreach ($name in $fontCandidates) {
+    $f = Join-Path $fontDirectory $name
+    if (-not (Test-Path -LiteralPath $f)) { continue }
+    $installedFontHash = (Get-FileHash -LiteralPath $f -Algorithm SHA256).Hash
+    if ($installedFontHash -eq $ourFontHash) { Write-Info "  [OK] 字体  $name" }
+    else { Write-Info "  [缺] 字体  $name"; $checkOk = $false }
 }
 
 
@@ -1338,7 +1378,7 @@ Install-TbsceneAssociation -pluginDir $pluginDir -toolbag $toolbag
 
 $stateKey = New-Item -Path (Get-UserRegistryPath 'Software\MarmosetChineseLocalizer') -Force
 New-ItemProperty -LiteralPath $stateKey.PSPath -Name ToolbagDir -Value $toolbag -PropertyType String -Force | Out-Null
-New-ItemProperty -LiteralPath $stateKey.PSPath -Name SegoeUiFontReplaced -Value ([int]$segoeFontReplaced) -PropertyType DWord -Force | Out-Null
+New-ItemProperty -LiteralPath $stateKey.PSPath -Name SegoeUiFontReplaced -Value ([int]$fontReplaced) -PropertyType DWord -Force | Out-Null
 
 $script:installInProgress = $false
 if (Test-Path -LiteralPath $script:rollbackPluginBackup) {

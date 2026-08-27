@@ -20,7 +20,7 @@ MAGIC = 0x314D484254  # "TBHM1"
 PAYLOAD_FILES = [
     ("scripts/install.ps1", "scripts/install.ps1"),
     ("dist/dictionary_zh.json", "translations/dictionary_zh.json"),
-    ("dist/alibaba_puhuiti.slug", "fonts/alibaba_puhuiti.slug"),
+    ("dist/ToolbagChineseFont.slug", "fonts/ToolbagChineseFont.slug"),
     ("dist/tbscene.ico", "icon/tbscene.ico"),
     ("dist/ToolbagChineseHook.dll", "build/out/ToolbagChineseHook.dll"),
     ("dist/ToolbagChineseLauncher.exe", "build/out/ToolbagChineseLauncher.exe"),
