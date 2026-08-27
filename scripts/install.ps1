@@ -1093,7 +1093,7 @@ if ($Uninstall) {
 
 
 $requiredFiles = @('dictionary_zh.json', 'ToolbagChineseHook.dll',
-                   'ToolbagChineseLauncher.exe', 'segoeui.slug', 'tbscene.ico')
+                   'ToolbagChineseLauncher.exe', 'alibaba_puhuiti.slug', 'tbscene.ico')
 
 
 $missing = @($requiredFiles | Where-Object { -not (Test-Path -LiteralPath (Join-Path $Dist $_)) })
@@ -1257,31 +1257,37 @@ foreach ($name in @('dictionary_zh.json', 'ToolbagChineseHook.dll',
 Write-Step '检查中文字体'
 
 $fontDirectory = Join-Path $toolbag 'data\gui\font'
-$nativeChineseFont = Join-Path $fontDirectory 'notosans_chinese.slug'
 $segoeFont = Join-Path $fontDirectory 'segoeui.slug'
 $segoeFontBackup = Join-Path $fontDirectory 'segoeui.slug.ChineseLocalizer.backup'
 $script:fontOriginalPath = $segoeFont
 $script:fontBackupPath = $segoeFontBackup
 $segoeFontReplaced = Test-Path -LiteralPath $segoeFontBackup
 
-if (Test-Path -LiteralPath $nativeChineseFont) {
-    Write-Info '已检测到 notosans_chinese.slug，无需替换主字体。'
-} else {
-    if (-not (Test-Path -LiteralPath $segoeFont)) {
-        throw "未找到需要备份的原字体：$segoeFont"
-    }
-    if (-not (Test-Path -LiteralPath $segoeFontBackup)) {
-        Copy-Item -LiteralPath $segoeFont -Destination $segoeFontBackup -Force
-        $script:fontBackupCreatedByCurrentInstall = $true
-        Write-Info "已备份原字体：$segoeFontBackup"
-    } else {
-        Write-Info '已存在原字体备份，保留该备份，不重复覆盖。'
-    }
-    Copy-Item -LiteralPath (Join-Path $Dist 'segoeui.slug') -Destination $segoeFont -Force
-    $segoeFontReplaced = $true
-    $script:installedFiles.Add('segoeui.slug（中文字体）')
-    Write-Info '已用中文字体替换 segoeui.slug'
+if (-not (Test-Path -LiteralPath $segoeFont)) {
+    throw "未找到需要备份的原字体：$segoeFont"
 }
+
+$sourceFontHash = (Get-FileHash -LiteralPath (Join-Path $Dist 'alibaba_puhuiti.slug') -Algorithm SHA256).Hash
+$installedFontHash = if (Test-Path -LiteralPath $segoeFont) {
+    (Get-FileHash -LiteralPath $segoeFont -Algorithm SHA256).Hash
+} else { '' }
+if ($sourceFontHash -eq $installedFontHash) {
+    Write-Info '  [OK] 字体  阿里巴巴普惠体 2.0 Regular'
+} else {
+    Write-Info '  [错] 字体文件未正确安装'
+    $checkOk = $false
+}
+if (-not (Test-Path -LiteralPath $segoeFontBackup)) {
+    Copy-Item -LiteralPath $segoeFont -Destination $segoeFontBackup -Force
+    $script:fontBackupCreatedByCurrentInstall = $true
+    Write-Info "已备份原字体：$segoeFontBackup"
+} else {
+    Write-Info '已存在原字体备份，保留该备份，不重复覆盖。'
+}
+Copy-Item -LiteralPath (Join-Path $Dist 'alibaba_puhuiti.slug') -Destination $segoeFont -Force
+$segoeFontReplaced = $true
+$script:installedFiles.Add('segoeui.slug（阿里巴巴普惠体中文字体）')
+Write-Info '已统一安装阿里巴巴普惠体中文字体'
 
 # ---------- 6. 自检 ----------
 

@@ -51,9 +51,7 @@ Toolbag安装目录\ChineseLauncher\ToolbagChineseLauncher.exe
 
 ## 中文字体
 
-部分 Toolbag 版本自带中文字体，安装器会直接使用它。
-
-如果目标版本缺少所需字体，安装器会先备份原来的 `segoeui.slug`，再安装兼容中文的字体文件。重复安装不会覆盖第一次生成的原版备份；拆卸汉化时会自动恢复原字体。
+所有受支持的 Toolbag 版本统一使用补丁内置的阿里巴巴普惠体 2.0 Regular Slug 字体。安装器会先备份 Toolbag 原来的 `segoeui.slug`，再安装中文字体；即使目标版本另有中文字体，也不会走不同分支。重复安装不会覆盖第一次生成的原版备份，拆卸汉化时会自动恢复原字体。
 
 ## 更新汉化
 
@@ -140,4 +138,4 @@ dist\            可发布安装器
 - 作者：[Bilibili 神说要凑数](https://space.bilibili.com/281243426)
 - 项目仓库：[GitHub](https://github.com/iillya/Toolbag)
 
-许可信息见 [LICENSE](LICENSE)。Zydis 使用 MIT 许可证，详见 `third_party/zydis/LICENSE`。Marmoset Toolbag 是 Marmoset LLC 的产品；本项目是非官方社区汉化补丁，与 Marmoset LLC 没有隶属关系。
+项目代码许可信息见 [LICENSE](LICENSE)。Zydis 使用 MIT 许可证，详见 `third_party/zydis/LICENSE`。内置 Slug 字体由本机安装的 Alibaba PuHuiTi 2.0 Regular 转换生成，字体版权归 Alibaba (China) Co., Ltd. 所有。Marmoset Toolbag 是 Marmoset LLC 的产品；本项目是非官方社区汉化补丁，与 Marmoset LLC 没有隶属关系。
