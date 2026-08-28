@@ -28,7 +28,7 @@ rc /nologo /fo "%OBJ%\app_icon.res" "%ICON%\app_icon.rc"
 if errorlevel 1 exit /b 1
 cl /nologo /O2 /Gy /Gw /W4 /wd4201 /TC /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" /c "%THIRD_PARTY%\zydis\Zydis.c" /Fo:"%OBJ%\zydis.obj"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" "%SOURCE%\hook.cpp" "%OBJ%\zydis.obj" user32.lib shell32.lib gdi32.lib /Fo:"%OBJ%\hook.obj" /Fe:"%OUT%\ToolbagChineseHook.dll" /link /IMPLIB:"%OBJ%\ToolbagChineseHook.lib"
+cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%THIRD_PARTY%\zydis" "%SOURCE%\hook.cpp" "%OBJ%\zydis.obj" user32.lib shell32.lib gdi32.lib dwmapi.lib /Fo:"%OBJ%\hook.obj" /Fe:"%OUT%\ToolbagChineseHook.dll" /link /IMPLIB:"%OBJ%\ToolbagChineseHook.lib"
 if errorlevel 1 exit /b 1
 cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\launcher.cpp" user32.lib "%OBJ%\app_icon.res" /Fo:"%OBJ%\launcher.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%OUT%\ToolbagChineseLauncher.exe"
 if errorlevel 1 exit /b 1
