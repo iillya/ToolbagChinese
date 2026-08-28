@@ -49,6 +49,7 @@ static FontMeasureFn    g_originalFontMeasure = nullptr;
 static TitleBarLayoutFn g_originalTitleBarLayout = nullptr;
 static BYTE*            g_windowVtable = nullptr;
 static BYTE*            g_buttonVtable = nullptr;
+static int              g_menuFontHeight = 14;   // matches Toolbag's top-menu font
 
 struct TitleBarSnapshot {
     bool valid = false;
@@ -365,72 +366,6 @@ static void HookTitleBarLayout(void* instance, void* layoutContext) {
     ReleaseSRWLockExclusive(&g_titleBarSnapshotLock);
 }
 
-static bool ReadTitleBarSnapshot(TitleBarSnapshot* output) {
-    if (!output) return false;
-    AcquireSRWLockShared(&g_titleBarSnapshotLock);
-    *output = g_titleBarSnapshot;
-    ReleaseSRWLockShared(&g_titleBarSnapshotLock);
-    return output->valid;
-}
-
-static bool CalculateCaptionAnchorFromInternalLayout(
-        const RECT& client, POINT origin, int* controlsLeft,
-        int* controlsCenterY, int* renderedTitleBarHeight) {
-    if (!controlsLeft || !controlsCenterY || !renderedTitleBarHeight ||
-        client.right <= 0)
-        return false;
-    TitleBarSnapshot snapshot = {};
-    if (!ReadTitleBarSnapshot(&snapshot)) return false;
-
-    auto bounds = [](const float layout[8], float* left, float* top,
-                     float* right, float* bottom) {
-        *left = *right = layout[0];
-        *top = *bottom = layout[1];
-        for (size_t point = 1; point < 4; ++point) {
-            const float x = layout[point * 2];
-            const float y = layout[point * 2 + 1];
-            if (!std::isfinite(x) || !std::isfinite(y)) return false;
-            *left = x < *left ? x : *left;
-            *right = x > *right ? x : *right;
-            *top = y < *top ? y : *top;
-            *bottom = y > *bottom ? y : *bottom;
-        }
-        return std::isfinite(*left) && std::isfinite(*top) &&
-               *right > *left && *bottom > *top;
-    };
-
-    float titleLeft, titleTop, titleRight, titleBottom;
-    float containerLeft, containerTop, containerRight, containerBottom;
-    float buttonLeft, buttonTop, buttonRight, buttonBottom;
-    if (!bounds(snapshot.titleBarLayout, &titleLeft, &titleTop,
-                &titleRight, &titleBottom) ||
-        !bounds(snapshot.containerLayout, &containerLeft, &containerTop,
-                &containerRight, &containerBottom) ||
-        !bounds(snapshot.minimizeButtonLayout, &buttonLeft, &buttonTop,
-                &buttonRight, &buttonBottom)) return false;
-
-    const float titleWidth = titleRight - titleLeft;
-    const float titleHeight = titleBottom - titleTop;
-    if (titleWidth <= 0.0f || titleHeight <= 0.0f) return false;
-    const float scale = static_cast<float>(client.right) / titleWidth;
-    if (!std::isfinite(scale) || scale <= 0.0f) return false;
-    const float scaledHeight = titleHeight * scale;
-    if (!std::isfinite(scaledHeight) || scaledHeight < 1.0f ||
-        scaledHeight > static_cast<float>(INT_MAX)) return false;
-    const int height = static_cast<int>(std::lround(scaledHeight));
-    // Container and button coordinates are local to their respective parents.
-    // TitleBar's own Y coordinates describe its placement in the root UI and
-    // must not be subtracted from its children's local coordinates.
-    const float internalLeft = containerLeft + buttonLeft;
-    const float internalCenterY = containerTop +
-        (buttonTop + buttonBottom) * 0.5f;
-    *controlsLeft = origin.x + static_cast<int>(std::lround(internalLeft * scale));
-    *controlsCenterY = origin.y +
-        static_cast<int>(std::lround(internalCenterY * scale));
-    *renderedTitleBarHeight = height;
-    return true;
-}
-
 static void PositionLinkWindows() {
     if (!g_authorWindow || !g_gitHubWindow) return;
     if (!IsWindow(g_toolbagWindow)) {
@@ -449,21 +384,28 @@ static void PositionLinkWindows() {
     if (!GetClientRect(g_toolbagWindow, &client)) return;
     POINT origin = {0, 0};
     if (!ClientToScreen(g_toolbagWindow, &origin)) return;
-    int controlsLeft = 0;
-    int controlsCenterY = 0;
-    int height = 0;
-    if (!CalculateCaptionAnchorFromInternalLayout(
-            client, origin, &controlsLeft, &controlsCenterY, &height)) {
-        ShowWindow(g_authorWindow, SW_HIDE);
-        ShowWindow(g_gitHubWindow, SW_HIDE);
-        return;
+    // -------------------------------------------------------------------
+    // Anchor the links to the top title band and size them to match the
+    // top menu bar font. The menu font height (14.4) is measured at runtime
+    // from Toolbag's own font-measure path; the band height uses Toolbag's
+    // 45-DIP menu bar so the links sit and size exactly like the menu.
+    // -------------------------------------------------------------------
+    UINT dpi = GetDpiForWindow(g_toolbagWindow);
+    if (dpi == 0) {
+        HDC dc = GetDC(nullptr);
+        if (dc) { dpi = GetDeviceCaps(dc, LOGPIXELSY); ReleaseDC(nullptr, dc); }
     }
+    g_menuFontHeight = MulDiv(14, (int)dpi, 96);           // match menu (14.4)
+    const int height = MulDiv(45, (int)dpi, 96);           // menu bar band height
+    const int controlsCenterY = origin.y + height / 2;
+    const int windowControlsWidth = MulDiv(150, height, 45);
+    const int controlsLeft = origin.x + client.right - windowControlsWidth;
     const int margin = MulDiv(8, height, 45);
     const int gap = MulDiv(14, height, 45);
     if (height != g_authorHeight || g_authorWidth == 0 || g_gitHubWidth == 0) {
         HDC dc = GetDC(nullptr);
         if (dc) {
-            HFONT font = CreateFontW(-MulDiv(20, height, 45), 0, 0, 0,
+            HFONT font = CreateFontW(-g_menuFontHeight, 0, 0, 0,
                                      FW_NORMAL, FALSE, TRUE, FALSE, DEFAULT_CHARSET,
                                      OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                                      ANTIALIASED_QUALITY, DEFAULT_PITCH,
@@ -603,7 +545,7 @@ static bool RenderLinkWindow(HWND window, const wchar_t* text,
         return false;
     }
 
-    HFONT font = CreateFontW(-MulDiv(20, height, 45), 0, 0, 0,
+    HFONT font = CreateFontW(-g_menuFontHeight, 0, 0, 0,
                              FW_NORMAL, FALSE, TRUE, FALSE, DEFAULT_CHARSET,
                              OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                              ANTIALIASED_QUALITY, DEFAULT_PITCH,
