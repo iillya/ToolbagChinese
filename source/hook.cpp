@@ -25,6 +25,7 @@
 #include <climits>
 #include <cstdio>
 #include <cstring>
+#include <cmath>
 #include <wchar.h>
 #include "Zydis.h"
 
@@ -37,6 +38,7 @@ using FontCompileFn   = void(__fastcall*)(void*, const char*);
 // single-line flags; keeping them in the hook is important because they are
 // passed on the stack by the Windows x64 ABI.
 using FontMeasureFn   = void(__fastcall*)(void*, float*, float*, const char*, int, bool);
+using TitleBarLayoutFn = void(__fastcall*)(void*, void*);
 
 // ---------------------------------------------------------------------------
 // Global state
@@ -44,6 +46,18 @@ using FontMeasureFn   = void(__fastcall*)(void*, float*, float*, const char*, in
 static HMODULE          g_hookModule = nullptr;
 static FontCompileFn    g_originalFontCompile[2] = {};
 static FontMeasureFn    g_originalFontMeasure = nullptr;
+static TitleBarLayoutFn g_originalTitleBarLayout = nullptr;
+static BYTE*            g_windowVtable = nullptr;
+static BYTE*            g_buttonVtable = nullptr;
+
+struct TitleBarSnapshot {
+    bool valid = false;
+    float titleBarLayout[8] = {};
+    float containerLayout[8] = {};
+    float minimizeButtonLayout[8] = {};
+};
+static TitleBarSnapshot g_titleBarSnapshot = {};
+static SRWLOCK g_titleBarSnapshotLock = SRWLOCK_INIT;
 
 
 struct TransparentStringHash {
@@ -77,7 +91,6 @@ static int              g_authorWidth = 0;
 static int              g_authorHeight = 0;
 static int              g_gitHubX = INT_MIN;
 static int              g_gitHubWidth = 0;
-static int              g_menuBarHeight = 0;
 static HWINEVENTHOOK    g_locationEventHook = nullptr;
 static HWINEVENTHOOK    g_minimizeEventHook = nullptr;
 static HWINEVENTHOOK    g_visibilityEventHook = nullptr;
@@ -267,13 +280,19 @@ static const char* TranslateText(const char* text) {
     }
 }
 
+static int FilterMemoryReadException(DWORD exceptionCode) {
+    return exceptionCode == EXCEPTION_ACCESS_VIOLATION ||
+           exceptionCode == EXCEPTION_IN_PAGE_ERROR
+        ? EXCEPTION_EXECUTE_HANDLER
+        : EXCEPTION_CONTINUE_SEARCH;
+}
+
 static const char* TranslateSafely(const char* text) {
     __try {
         return TranslateText(text);
     // Toolbag owns the incoming pointer. A stale engine pointer must fall back
     // to the original value instead of taking down the host process.
-#pragma warning(suppress: 6320)
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
+    } __except (FilterMemoryReadException(GetExceptionCode())) {
         return text;
     }
 }
@@ -305,11 +324,120 @@ static void HookFontMeasure(void* instance, float* width, float* height,
                           characterLimit, singleLine);
 }
 
+// Capture the real child controls of TitleBar's window-button container after
+// Toolbag has performed its own layout. Control stores its child vector at
+// +0xF0/+0xF8; TitleBar stores the button container at +0x140.
+static void HookTitleBarLayout(void* instance, void* layoutContext) {
+    g_originalTitleBarLayout(instance, layoutContext);
+
+    TitleBarSnapshot snapshot = {};
+    __try {
+        if (!instance) __leave;
+        BYTE* titleBar = static_cast<BYTE*>(instance);
+        BYTE* container = *reinterpret_cast<BYTE**>(titleBar + 0x140);
+        if (!container || *reinterpret_cast<BYTE**>(container) != g_windowVtable)
+            __leave;
+        BYTE** begin = *reinterpret_cast<BYTE***>(container + 0xF0);
+        BYTE** end = *reinterpret_cast<BYTE***>(container + 0xF8);
+        if (!begin || !end || end < begin || end - begin != 3) __leave;
+        for (BYTE** child = begin; child != end; ++child) {
+            if (!*child || *reinterpret_cast<BYTE**>(*child) != g_buttonVtable)
+                __leave;
+        }
+        constexpr size_t layoutOffsets[8] = {
+            0x2C, 0x30, 0x4C, 0x50, 0x6C, 0x70, 0x8C, 0x90
+        };
+        for (size_t field = 0; field < 8; ++field) {
+            snapshot.titleBarLayout[field] = *reinterpret_cast<float*>(
+                titleBar + layoutOffsets[field]);
+            snapshot.containerLayout[field] = *reinterpret_cast<float*>(
+                container + layoutOffsets[field]);
+            snapshot.minimizeButtonLayout[field] = *reinterpret_cast<float*>(
+                begin[0] + layoutOffsets[field]);
+        }
+        snapshot.valid = true;
+    } __except (FilterMemoryReadException(GetExceptionCode())) {
+        snapshot.valid = false;
+    }
+
+    AcquireSRWLockExclusive(&g_titleBarSnapshotLock);
+    g_titleBarSnapshot = snapshot;
+    ReleaseSRWLockExclusive(&g_titleBarSnapshotLock);
+}
+
+static bool ReadTitleBarSnapshot(TitleBarSnapshot* output) {
+    if (!output) return false;
+    AcquireSRWLockShared(&g_titleBarSnapshotLock);
+    *output = g_titleBarSnapshot;
+    ReleaseSRWLockShared(&g_titleBarSnapshotLock);
+    return output->valid;
+}
+
+static bool CalculateCaptionAnchorFromInternalLayout(
+        const RECT& client, POINT origin, int* controlsLeft,
+        int* controlsCenterY, int* renderedTitleBarHeight) {
+    if (!controlsLeft || !controlsCenterY || !renderedTitleBarHeight ||
+        client.right <= 0)
+        return false;
+    TitleBarSnapshot snapshot = {};
+    if (!ReadTitleBarSnapshot(&snapshot)) return false;
+
+    auto bounds = [](const float layout[8], float* left, float* top,
+                     float* right, float* bottom) {
+        *left = *right = layout[0];
+        *top = *bottom = layout[1];
+        for (size_t point = 1; point < 4; ++point) {
+            const float x = layout[point * 2];
+            const float y = layout[point * 2 + 1];
+            if (!std::isfinite(x) || !std::isfinite(y)) return false;
+            *left = x < *left ? x : *left;
+            *right = x > *right ? x : *right;
+            *top = y < *top ? y : *top;
+            *bottom = y > *bottom ? y : *bottom;
+        }
+        return std::isfinite(*left) && std::isfinite(*top) &&
+               *right > *left && *bottom > *top;
+    };
+
+    float titleLeft, titleTop, titleRight, titleBottom;
+    float containerLeft, containerTop, containerRight, containerBottom;
+    float buttonLeft, buttonTop, buttonRight, buttonBottom;
+    if (!bounds(snapshot.titleBarLayout, &titleLeft, &titleTop,
+                &titleRight, &titleBottom) ||
+        !bounds(snapshot.containerLayout, &containerLeft, &containerTop,
+                &containerRight, &containerBottom) ||
+        !bounds(snapshot.minimizeButtonLayout, &buttonLeft, &buttonTop,
+                &buttonRight, &buttonBottom)) return false;
+
+    const float titleWidth = titleRight - titleLeft;
+    const float titleHeight = titleBottom - titleTop;
+    if (titleWidth <= 0.0f || titleHeight <= 0.0f) return false;
+    const float scale = static_cast<float>(client.right) / titleWidth;
+    if (!std::isfinite(scale) || scale <= 0.0f) return false;
+    const float scaledHeight = titleHeight * scale;
+    if (!std::isfinite(scaledHeight) || scaledHeight < 1.0f ||
+        scaledHeight > static_cast<float>(INT_MAX)) return false;
+    const int height = static_cast<int>(std::lround(scaledHeight));
+    // Container and button coordinates are local to their respective parents.
+    // TitleBar's own Y coordinates describe its placement in the root UI and
+    // must not be subtracted from its children's local coordinates.
+    const float internalLeft = containerLeft + buttonLeft;
+    const float internalCenterY = containerTop +
+        (buttonTop + buttonBottom) * 0.5f;
+    *controlsLeft = origin.x + static_cast<int>(std::lround(internalLeft * scale));
+    *controlsCenterY = origin.y +
+        static_cast<int>(std::lround(internalCenterY * scale));
+    *renderedTitleBarHeight = height;
+    return true;
+}
+
 static void PositionLinkWindows() {
     if (!g_authorWindow || !g_gitHubWindow) return;
     if (!IsWindow(g_toolbagWindow)) {
-        g_toolbagWindow = nullptr;
-        EnumWindows(FindMainToolbagWindow, (LPARAM)&g_toolbagWindow);
+        MainWindowCandidate candidate;
+        EnumWindows(FindMainToolbagWindow,
+                    reinterpret_cast<LPARAM>(&candidate));
+        g_toolbagWindow = candidate.window;
     }
     if (!g_toolbagWindow) return;
     if (!IsWindowVisible(g_toolbagWindow) || IsIconic(g_toolbagWindow)) {
@@ -321,38 +449,17 @@ static void PositionLinkWindows() {
     if (!GetClientRect(g_toolbagWindow, &client)) return;
     POINT origin = {0, 0};
     if (!ClientToScreen(g_toolbagWindow, &origin)) return;
-    // Toolbag renders its custom chrome using its own UI scale, which is not
-    // necessarily the Win32 window DPI. Measure the first solid title/menu
-    // band from the composed screen pixels instead of guessing from DPI.
-    if (g_menuBarHeight == 0) {
-        HDC screenDc = GetDC(nullptr);
-        if (screenDc) {
-            const int sampleX = origin.x + client.right / 2;
-            const COLORREF reference = GetPixel(screenDc, sampleX, origin.y + 2);
-            int changedRows = 0;
-            if (reference != CLR_INVALID) {
-                for (int row = 3; row < 90; ++row) {
-                    const COLORREF pixel = GetPixel(screenDc, sampleX, origin.y + row);
-                    const int difference =
-                        abs((int)GetRValue(pixel) - (int)GetRValue(reference)) +
-                        abs((int)GetGValue(pixel) - (int)GetGValue(reference)) +
-                        abs((int)GetBValue(pixel) - (int)GetBValue(reference));
-                    changedRows = difference > 24 ? changedRows + 1 : 0;
-                    if (changedRows == 3) {
-                        const int measuredHeight = row - 2;
-                        if (measuredHeight >= 30 && measuredHeight <= 70)
-                            g_menuBarHeight = measuredHeight;
-                        break;
-                    }
-                }
-            }
-            ReleaseDC(nullptr, screenDc);
-        }
+    int controlsLeft = 0;
+    int controlsCenterY = 0;
+    int height = 0;
+    if (!CalculateCaptionAnchorFromInternalLayout(
+            client, origin, &controlsLeft, &controlsCenterY, &height)) {
+        ShowWindow(g_authorWindow, SW_HIDE);
+        ShowWindow(g_gitHubWindow, SW_HIDE);
+        return;
     }
-    const int height = g_menuBarHeight ? g_menuBarHeight : 45;
     const int margin = MulDiv(8, height, 45);
     const int gap = MulDiv(14, height, 45);
-    const int windowControlsWidth = MulDiv(150, height, 45);
     if (height != g_authorHeight || g_authorWidth == 0 || g_gitHubWidth == 0) {
         HDC dc = GetDC(nullptr);
         if (dc) {
@@ -361,23 +468,30 @@ static void PositionLinkWindows() {
                                      OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                                      ANTIALIASED_QUALITY, DEFAULT_PITCH,
                                      L"Microsoft YaHei UI");
-            HFONT oldFont = (HFONT)SelectObject(dc, font);
-            SIZE size = {};
-            if (GetTextExtentPoint32W(dc, kAuthorText, (int)wcslen(kAuthorText), &size))
-                g_authorWidth = size.cx;
-            if (GetTextExtentPoint32W(dc, kGitHubText, (int)wcslen(kGitHubText), &size))
-                g_gitHubWidth = size.cx;
-            SelectObject(dc, oldFont);
-            DeleteObject(font);
+            if (font) {
+                HGDIOBJ oldFont = SelectObject(dc, font);
+                SIZE size = {};
+                if (oldFont && oldFont != HGDI_ERROR) {
+                    if (GetTextExtentPoint32W(
+                            dc, kAuthorText, static_cast<int>(wcslen(kAuthorText)),
+                            &size))
+                        g_authorWidth = size.cx;
+                    if (GetTextExtentPoint32W(
+                            dc, kGitHubText, static_cast<int>(wcslen(kGitHubText)),
+                            &size))
+                        g_gitHubWidth = size.cx;
+                    SelectObject(dc, oldFont);
+                }
+                DeleteObject(font);
+            }
             ReleaseDC(nullptr, dc);
         }
     }
     if (g_authorWidth <= 0) g_authorWidth = MulDiv(210, height, 45);
     if (g_gitHubWidth <= 0) g_gitHubWidth = MulDiv(100, height, 45);
-    const int githubX = origin.x + client.right - windowControlsWidth -
-                        g_gitHubWidth - margin;
+    const int githubX = controlsLeft - g_gitHubWidth - margin;
     const int x = githubX - gap - g_authorWidth;
-    const int y = origin.y;
+    const int y = controlsCenterY - height / 2;
     if (x == g_authorX && githubX == g_gitHubX && y == g_authorY &&
         height == g_authorHeight && IsWindowVisible(g_authorWindow) &&
         IsWindowVisible(g_gitHubWindow)) return;
@@ -400,7 +514,7 @@ static void PositionLinkWindows() {
 static int CalculateTextVerticalOffset(HDC referenceDc, HFONT font,
                                        const wchar_t* text,
                                        int width, int height) {
-    if (width <= 0 || height <= 0) return 0;
+    if (!referenceDc || !font || !text || width <= 0 || height <= 0) return 0;
 
     BITMAPINFO bitmapInfo = {};
     bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -421,11 +535,21 @@ static int CalculateTextVerticalOffset(HDC referenceDc, HFONT font,
     }
 
     HBITMAP oldBitmap = (HBITMAP)SelectObject(memoryDc, bitmap);
+    if (!oldBitmap || oldBitmap == HGDI_ERROR) {
+        DeleteDC(memoryDc);
+        DeleteObject(bitmap);
+        return 0;
+    }
     HFONT oldFont = (HFONT)SelectObject(memoryDc, font);
+    if (!oldFont || oldFont == HGDI_ERROR) {
+        SelectObject(memoryDc, oldBitmap);
+        DeleteDC(memoryDc);
+        DeleteObject(bitmap);
+        return 0;
+    }
     RECT rect = {0, 0, width, height};
-    HBRUSH background = CreateSolidBrush(kLinkTransparentColor);
-    FillRect(memoryDc, &rect, background);
-    DeleteObject(background);
+    SetDCBrushColor(memoryDc, kLinkTransparentColor);
+    FillRect(memoryDc, &rect, static_cast<HBRUSH>(GetStockObject(DC_BRUSH)));
     SetBkMode(memoryDc, TRANSPARENT);
     SetTextColor(memoryDc, kLinkTextColor);
     DrawTextW(memoryDc, text, -1, &rect,
@@ -459,6 +583,7 @@ static int CalculateTextVerticalOffset(HDC referenceDc, HFONT font,
 
 static bool RenderLinkWindow(HWND window, const wchar_t* text,
                              int x, int y, int width, int height) {
+    if (!window || !text || width <= 0 || height <= 0) return false;
     HDC screenDc = GetDC(nullptr);
     HDC memoryDc = screenDc ? CreateCompatibleDC(screenDc) : nullptr;
     BITMAPINFO bitmapInfo = {};
@@ -478,14 +603,35 @@ static bool RenderLinkWindow(HWND window, const wchar_t* text,
         return false;
     }
 
-    HBITMAP oldBitmap = (HBITMAP)SelectObject(memoryDc, bitmap);
-    memset(pixels, 0, (size_t)width * height * sizeof(DWORD));
     HFONT font = CreateFontW(-MulDiv(20, height, 45), 0, 0, 0,
                              FW_NORMAL, FALSE, TRUE, FALSE, DEFAULT_CHARSET,
                              OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                              ANTIALIASED_QUALITY, DEFAULT_PITCH,
                              L"Microsoft YaHei UI");
+    if (!font) {
+        DeleteObject(bitmap);
+        DeleteDC(memoryDc);
+        ReleaseDC(nullptr, screenDc);
+        return false;
+    }
+    HBITMAP oldBitmap = (HBITMAP)SelectObject(memoryDc, bitmap);
+    if (!oldBitmap || oldBitmap == HGDI_ERROR) {
+        DeleteObject(font);
+        DeleteObject(bitmap);
+        DeleteDC(memoryDc);
+        ReleaseDC(nullptr, screenDc);
+        return false;
+    }
     HFONT oldFont = (HFONT)SelectObject(memoryDc, font);
+    if (!oldFont || oldFont == HGDI_ERROR) {
+        SelectObject(memoryDc, oldBitmap);
+        DeleteObject(font);
+        DeleteObject(bitmap);
+        DeleteDC(memoryDc);
+        ReleaseDC(nullptr, screenDc);
+        return false;
+    }
+    memset(pixels, 0, static_cast<size_t>(width) * height * sizeof(DWORD));
     SetBkMode(memoryDc, TRANSPARENT);
     SetTextColor(memoryDc, kLinkTextColor);
     RECT textRect = {0, 0, width, height};
@@ -515,7 +661,7 @@ static bool RenderLinkWindow(HWND window, const wchar_t* text,
     DeleteObject(bitmap);
     DeleteDC(memoryDc);
     ReleaseDC(nullptr, screenDc);
-    ShowWindow(window, SW_SHOWNOACTIVATE);
+    ShowWindow(window, updated ? SW_SHOWNOACTIVATE : SW_HIDE);
     return updated != FALSE;
 }
 
@@ -536,7 +682,6 @@ static LRESULT CALLBACK LinkWindowProc(HWND window, UINT message,
             return 0;
         case WM_DISPLAYCHANGE:
         case WM_DPICHANGED:
-            g_menuBarHeight = 0;
             PositionLinkWindows();
             return 0;
         case WM_SETCURSOR:
@@ -983,6 +1128,56 @@ static BYTE* ResolveTextDrawMethod(BYTE* textVtable, BYTE* imageBegin,
     return ambiguous ? nullptr : bestMethod;
 }
 
+// Identify TitleBar's layout override by the set of class fields it consumes.
+// Unlike a fixed vtable slot, these semantic accesses have remained stable as
+// methods move between slots/builds: menu bar (+0x138), caption container
+// (+0x140), frame (+0x148), and the two title textures (+0x150/+0x158).
+static bool LooksLikeTitleBarLayoutMethod(BYTE* method, BYTE* codeEnd) {
+    constexpr ZyanI64 requiredOffsets[] = {
+        0x138, 0x140, 0x148, 0x150, 0x158
+    };
+    bool found[ARRAYSIZE(requiredOffsets)] = {};
+    size_t offset = 0;
+    size_t instructions = 0;
+    while (offset < 0x500 && method + offset < codeEnd &&
+           instructions++ < 512) {
+        DecodedInstruction decoded;
+        if (!DecodeInstruction(method + offset,
+                               static_cast<size_t>(codeEnd - method - offset),
+                               decoded)) return false;
+        for (ZyanU8 operandIndex = 0;
+             operandIndex < decoded.instruction.operand_count_visible;
+             ++operandIndex) {
+            const auto& operand = decoded.operands[operandIndex];
+            if (operand.type != ZYDIS_OPERAND_TYPE_MEMORY) continue;
+            for (size_t field = 0; field < ARRAYSIZE(requiredOffsets); ++field)
+                if (operand.mem.disp.value == requiredOffsets[field])
+                    found[field] = true;
+        }
+        offset += decoded.instruction.length;
+        if (decoded.instruction.meta.category == ZYDIS_CATEGORY_RET) break;
+    }
+    for (bool value : found)
+        if (!value) return false;
+    return true;
+}
+
+static BYTE* ResolveTitleBarLayoutMethod(BYTE* titleBarVtable,
+                                         BYTE* codeBegin, BYTE* codeEnd) {
+    if (!titleBarVtable) return nullptr;
+    BYTE* match = nullptr;
+    constexpr size_t kMaximumVtableSlots = 64;
+    for (size_t slot = 0; slot < kMaximumVtableSlots; ++slot) {
+        BYTE* method = reinterpret_cast<BYTE*>(
+            *reinterpret_cast<void**>(titleBarVtable + slot * sizeof(void*)));
+        if (!IsExecutableAddress(method, codeBegin, codeEnd)) break;
+        if (!LooksLikeTitleBarLayoutMethod(method, codeEnd)) continue;
+        if (match && match != method) return nullptr;
+        match = method;
+    }
+    return match;
+}
+
 static void EmitJump(BYTE* destination, const void* target);
 static bool InstallInlineHook(BYTE* target, void* replacement,
                               void** original);
@@ -1277,6 +1472,25 @@ static BOOL CALLBACK InitializeHooks(PINIT_ONCE, PVOID, PVOID*) {
             // the safe display-only translation from starting.
             if (compileReady) g_hooksInstalled = TRUE;
             (void)measureReady;
+        }
+    }
+
+    // Resolve the caption layout by class RTTI plus method semantics. Never
+    // assume a fixed RVA or vtable slot; a mismatch only disables link
+    // positioning and cannot prevent the translation hooks from starting.
+    BYTE* titleBarVtable = ResolveVtableByName(imageBase, ".?AVTitleBar@mset@@");
+    g_windowVtable = ResolveVtableByName(imageBase, ".?AVWindow@mset@@");
+    g_buttonVtable = ResolveVtableByName(imageBase, ".?AVButton@mset@@");
+    if (titleBarVtable && g_windowVtable && g_buttonVtable) {
+        BYTE* titleBarLayout = ResolveTitleBarLayoutMethod(
+            titleBarVtable, codeBegin, codeEnd);
+        void* original = nullptr;
+        if (titleBarLayout &&
+            InstallInlineHook(titleBarLayout,
+                              reinterpret_cast<void*>(HookTitleBarLayout),
+                              &original)) {
+            g_originalTitleBarLayout =
+                reinterpret_cast<TitleBarLayoutFn>(original);
         }
     }
 

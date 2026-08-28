@@ -536,10 +536,6 @@ $script:rollbackToolbag = ''
 # 一次安装中创建的字体备份（Original/Backup 对），用于失败时整体回滚。
 $script:fontRollbackPairs = @()
 
-# 本次被替换成中文字体的字体文件名，用于安装自检。
-$script:replacedFonts = @()
-
-
 if (-not $OriginalUserSid) {
     $OriginalUserSid = Get-InteractiveShellSid
     if (-not $OriginalUserSid) { $OriginalUserSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
@@ -1274,7 +1270,6 @@ Write-Step '检查中文字体'
 
 $fontDirectory = Join-Path $toolbag 'data\gui\font'
 $script:fontRollbackPairs = @()
-$script:replacedFonts = @()
 
 # 默认要替换的字体：覆盖界面默认字体（selawik）、中文字体（notosans_chinese）
 # 以及老版本可能用到的 segoeui。哪个存在就替换哪个，并全部备份原字体。
@@ -1310,7 +1305,6 @@ foreach ($name in $fontCandidates) {
 
     Copy-Item -LiteralPath $ourFontSource -Destination $targetFont -Force
     $fontReplaced = $true
-    $script:replacedFonts += $name
     $script:installedFiles.Add("$name（中文字体）")
     Write-Info "已安装中文字体：$name"
 }

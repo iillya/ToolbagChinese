@@ -96,11 +96,14 @@ bool IsX64WindowsExecutable(const std::wstring& path) {
     if (file == INVALID_HANDLE_VALUE) return false;
     IMAGE_DOS_HEADER dos{};
     DWORD read = 0;
+    LARGE_INTEGER ntOffset{};
     bool valid = ReadFile(file, &dos, sizeof(dos), &read, nullptr) &&
                  read == sizeof(dos) && dos.e_magic == IMAGE_DOS_SIGNATURE &&
-                 dos.e_lfanew > 0 &&
-                 SetFilePointer(file, dos.e_lfanew, nullptr, FILE_BEGIN) !=
-                     INVALID_SET_FILE_POINTER;
+                 dos.e_lfanew > 0;
+    if (valid) {
+        ntOffset.QuadPart = dos.e_lfanew;
+        valid = SetFilePointerEx(file, ntOffset, nullptr, FILE_BEGIN) != FALSE;
+    }
     DWORD signature = 0;
     IMAGE_FILE_HEADER header{};
     valid = valid && ReadFile(file, &signature, sizeof(signature), &read, nullptr) &&
@@ -129,7 +132,10 @@ bool ReadPayloadManifest(std::vector<PayloadEntry>& entries) {
     FILE* file = nullptr;
     if (_wfopen_s(&file, executablePath.c_str(), L"rb") || !file) return false;
 
-    _fseeki64(file, 0, SEEK_END);
+    if (_fseeki64(file, 0, SEEK_END) != 0) {
+        fclose(file);
+        return false;
+    }
     const int64_t fileSize = _ftelli64(file);
     if (fileSize < 16) { fclose(file); return false; }
 
@@ -147,7 +153,10 @@ bool ReadPayloadManifest(std::vector<PayloadEntry>& entries) {
         manifestSize > (uint64_t)fileSize - 16) { fclose(file); return false; }
 
     const int64_t entriesStart = fileSize - 16 - manifestSize;
-    _fseeki64(file, entriesStart, SEEK_SET);
+    if (_fseeki64(file, entriesStart, SEEK_SET) != 0) {
+        fclose(file);
+        return false;
+    }
 
     for (uint32_t i = 0; i < count; i++) {
         uint32_t nameLen = 0;
@@ -160,8 +169,9 @@ bool ReadPayloadManifest(std::vector<PayloadEntry>& entries) {
         }
         name[nameLen] = 0;
         PayloadEntry entry;
-        entry.name = name.data();
-        if (entry.name.find("..") != std::string::npos || entry.name[0] == '/' ||
+        entry.name.assign(name.data(), nameLen);
+        if (entry.name.find('\0') != std::string::npos ||
+            entry.name.find("..") != std::string::npos || entry.name[0] == '/' ||
             entry.name[0] == '\\' || entry.name.find(':') != std::string::npos ||
             fread(&entry.offset, 8, 1, file) != 1 ||
             fread(&entry.size, 8, 1, file) != 1 ||
@@ -225,7 +235,11 @@ bool ExtractPayloadFiles(const std::vector<PayloadEntry>& entries,
         const std::wstring destination = directory + name;
         FILE* out = nullptr;
         if (_wfopen_s(&out, destination.c_str(), L"wb") || !out) { ok = false; break; }
-        _fseeki64(in, entry.offset, SEEK_SET);
+        if (_fseeki64(in, static_cast<int64_t>(entry.offset), SEEK_SET) != 0) {
+            fclose(out);
+            ok = false;
+            break;
+        }
         BCRYPT_ALG_HANDLE algorithm = nullptr;
         BCRYPT_HASH_HANDLE hash = nullptr;
         if (BCryptOpenAlgorithmProvider(&algorithm, BCRYPT_SHA256_ALGORITHM,
