@@ -397,17 +397,16 @@ static void PositionLinkWindows() {
         if (dc) { dpi = GetDeviceCaps(dc, LOGPIXELSY); ReleaseDC(nullptr, dc); }
     }
     g_menuFontHeight = MulDiv(14, (int)dpi, 96);           // match menu (14.4)
-    const int height = MulDiv(45, (int)dpi, 96);           // menu bar band height
-    // The menu bar sits below the self-drawn caption row (which holds the
-    // _ 口 X buttons). To centre the links on the menu-bar row, skip that
-    // caption height first. DWMWA_CAPTION_HEIGHT gives the true caption height
-    // for a borderless DWM window; fall back to SM_CYCAPTION scaled.
+    // The signature belongs in the self-drawn caption row (the one holding the
+    // _ 口 X buttons), not the menu bar below it. DWMWA_CAPTION_HEIGHT gives the
+    // true caption height for a borderless DWM window; fall back to SM_CYCAPTION.
     int captionH = 0;
     (void)DwmGetWindowAttribute(g_toolbagWindow, 33, &captionH, sizeof(captionH));
     if (captionH <= 0)
         captionH = MulDiv(GetSystemMetrics(SM_CYCAPTION), (int)dpi, 96);
     if (captionH < 0) captionH = 0;
-    const int controlsCenterY = origin.y + captionH + height / 2;
+    const int height = captionH;
+    const int controlsCenterY = origin.y + captionH / 2;
     const int windowControlsWidth = MulDiv(150, height, 45);
     const int controlsLeft = origin.x + client.right - windowControlsWidth;
     const int margin = MulDiv(8, height, 45);
