@@ -38,3 +38,7 @@ work/
 build/
 release/
 .tools/
+
+# Release artifacts under dist are versioned.
+!/dist/
+!/dist/**
