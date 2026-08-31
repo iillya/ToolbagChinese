@@ -23,7 +23,7 @@ std::wstring GetParentDirectory(const std::wstring& path) {
 }
 
 void ShowLauncherError(const wchar_t* message) {
-    MessageBoxW(nullptr, message, L"八猴5汉化版", MB_OK | MB_ICONERROR);
+    MessageBoxW(nullptr, message, L"Toolbag 中文补丁", MB_OK | MB_ICONERROR);
 }
 
 LPTHREAD_START_ROUTINE ResolveLoadLibraryEntryPoint(DWORD processId) {
@@ -193,10 +193,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE,
         WaitForSingleObject(processInfo.hProcess, 5000);
         wchar_t detail[640] = {};
         swprintf_s(detail,
-            L"汉化 Hook 安装失败。Toolbag 未启动，原程序文件未受影响。\n\n"
+            L"汉化加载失败，已取消本次 Toolbag 启动。原程序文件未修改。\n\n"
             L"诊断：事件=%s，主线程信息=%s，内存=%s，写入=%s，"
             L"远程地址=%s，远程线程=%s，"
-            L"远程等待=0x%08lX，加载结果=0x%08lX，Hook等待=0x%08lX",
+            L"远程等待=0x%08lX，加载结果=0x%08lX，Hook 等待=0x%08lX。",
             readyEvent ? L"成功" : L"失败",
             startupInfoReady ? L"成功" : L"失败",
             remoteDllPath ? L"成功" : L"失败",

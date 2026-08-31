@@ -97,11 +97,11 @@ static HWINEVENTHOOK    g_locationEventHook = nullptr;
 static HWINEVENTHOOK    g_minimizeEventHook = nullptr;
 static HWINEVENTHOOK    g_visibilityEventHook = nullptr;
 
-static const wchar_t kAuthorText[] = L"Bilibili神说要凑数汉化";
+static const wchar_t kAuthorText[] = L"Bilibili 神说要凑数汉化";
 static const wchar_t kAuthorUrl[] =
     L"https://space.bilibili.com/281243426?spm_id_from=333.1007.0.0";
-static const wchar_t kGitHubText[] = L"Github仓库";
-static const wchar_t kGitHubUrl[] = L"https://github.com/iillya/Toolbag";
+static const wchar_t kGitHubText[] = L"GitHub 仓库";
+static const wchar_t kGitHubUrl[] = L"https://github.com/iillya/ToolbagChinese";
 static constexpr COLORREF kLinkTextColor = RGB(102, 170, 255); // #66AAFF
 static constexpr COLORREF kLinkTransparentColor = RGB(1, 2, 3);
 static constexpr DWORD kLinkTransparentDibPixel = 0x00010203;

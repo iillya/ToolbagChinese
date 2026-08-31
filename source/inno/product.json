@@ -1,0 +1,27 @@
+{
+  "product": "Toolbag",
+  "exe": "toolbag.exe",
+  "default": "Marmoset\\Toolbag 5",
+  "icon": "toolbag.ico",
+  "qt": [],
+  "modules": [],
+  "handlers": [
+    "MarmosetToolbag5.Scene",
+    "MarmosetToolbag.Scene",
+    "Applications\\toolbag.exe"
+  ],
+  "extensions": [
+    ".tbscene"
+  ],
+  "legacy": [
+    "ChineseLocalizer.tbscene"
+  ],
+  "payload": {
+    "ToolbagChineseHook.dll": "build/out/ToolbagChineseHook.dll",
+    "ToolbagChineseLauncher.exe": "build/out/ToolbagChineseLauncher.exe",
+    "dictionary_zh.json": "translations/dictionary_zh.json",
+    "ToolbagChineseFont.slug": "fonts/ToolbagChineseFont.slug",
+    "tbscene.ico": "icon/tbscene.ico"
+  },
+  "id": "ToolbagChinese"
+}

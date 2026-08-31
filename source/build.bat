@@ -1,5 +1,6 @@
 @echo off
 setlocal
+rem INNO_PRIMARY_BUILD
 set "ROOT=%~dp0.."
 set "SOURCE=%ROOT%\source"
 set "BUILD=%ROOT%\build"
@@ -32,9 +33,8 @@ cl /nologo /O2 /W4 /LD /EHa /std:c++20 /utf-8 /DZYDIS_STATIC_BUILD /I"%THIRD_PAR
 if errorlevel 1 exit /b 1
 cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\launcher.cpp" user32.lib "%OBJ%\app_icon.res" /Fo:"%OBJ%\launcher.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%OUT%\ToolbagChineseLauncher.exe"
 if errorlevel 1 exit /b 1
-cl /nologo /O2 /W4 /EHsc /utf-8 "%SOURCE%\installer.cpp" user32.lib gdi32.lib ole32.lib shell32.lib "%OBJ%\app_icon.res" /Fo:"%OBJ%\installer.obj" /link /SUBSYSTEM:WINDOWS /OUT:"%OUT%\ChineseInstaller.exe" /MANIFEST:EMBED /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'"
-if errorlevel 1 exit /b 1
-python "%SOURCE%\embed_files.py"
+if /I "%~1"=="--runtime-only" exit /b 0
+call "%~dp0build_inno.bat" --package-only
 if errorlevel 1 exit /b 1
 echo Build complete.
 endlocal
