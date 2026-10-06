@@ -4,11 +4,9 @@
 #endif
 #define ProductId "ToolbagChinese.Inno"
 #define ProductName "Toolbag 中文补丁"
-#define AssocId "ToolbagChinese.Inno.casc"
 #ifdef TestMode
   #define ProductId "ToolbagChinese.Inno.IsolatedTests"
   #define ProductName "Toolbag Inno Isolated Tests"
-  #define AssocId "ToolbagChinese.Inno.IsolatedTests.casc"
 #endif
 
 [Setup]
@@ -25,6 +23,9 @@ DirExistsWarning=no
 DisableProgramGroupPage=yes
 UsePreviousTasks=no
 UninstallFilesDir={app}\ChineseLauncher\.inno
+; Replace the previous log: the 1.0.2 release logged a recursive delete of
+; ChineseLauncher. Appending that log would delete user dictionaries on uninstall.
+UninstallLogMode=overwrite
 UninstallDisplayIcon={app}\ChineseLauncher\ToolbagChineseLauncher.exe
 OutputDir={#PackageOutput}
 OutputBaseFilename=ToolbagChineseInstaller
@@ -32,7 +33,7 @@ SetupIconFile=..\..\icon\toolbag.ico
 SetupArchitecture=x64
 ArchitecturesAllowed=x64os
 ArchitecturesInstallIn64BitMode=x64os
-MinVersion=10.0
+MinVersion=10.0.14393
 WizardStyle=modern light windows11
 WizardSizePercent=110
 WizardImageFile=
@@ -60,7 +61,7 @@ DialogFontSize=10
 
 [Messages]
 SelectDirLabel3=请选择包含 toolbag.exe 的软件目录。补丁只写入其下的 ChineseLauncher 文件夹。
-FinishedLabel=中文补丁已安装。请通过“Toolbag 中文版”快捷方式启动软件。%n%n卸载请使用 Windows“已安装的应用”。卸载会完整删除 ChineseLauncher 文件夹及其中的全部文件，不保留词典、设置或备份。
+FinishedLabel=中文补丁已安装。请通过“Toolbag 中文版”快捷方式启动软件。%n%n卸载请使用 Windows“已安装的应用”。用户修改的词典、设置和额外文件将保留。
 
 [Tasks]
 Name: "desktopicon"; Description: "创建公共桌面快捷方式"
@@ -78,16 +79,13 @@ Name: "{autoprograms}\Toolbag 中文版"; Filename: "{app}\ChineseLauncher\Toolb
 #endif
 
 ; Associations are handled by the native, ownership-checked proxy journal.
-[UninstallDelete]
-Type: filesandordirs; Name: "{app}\ChineseLauncher"
-
 ; Do not create a new default ProgID or write UserChoice.
 
 [Code]
 var
   LegacySid: String;
   ProxySid: String;
-  PayloadNames: TArrayOfString;
+  PayloadNames, PayloadHashes: TArrayOfString;
 
 function CheckTarget(Directory: String; CheckVersion: Boolean; Message: String; Capacity: Cardinal): Boolean;
 external 'CheckTarget@files:support.dll stdcall setuponly';
@@ -120,9 +118,44 @@ begin
   Result := InstallRoot + '\.inno\install-state.ini';
 end;
 
-function LauncherCommand: String;
+function IsDictionary(Name: String): Boolean;
 begin
-  Result := '"' + InstallRoot + '\ToolbagChineseLauncher.exe" "%1"';
+  Result := (Pos('translations\', Lowercase(Name)) = 1) or
+    (CompareText(Name, 'dictionary_zh.json') = 0);
+end;
+
+function IsUserSetting(Name: String): Boolean;
+begin
+  Result := CompareText(Name, 'settings.ini') = 0;
+end;
+
+function IsReleasedDefault(Name, Digest: String): Boolean;
+begin
+  { 1.0.2 deleted the hash journal. Its published dictionary is still a known
+    unmodified default, so it may be updated without touching custom files. }
+  Result := (CompareText(Name, 'dictionary_zh.json') = 0) and
+    (CompareText(Digest, '13e73005560f501a4b6337dcacf4879affcc8edd6c4ffbb126f0ec1994ec7031') = 0);
+end;
+
+function ShouldInstallDictionary(Name, NewHash: String): Boolean;
+var
+  Target, CurrentHash, PreviousHash: String;
+begin
+  Target := InstallRoot + '\' + Name;
+  Result := True;
+  if not FileExists(Target) then Exit;
+  if IsUserSetting(Name) then begin
+    Result := False;
+    Log('Preserving user settings: ' + Target);
+    Exit;
+  end;
+  CurrentHash := GetSHA256OfFile(Target);
+  PreviousHash := GetIniString('Hashes', Name, '', StateFile);
+  Result := (CompareText(CurrentHash, NewHash) = 0) or
+    ((PreviousHash <> '') and (CompareText(CurrentHash, PreviousHash) = 0)) or
+    IsReleasedDefault(Name, CurrentHash);
+  if not Result then
+    Log('Preserving modified dictionary: ' + Target + '; latest default is in .inno\defaults.');
 end;
 
 function BufferText(Buffer: String): String;
@@ -244,7 +277,10 @@ end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 var
+  I: Integer;
+  #ifndef TestMode
   Message: String;
+  #endif
 begin
   if CurStep = ssInstall then begin
     #ifndef TestMode
@@ -258,11 +294,17 @@ begin
     BackupExistingPayload;
   end;
   if CurStep = ssPostInstall then begin
-    DeleteIniSection('Hashes', StateFile);
     if not SetIniString('Install', 'Owner', '{#ProductId}', StateFile) or
       not SetIniString('Install', 'LegacyOwnerSid', LegacySid, StateFile) or
       not SetIniString('Install', 'ProxyOwnerSid', ProxySid, StateFile) then
       RaiseException('文件已安装，但安装记录无法保存；请保留日志并重新运行安装器。');
+    for I := 0 to GetArrayLength(PayloadNames) - 1 do
+      if FileExists(InstallRoot + '\' + PayloadNames[I]) and
+        (CompareText(GetSHA256OfFile(InstallRoot + '\' + PayloadNames[I]), PayloadHashes[I]) = 0) then begin
+        if not SetIniString('Hashes', PayloadNames[I], PayloadHashes[I], StateFile) then
+          RaiseException('文件已安装，但文件校验记录无法保存；请重新运行安装器。');
+      end else if not (IsDictionary(PayloadNames[I]) or IsUserSetting(PayloadNames[I])) then
+        RaiseException('补丁文件缺失或校验失败：' + PayloadNames[I]);
       #ifndef TestMode
       { Remove alternate uninstall records from other installer IDs for the
         same product so they cannot later delete this shared ChineseLauncher. }
@@ -323,7 +365,8 @@ end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
-  Sid, Message: String;
+  I: Integer;
+  Name, Target, InstalledHash, Sid, Message: String;
 begin
   if CurUninstallStep = usUninstall then begin
     try
@@ -342,6 +385,23 @@ begin
 
     CleanupInstallerBackups;
     CleanupProductBackups;
-
+    for I := 0 to GetArrayLength(PayloadNames) - 1 do begin
+      Name := PayloadNames[I];
+      Target := InstallRoot + '\' + Name;
+      if IsDictionary(Name) and FileExists(Target) then begin
+        InstalledHash := GetIniString('Hashes', Name, '', StateFile);
+        if (InstalledHash <> '') and
+          (CompareText(GetSHA256OfFile(Target), InstalledHash) = 0) then
+          DeleteOwnedFile(Target)
+        else Log('Keeping modified/unknown dictionary: ' + Target);
+      end;
+    end;
+  end;
+  if CurUninstallStep = usPostUninstall then begin
+    CleanupInstallerDefaults;
+    DeleteOwnedFile(StateFile);
+    RemoveDir(InstallRoot + '\translations');
+    RemoveDir(InstallRoot + '\.inno');
+    RemoveDir(InstallRoot);
   end;
 end;

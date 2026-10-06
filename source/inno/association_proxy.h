@@ -1,5 +1,5 @@
 #pragma once
-// A user-level overlay of verified Cascadeur shell commands. No extension
+// A user-level overlay of verified Toolbag shell commands. No extension
 // default, UserChoice, machine-hive or unrelated handler writes.
 #include <windows.h>
 #include <shlwapi.h>
@@ -8,10 +8,10 @@
 #include <cstring>
 
 #include "product_config.h"
-namespace CascadeurProxy { struct Value; }
+namespace ToolbagProxy { struct Value; }
 namespace ProductLegacy { bool importOriginal(HKEY, HKEY, const std::wstring&, const std::wstring&,
-    const std::wstring&, CascadeurProxy::Value&, std::wstring&); }
-namespace CascadeurProxy {
+    const std::wstring&, ToolbagProxy::Value&, std::wstring&); }
+namespace ToolbagProxy {
 constexpr wchar_t kJournal[] = L"Software\\ToolbagChineseLocalizer\\InnoProxyV1";
 inline std::vector<std::wstring> kHandlers;
 struct Key {
@@ -161,10 +161,10 @@ inline bool makeProxy(const Value& effective, const std::wstring& officialExe,
         executable = expanded;
     }
     const auto slash = executable.find_last_of(L"\\/");
-    const bool otherCascadeur = allowOtherInstall && executable.size() > 3 && executable[1] == L':' &&
+    const bool otherInstallation = allowOtherInstall && executable.size() > 3 && executable[1] == L':' &&
         executable[2] == L'\\' && slash != std::wstring::npos &&
         _wcsicmp(executable.substr(slash + 1).c_str(), officialExe.substr(officialExe.find_last_of(L"\\/") + 1).c_str()) == 0;
-    if ((_wcsicmp(executable.c_str(), officialExe.c_str()) != 0 && !otherCascadeur) || arguments.empty() ||
+    if ((_wcsicmp(executable.c_str(), officialExe.c_str()) != 0 && !otherInstallation) || arguments.empty() ||
         (arguments.front() != L' ' && arguments.front() != L'\t') ||
         (arguments.find(L"%1") == std::wstring::npos && arguments.find(L"%L") == std::wstring::npos &&
          arguments.find(L"%l") == std::wstring::npos && arguments.find(L"%*") == std::wstring::npos)) return false;

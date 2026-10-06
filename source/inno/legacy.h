@@ -2,7 +2,7 @@
 // Conservative import of prior installer records. Never delete an official class
 // or UserChoice; legacy classes are retained with an official open command.
 namespace ProductLegacy {
-using namespace CascadeurProxy;
+using namespace ToolbagProxy;
 inline bool exactLauncher(const Value& value, const std::wstring& launcher) {
     std::wstring command;
     return text(value, command) && command == L"\"" + launcher + L"\" \"%1\"";

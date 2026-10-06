@@ -1,6 +1,5 @@
-{ Delete only installer-owned transaction snapshots and legacy default copies.
-  Never recurse through ChineseLauncher or unknown directories. Called after a
-  successful install or after uninstall restoration succeeds. }
+{ Delete only installer-owned transaction snapshots and default copies.
+  Never recurse through ChineseLauncher or unknown directories. }
 procedure DeleteOwnedFile(FileName: String);
 begin
   if FileExists(FileName) and not DeleteFile(FileName) then
@@ -53,5 +52,11 @@ begin
     end;
   end;
   RemoveDir(Directory);
+end;
+
+procedure CleanupInstallerDefaults;
+begin
+  { The latest packaged dictionary remains available while a user-modified
+    dictionary is active. Remove this installer-owned copy only on uninstall. }
   CleanSnapshot(InstallRoot + '\.inno\defaults');
 end;

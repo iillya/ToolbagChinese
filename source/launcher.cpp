@@ -32,8 +32,18 @@ LPTHREAD_START_ROUTINE ResolveLoadLibraryEntryPoint(DWORD processId) {
     FARPROC localFunction = GetProcAddress(localKernel, "LoadLibraryW");
     if (!localFunction) return nullptr;
 
+    // Forwarded Windows exports can live in KernelBase instead of Kernel32.
+    HMODULE owner = nullptr;
+    if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            reinterpret_cast<LPCWSTR>(localFunction), &owner)) return nullptr;
+    wchar_t ownerPath[32768]{};
+    const DWORD ownerLength = GetModuleFileNameW(owner, ownerPath, 32768);
+    if (!ownerLength || ownerLength >= 32768) return nullptr;
+    const wchar_t* ownerName = wcsrchr(ownerPath, L'\\');
+    ownerName = ownerName ? ownerName + 1 : ownerPath;
     const uintptr_t functionRva = reinterpret_cast<uintptr_t>(localFunction) -
-                                  reinterpret_cast<uintptr_t>(localKernel);
+                                  reinterpret_cast<uintptr_t>(owner);
     HANDLE snapshot = CreateToolhelp32Snapshot(
         TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, processId);
     if (snapshot != INVALID_HANDLE_VALUE) {
@@ -41,7 +51,7 @@ LPTHREAD_START_ROUTINE ResolveLoadLibraryEntryPoint(DWORD processId) {
         module.dwSize = sizeof(module);
         if (Module32FirstW(snapshot, &module)) {
             do {
-                if (_wcsicmp(module.szModule, L"kernel32.dll") == 0) {
+                if (_wcsicmp(module.szModule, ownerName) == 0) {
                     CloseHandle(snapshot);
                     return reinterpret_cast<LPTHREAD_START_ROUTINE>(
                         reinterpret_cast<uintptr_t>(module.modBaseAddr) +

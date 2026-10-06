@@ -26,6 +26,36 @@ def pascal_string(value):
     return "'" + value.replace("'", "''") + "'"
 
 
+def validate_dictionary(source):
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"Duplicate dictionary field: {key!r}")
+            result[key] = value
+        return result
+
+    def invalid_constant(value):
+        raise ValueError(f"Invalid JSON constant: {value}")
+
+    if not 0 < source.stat().st_size <= 64 * 1024 * 1024:
+        raise ValueError('Dictionary must be nonempty and at most 64 MiB')
+    data = json.loads(source.read_text(encoding='utf-8-sig'),
+                      object_pairs_hook=unique_object, parse_constant=invalid_constant)
+    translations = data.get('translations') if isinstance(data, dict) else None
+    if not isinstance(translations, dict) or not translations:
+        raise ValueError('Dictionary requires a nonempty translations object')
+    for key, value in translations.items():
+        if not isinstance(value, str):
+            raise ValueError(f'Non-string translation: {key!r}')
+        if '\0' in key or '\0' in value:
+            raise ValueError('Dictionary strings cannot contain embedded NUL')
+        key.encode('utf-8')
+        value.encode('utf-8')  # Reject unpaired Unicode surrogates.
+    if not any(key and value for key, value in translations.items()):
+        raise ValueError('Dictionary has no usable translations')
+
+
 def payload_entries():
     cfg = json.loads((HERE / 'product.json').read_text(encoding='utf-8'))
     entries = []
@@ -35,6 +65,8 @@ def payload_entries():
         source = ROOT / relative
         if source.is_symlink() or not source.is_file() or not source.resolve().is_relative_to(ROOT):
             raise ValueError(f'Unsafe/missing payload: {source}')
+        if name == 'dictionary_zh.json':
+            validate_dictionary(source)
         entries.append((name.replace('/', '\\'), source, hashlib.sha256(source.read_bytes()).hexdigest()))
     names = [name.casefold() for name, _, _ in entries]
     if len(names) != len(set(names)) or not any(n.endswith('dictionary_zh.json') for n in names):
@@ -43,20 +75,29 @@ def payload_entries():
 
 
 def includes(entries):
-    files, code = [], [f'SetArrayLength(PayloadNames, {len(entries)});']
+    files, code = [], [f'SetArrayLength(PayloadNames, {len(entries)});',
+                       f'SetArrayLength(PayloadHashes, {len(entries)});']
     for index, (name, source, digest) in enumerate(entries):
         parent, filename = name.rsplit('\\', 1) if '\\' in name else ('', name)
         target = '{app}\\ChineseLauncher' + ('\\' + parent if parent else '')
+        flags, check = 'ignoreversion', ''
+        if name.casefold().startswith('translations\\') or name.casefold() in ('dictionary_zh.json', 'settings.ini'):
+            flags += ' uninsneveruninstall'
+            check = f'; Check: ShouldInstallDictionary({pascal_string(name)}, {pascal_string(digest)})'
+            defaults = '{app}\\ChineseLauncher\\.inno\\defaults' + ('\\' + parent if parent else '')
+            files.append(f'Source: "{iss_string(source)}"; DestDir: "{defaults}"; '
+                         f'DestName: "{iss_string(filename)}"; Flags: ignoreversion')
         files.append(f'Source: "{iss_string(source)}"; DestDir: "{target}"; '
-                     f'DestName: "{iss_string(filename)}"; Flags: ignoreversion')
+                     f'DestName: "{iss_string(filename)}"; Flags: {flags}{check}')
         code.append(f'PayloadNames[{index}] := {pascal_string(name)};')
+        code.append(f'PayloadHashes[{index}] := {pascal_string(digest)};')
     return '\n'.join(files) + '\n', '\n'.join(code) + '\n'
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--iscc', type=Path, default=os.environ.get('INNO_ISCC', ROOT.parent / '_ThirdParty/InnoSetup/7.1.0/ISCC.exe'))
-    parser.add_argument('--version', default='1.0.2')
+    parser.add_argument('--version', default='1.0.4')
     parser.add_argument('--test-mode', action='store_true')
     args = parser.parse_args()
     if not re.fullmatch(r'\d+\.\d+\.\d+(?:\.\d+)?', args.version): parser.error('Invalid version')

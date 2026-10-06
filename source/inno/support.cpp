@@ -51,7 +51,7 @@ bool amd64(const std::wstring& path) {
 
 bool safePath(const std::wstring& root) {
     // A host directory, not a drive root, UNC share or Win32 device path.
-    if (root.size() < 4 || root.size() > 180 || root[1] != L':' || root[2] != L'\\' ||
+    if (root.size() < 4 || root[1] != L':' || root[2] != L'\\' ||
         !((root[0] >= L'A' && root[0] <= L'Z') || (root[0] >= L'a' && root[0] <= L'z')) ||
         root.find_first_of(L"\"<>|?*") != std::wstring::npos || root.find(L':', 2) != std::wstring::npos) return false;
     wchar_t full[32768]{};
@@ -147,14 +147,13 @@ extern "C" __declspec(dllexport) BOOL __stdcall CheckTarget(
     if (message && capacity) message[0] = L'\0';
     try {
         const std::wstring root(directory ? directory : L"");
-        if (!safePath(root)) return fail(L"请选择本地、无目录链接的 Toolbag 目录；路径长度上限为 180 字符。", message, capacity);
+        if (!safePath(root)) return fail(L"请选择本地磁盘上真实存在、无目录链接的 Toolbag 目录。", message, capacity);
         unsigned count = 0;
         if (!safeTree(std::filesystem::path(root) / L"ChineseLauncher", 0, count))
             return fail(L"ChineseLauncher 内含目录链接、不可访问文件或超出检查上限，已停止操作。", message, capacity);
         if (checkVersion) {
             if (!regularFile(root + L"\\" + hostName(root)) || !amd64(root + L"\\" + hostName(root)))
                 return fail(L"请选择包含 x64 toolbag.exe 的软件目录，不要选择 ChineseLauncher 子目录。", message, capacity);
-            if (!productQt(root)) return fail(L"目标 Qt 组件不完整或版本不兼容，请确认软件版本。", message, capacity);
         }
         if (!productExtraPaths(root)) return fail(L"字体目录缺失或含有文件链接，已停止操作。", message, capacity);
         if (!hostStopped(root))
@@ -168,7 +167,7 @@ extern "C" __declspec(dllexport) BOOL __stdcall LegacyOwner(
     if (!launcher || !owner || capacity < 185) return FALSE;
     try {
         const auto sid = interactiveSid();
-        CascadeurProxy::Key user;
+        ToolbagProxy::Key user;
         if (sid.empty() || RegOpenKeyExW(HKEY_USERS, sid.c_str(), 0, KEY_READ, &user.value) != ERROR_SUCCESS) return FALSE;
         const auto root = std::filesystem::path(launcher).parent_path().parent_path().wstring();
         std::wstring error;
@@ -185,7 +184,7 @@ extern "C" __declspec(dllexport) BOOL __stdcall RestoreLegacy(const wchar_t* sid
     if (!sid || !*sid) return TRUE;
     if (!launcher || wcslen(sid) > 184) return FALSE;
     try {
-        CascadeurProxy::Key user;
+        ToolbagProxy::Key user;
         if (RegOpenKeyExW(HKEY_USERS, sid, 0, KEY_READ | KEY_WRITE, &user.value) != ERROR_SUCCESS) return FALSE;
         const auto root = std::filesystem::path(launcher).parent_path().parent_path().wstring();
         std::wstring error;
@@ -196,7 +195,7 @@ extern "C" __declspec(dllexport) BOOL __stdcall RestoreLegacy(const wchar_t* sid
 }
 
 namespace {
-bool openProxyUser(const wchar_t* sid, CascadeurProxy::Key& user, REGSAM access) {
+bool openProxyUser(const wchar_t* sid, ToolbagProxy::Key& user, REGSAM access) {
     if (!sid || !*sid || wcslen(sid) > 184) return false;
     PSID parsed = nullptr;
     if (!ConvertStringSidToSidW(sid, &parsed)) return false;
@@ -212,15 +211,15 @@ extern "C" __declspec(dllexport) BOOL __stdcall PlanProxy(
     owner[0] = L'\0';
     try {
         const auto sid = interactiveSid();
-        CascadeurProxy::Key user;
+        ToolbagProxy::Key user;
         if (!openProxyUser(sid.c_str(), user, KEY_READ))
             return fail(L"无法确认当前桌面用户，未接管工程关联。", message, capacity);
-        std::vector<CascadeurProxy::Record> records;
+        std::vector<ToolbagProxy::Record> records;
         std::wstring error;
         // Explicit option: redirect the verified official handler to the
         // selected installation, even when its old registration names another
         // Toolbag directory. The original registration is never rewritten.
-        if (!CascadeurProxy::prepare(user.value, HKEY_LOCAL_MACHINE, root, records, error, true))
+        if (!ToolbagProxy::prepare(user.value, HKEY_LOCAL_MACHINE, root, records, error, true))
             return fail(error.c_str(), message, capacity);
         wcscpy_s(owner, ownerCapacity, sid.c_str());
         return TRUE;
@@ -230,11 +229,11 @@ extern "C" __declspec(dllexport) BOOL __stdcall PlanProxy(
 extern "C" __declspec(dllexport) BOOL __stdcall ApplyProxy(
     const wchar_t* root, const wchar_t* owner, wchar_t* message, unsigned capacity) {
     try {
-        CascadeurProxy::Key user;
+        ToolbagProxy::Key user;
         if (!root || !openProxyUser(owner, user, KEY_READ | KEY_WRITE))
             return fail(L"无法打开已确认用户的关联配置。", message, capacity);
         std::wstring error;
-        if (!CascadeurProxy::install(user.value, HKEY_LOCAL_MACHINE, root, error, nullptr, true))
+        if (!ToolbagProxy::install(user.value, HKEY_LOCAL_MACHINE, root, error, nullptr, true))
             return fail(error.c_str(), message, capacity);
         SHChangeNotify(SHCNE_ASSOCCHANGED, 0, nullptr, nullptr);
         return TRUE;
@@ -245,11 +244,11 @@ extern "C" __declspec(dllexport) BOOL __stdcall RemoveProxy(
     const wchar_t* root, const wchar_t* owner, wchar_t* message, unsigned capacity) {
     if (!owner || !*owner) return TRUE;
     try {
-        CascadeurProxy::Key user;
+        ToolbagProxy::Key user;
         if (!root || !openProxyUser(owner, user, KEY_READ | KEY_WRITE))
             return fail(L"原安装用户的注册表未加载，请登录该用户后重试卸载。", message, capacity);
         std::wstring error;
-        if (!CascadeurProxy::uninstall(user.value, root, error)) return fail(error.c_str(), message, capacity);
+        if (!ToolbagProxy::uninstall(user.value, root, error)) return fail(error.c_str(), message, capacity);
         SHChangeNotify(SHCNE_ASSOCCHANGED, 0, nullptr, nullptr);
         return TRUE;
     } catch (...) { return fail(L"工程关联恢复失败，已停止卸载；请保留备份。", message, capacity); }

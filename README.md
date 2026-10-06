@@ -2,6 +2,8 @@
 
 当前仅提供 **Inno Setup 安装器**，文件名为 `ToolbagChineseInstaller.exe`。安装、更新、迁移及卸载说明见 [安装指南](docs/installer.md)。卸载请使用 Windows“已安装的应用”，不再使用旧安装器。
 
+当前安装包：**1.0.4**。
+
 适用于 Windows 版 **Marmoset Toolbag 5** 的非官方简体中文补丁。安装后通过“Toolbag 中文版”启动，即可使用中文界面，同时保留 Toolbag 原有的命令、快捷键和工程数据。
 
 ## 下载与安装
@@ -61,7 +63,7 @@ Toolbag安装目录\ChineseLauncher\ToolbagChineseLauncher.exe
 
 ## 卸载与恢复原版
 
-保存工程并退出 Toolbag，在 Windows“已安装的应用”中卸载“Toolbag 中文补丁”。只删除补丁拥有的文件与快捷方式，保留修改过的词典、额外文件及备份，不删除用户工程。产品关联与字体的恢复规则见 [安装指南](docs/installer.md)。
+保存工程并退出 Toolbag，在 Windows“已安装的应用”中卸载“Toolbag 中文补丁”。只删除补丁拥有的文件与快捷方式，保留修改过的词典、设置和额外文件，不删除用户工程。安装器生成的备份在成功安装或卸载后清理。产品关联与字体的恢复规则见 [安装指南](docs/installer.md)。
 
 ## 常见问题
 
@@ -97,7 +99,7 @@ Toolbag安装目录\ChineseLauncher\ToolbagChineseLauncher.exe
 
 ## 兼容性说明
 
-- 支持 Windows x64 和 Marmoset Toolbag 5。
+- 支持 Windows 10 1607 或更高版本的 x64 系统，以及 Marmoset Toolbag 5。
 - 已对 Toolbag 5.0.0、5.0.1、5.0.2、5.0.3 做过静态兼容验证。
 - 不同小版本的界面可能存在差异，部分新词条可能暂时显示英文。
 - Toolbag 更新内部文字渲染方式后，可能需要等待补丁适配。
@@ -118,7 +120,6 @@ source\          Hook DLL、启动器、安装器和构建入口
 translations\    正式中文字典
 fonts\           中文兼容字体
 icon\            程序与场景文件图标
-scripts\         安装和恢复脚本
 third_party\     第三方依赖
 build\           本地构建文件与编译结果
 dist\            可发布安装器
@@ -130,3 +131,5 @@ dist\            可发布安装器
 - 项目仓库：[GitHub](https://github.com/iillya/ToolbagChinese)
 
 项目代码许可信息见 [LICENSE](LICENSE)。Zydis 使用 MIT 许可证，详见 `third_party/zydis/LICENSE`。内置 Slug 字体由本机安装的 Alibaba PuHuiTi 2.0 Regular 转换生成，字体版权归 Alibaba (China) Co., Ltd. 所有。Marmoset Toolbag 是 Marmoset LLC 的产品；本项目是非官方社区汉化补丁，与 Marmoset LLC 没有隶属关系。
+
+本次代码与验证记录见 [2026-09-28 审核记录](docs/audit-2026-09-28.md)。

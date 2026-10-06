@@ -14,7 +14,6 @@
 
 #include <Windows.h>
 #include <Shellapi.h>
-#include <dwmapi.h>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -29,6 +28,7 @@
 #include <cmath>
 #include <wchar.h>
 #include "Zydis.h"
+#include "translation_dictionary.h"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,7 +39,6 @@ using FontCompileFn   = void(__fastcall*)(void*, const char*);
 // single-line flags; keeping them in the hook is important because they are
 // passed on the stack by the Windows x64 ABI.
 using FontMeasureFn   = void(__fastcall*)(void*, float*, float*, const char*, int, bool);
-using TitleBarLayoutFn = void(__fastcall*)(void*, void*);
 
 // ---------------------------------------------------------------------------
 // Global state
@@ -47,28 +46,12 @@ using TitleBarLayoutFn = void(__fastcall*)(void*, void*);
 static HMODULE          g_hookModule = nullptr;
 static FontCompileFn    g_originalFontCompile[2] = {};
 static FontMeasureFn    g_originalFontMeasure = nullptr;
-static TitleBarLayoutFn g_originalTitleBarLayout = nullptr;
-static BYTE*            g_windowVtable = nullptr;
-static BYTE*            g_buttonVtable = nullptr;
-static int              g_menuFontHeight = 14;   // matches Toolbag's top-menu font
-
-struct TitleBarSnapshot {
-    bool valid = false;
-    float titleBarLayout[8] = {};
-    float containerLayout[8] = {};
-    float minimizeButtonLayout[8] = {};
-};
-static TitleBarSnapshot g_titleBarSnapshot = {};
-static SRWLOCK g_titleBarSnapshotLock = SRWLOCK_INIT;
-
+static int g_menuFontHeight = 14;
 
 struct TransparentStringHash {
     using is_transparent = void;
     size_t operator()(std::string_view value) const noexcept {
         return std::hash<std::string_view>{}(value);
-    }
-    size_t operator()(const std::string& value) const noexcept {
-        return (*this)(std::string_view(value));
     }
 };
 struct TransparentStringEqual {
@@ -130,63 +113,6 @@ static BOOL             g_hooksInstalled = FALSE;
 // ---------------------------------------------------------------------------
 // Dictionary loading
 // ---------------------------------------------------------------------------
-// Minimal JSON string unescaper ("... \n \t \\ \" \uXXXX ...").
-static std::string DecodeJsonEscapes(const std::string& input) {
-    std::string out;
-    out.reserve(input.size());
-    for (size_t i = 0; i < input.size(); i++) {
-        char c = input[i];
-        if (c != '\\' || i + 1 >= input.size()) { out += c; continue; }
-        char e = input[++i];
-        switch (e) {
-            case 'n': out += '\n'; break;
-            case 't': out += '\t'; break;
-            case 'r': out += '\r'; break;
-            case 'b': out += '\b'; break;
-            case 'f': out += '\f'; break;
-            case 'u': {
-                if (i + 4 < input.size()) {
-                    unsigned cp = 0;
-                    for (int j = 1; j <= 4; j++) {
-                        char h = input[i + j]; cp <<= 4;
-                        if (h >= '0' && h <= '9') cp |= (unsigned)(h - '0');
-                        else if (h >= 'a' && h <= 'f') cp |= (unsigned)(h - 'a' + 10);
-                        else if (h >= 'A' && h <= 'F') cp |= (unsigned)(h - 'A' + 10);
-                    }
-                    i += 4;
-                    if (cp < 0x80) out += (char)cp;
-                    else if (cp < 0x800) {
-                        out += (char)(0xC0 | (cp >> 6));
-                        out += (char)(0x80 | (cp & 0x3F));
-                    } else {
-                        out += (char)(0xE0 | (cp >> 12));
-                        out += (char)(0x80 | ((cp >> 6) & 0x3F));
-                        out += (char)(0x80 | (cp & 0x3F));
-                    }
-                }
-                break;
-            }
-            default: out += e; break;
-        }
-    }
-    return out;
-}
-
-// Read a quoted JSON string starting after the opening quote. Stops before the
-// closing quote; handles \" escapes so they don't terminate early.
-static std::string ParseJsonString(const std::string& text, size_t& position) {
-    std::string out;
-    while (position < text.size()) {
-        char c = text[position];
-        if (c == '\\' && position + 1 < text.size()) {
-            out += c; out += text[position + 1]; position += 2; continue;
-        }
-        if (c == '"') { position++; break; }
-        out += c; position++;
-    }
-    return DecodeJsonEscapes(out);
-}
-
 // Load a sp-translation-v1 JSON dictionary (format like my_assets_zh.json):
 // { ..., "translations": { "English": "中文", ... } }.
 static bool LoadTranslationDictionary(const wchar_t* fileName) {
@@ -205,34 +131,7 @@ static bool LoadTranslationDictionary(const wchar_t* fileName) {
     if (fread(&text[0], 1, (size_t)size, file) != (size_t)size) { fclose(file); return false; }
     fclose(file);
 
-    bool any = false;
-    size_t pos = text.find("\"translations\"");
-    if (pos == std::string::npos) return false;
-    pos = text.find('{', pos);
-    if (pos == std::string::npos) return false;
-    pos++;
-
-    while (pos < text.size()) {
-        while (pos < text.size() &&
-               (text[pos]==' '||text[pos]=='\t'||text[pos]=='\r'||text[pos]=='\n'||text[pos]==','))
-            pos++;
-        if (pos >= text.size()) break;
-        if (text[pos] == '}') break;                 // end of translations object
-        if (text[pos] != '"') { pos++; continue; }
-        pos++;                                        // opening quote of key
-        std::string key = ParseJsonString(text, pos);
-        while (pos < text.size() && (text[pos]==' '||text[pos]=='\t'||text[pos]=='\r'||text[pos]=='\n')) pos++;
-        if (pos < text.size() && text[pos] == ':') pos++;
-        while (pos < text.size() && (text[pos]==' '||text[pos]=='\t'||text[pos]=='\r'||text[pos]=='\n')) pos++;
-        if (pos >= text.size() || text[pos] != '"') break;
-        pos++;                                        // opening quote of value
-        std::string value = ParseJsonString(text, pos);
-        if (!key.empty() && !value.empty()) {
-            g_translations[key] = value;
-            any = true;
-        }
-    }
-    return any;
+    return ToolbagDictionary::Parse(text, g_translations);
 }
 
 static bool LoadDictionary() {
@@ -289,9 +188,14 @@ static int FilterMemoryReadException(DWORD exceptionCode) {
         : EXCEPTION_CONTINUE_SEARCH;
 }
 
+static const char* TranslateNoThrow(const char* text) noexcept {
+    try { return TranslateText(text); }
+    catch (...) { return text; }
+}
+
 static const char* TranslateSafely(const char* text) {
     __try {
-        return TranslateText(text);
+        return TranslateNoThrow(text);
     // Toolbag owns the incoming pointer. A stale engine pointer must fall back
     // to the original value instead of taking down the host process.
     } __except (FilterMemoryReadException(GetExceptionCode())) {
@@ -326,47 +230,6 @@ static void HookFontMeasure(void* instance, float* width, float* height,
                           characterLimit, singleLine);
 }
 
-// Capture the real child controls of TitleBar's window-button container after
-// Toolbag has performed its own layout. Control stores its child vector at
-// +0xF0/+0xF8; TitleBar stores the button container at +0x140.
-static void HookTitleBarLayout(void* instance, void* layoutContext) {
-    g_originalTitleBarLayout(instance, layoutContext);
-
-    TitleBarSnapshot snapshot = {};
-    __try {
-        if (!instance) __leave;
-        BYTE* titleBar = static_cast<BYTE*>(instance);
-        BYTE* container = *reinterpret_cast<BYTE**>(titleBar + 0x140);
-        if (!container || *reinterpret_cast<BYTE**>(container) != g_windowVtable)
-            __leave;
-        BYTE** begin = *reinterpret_cast<BYTE***>(container + 0xF0);
-        BYTE** end = *reinterpret_cast<BYTE***>(container + 0xF8);
-        if (!begin || !end || end < begin || end - begin != 3) __leave;
-        for (BYTE** child = begin; child != end; ++child) {
-            if (!*child || *reinterpret_cast<BYTE**>(*child) != g_buttonVtable)
-                __leave;
-        }
-        constexpr size_t layoutOffsets[8] = {
-            0x2C, 0x30, 0x4C, 0x50, 0x6C, 0x70, 0x8C, 0x90
-        };
-        for (size_t field = 0; field < 8; ++field) {
-            snapshot.titleBarLayout[field] = *reinterpret_cast<float*>(
-                titleBar + layoutOffsets[field]);
-            snapshot.containerLayout[field] = *reinterpret_cast<float*>(
-                container + layoutOffsets[field]);
-            snapshot.minimizeButtonLayout[field] = *reinterpret_cast<float*>(
-                begin[0] + layoutOffsets[field]);
-        }
-        snapshot.valid = true;
-    } __except (FilterMemoryReadException(GetExceptionCode())) {
-        snapshot.valid = false;
-    }
-
-    AcquireSRWLockExclusive(&g_titleBarSnapshotLock);
-    g_titleBarSnapshot = snapshot;
-    ReleaseSRWLockExclusive(&g_titleBarSnapshotLock);
-}
-
 static void PositionLinkWindows() {
     if (!g_authorWindow || !g_gitHubWindow) return;
     if (!IsWindow(g_toolbagWindow)) {
@@ -386,10 +249,7 @@ static void PositionLinkWindows() {
     POINT origin = {0, 0};
     if (!ClientToScreen(g_toolbagWindow, &origin)) return;
     // -------------------------------------------------------------------
-    // Anchor the links to the top title band and size them to match the
-    // top menu bar font. The menu font height (14.4) is measured at runtime
-    // from Toolbag's own font-measure path; the band height uses Toolbag's
-    // 45-DIP menu bar so the links sit and size exactly like the menu.
+    // Anchor links to the title band using per-window DPI metrics.
     // -------------------------------------------------------------------
     UINT dpi = GetDpiForWindow(g_toolbagWindow);
     if (dpi == 0) {
@@ -397,14 +257,9 @@ static void PositionLinkWindows() {
         if (dc) { dpi = GetDeviceCaps(dc, LOGPIXELSY); ReleaseDC(nullptr, dc); }
     }
     g_menuFontHeight = MulDiv(14, (int)dpi, 96);           // match menu (14.4)
-    // The signature belongs in the self-drawn caption row (the one holding the
-    // _ 口 X buttons), not the menu bar below it. DWMWA_CAPTION_HEIGHT gives the
-    // true caption height for a borderless DWM window; fall back to SM_CYCAPTION.
-    int captionH = 0;
-    (void)DwmGetWindowAttribute(g_toolbagWindow, 33, &captionH, sizeof(captionH));
-    if (captionH <= 0)
-        captionH = MulDiv(GetSystemMetrics(SM_CYCAPTION), (int)dpi, 96);
-    if (captionH < 0) captionH = 0;
+    // Attribute 33 is WINDOW_CORNER_PREFERENCE, not caption height. Using
+    // it here shrank the links to 1-3 pixels on Windows 11 rounded windows.
+    const int captionH = (std::max)(0, GetSystemMetricsForDpi(SM_CYCAPTION, dpi));
     const int height = captionH;
     const int controlsCenterY = origin.y + captionH / 2;
     const int windowControlsWidth = MulDiv(150, height, 45);
@@ -986,9 +841,8 @@ static bool LooksLikeMeasureFunction(BYTE* target, BYTE* imageEnd) {
     return preservesText && hasLargeWorkspace && callsStackProbe;
 }
 
-static bool LooksLikeFontCompileFunction(BYTE* target, BYTE* imageEnd) {
-    if (target < reinterpret_cast<BYTE*>(GetModuleHandleW(nullptr)) ||
-        target >= imageEnd) return false;
+static bool LooksLikeFontCompileFunction(BYTE* target, BYTE* imageBegin, BYTE* imageEnd) {
+    if (!IsExecutableAddress(target, imageBegin, imageEnd)) return false;
     bool hasNullGuard = false;
     bool usesText = false;
     bool previousWasNullCheck = false;
@@ -1046,7 +900,7 @@ static TextMethodScore ScoreTextMethod(BYTE* method, BYTE* imageBegin,
     if (!CollectReachableCalls(method, imageBegin, imageEnd, calls)) return score;
     for (BYTE* target : calls) {
         if (!IsExecutableAddress(target, imageBegin, imageEnd)) continue;
-        if (LooksLikeFontCompileFunction(target, imageEnd))
+        if (LooksLikeFontCompileFunction(target, imageBegin, imageEnd))
             ++score.compileTargets;
         if (LooksLikeMeasureFunction(target, imageEnd))
             ++score.measureTargets;
@@ -1079,56 +933,6 @@ static BYTE* ResolveTextDrawMethod(BYTE* textVtable, BYTE* imageBegin,
     return ambiguous ? nullptr : bestMethod;
 }
 
-// Identify TitleBar's layout override by the set of class fields it consumes.
-// Unlike a fixed vtable slot, these semantic accesses have remained stable as
-// methods move between slots/builds: menu bar (+0x138), caption container
-// (+0x140), frame (+0x148), and the two title textures (+0x150/+0x158).
-static bool LooksLikeTitleBarLayoutMethod(BYTE* method, BYTE* codeEnd) {
-    constexpr ZyanI64 requiredOffsets[] = {
-        0x138, 0x140, 0x148, 0x150, 0x158
-    };
-    bool found[ARRAYSIZE(requiredOffsets)] = {};
-    size_t offset = 0;
-    size_t instructions = 0;
-    while (offset < 0x500 && method + offset < codeEnd &&
-           instructions++ < 512) {
-        DecodedInstruction decoded;
-        if (!DecodeInstruction(method + offset,
-                               static_cast<size_t>(codeEnd - method - offset),
-                               decoded)) return false;
-        for (ZyanU8 operandIndex = 0;
-             operandIndex < decoded.instruction.operand_count_visible;
-             ++operandIndex) {
-            const auto& operand = decoded.operands[operandIndex];
-            if (operand.type != ZYDIS_OPERAND_TYPE_MEMORY) continue;
-            for (size_t field = 0; field < ARRAYSIZE(requiredOffsets); ++field)
-                if (operand.mem.disp.value == requiredOffsets[field])
-                    found[field] = true;
-        }
-        offset += decoded.instruction.length;
-        if (decoded.instruction.meta.category == ZYDIS_CATEGORY_RET) break;
-    }
-    for (bool value : found)
-        if (!value) return false;
-    return true;
-}
-
-static BYTE* ResolveTitleBarLayoutMethod(BYTE* titleBarVtable,
-                                         BYTE* codeBegin, BYTE* codeEnd) {
-    if (!titleBarVtable) return nullptr;
-    BYTE* match = nullptr;
-    constexpr size_t kMaximumVtableSlots = 64;
-    for (size_t slot = 0; slot < kMaximumVtableSlots; ++slot) {
-        BYTE* method = reinterpret_cast<BYTE*>(
-            *reinterpret_cast<void**>(titleBarVtable + slot * sizeof(void*)));
-        if (!IsExecutableAddress(method, codeBegin, codeEnd)) break;
-        if (!LooksLikeTitleBarLayoutMethod(method, codeEnd)) continue;
-        if (match && match != method) return nullptr;
-        match = method;
-    }
-    return match;
-}
-
 static void EmitJump(BYTE* destination, const void* target);
 static bool InstallInlineHook(BYTE* target, void* replacement,
                               void** original);
@@ -1147,7 +951,7 @@ static bool InstallFontHooksFromTextDraw(BYTE* textDrawMethod,
     for (BYTE* target : calls) {
         if (installedCount >= 2) break;
         if (IsExecutableAddress(target, imageBegin, imageEnd) &&
-            LooksLikeFontCompileFunction(target, imageEnd) &&
+            LooksLikeFontCompileFunction(target, imageBegin, imageEnd) &&
             InstallFontHook(target, installedCount)) {
             ++installedCount;
             any = true;
@@ -1357,6 +1161,7 @@ static bool InstallInlineHook(BYTE* target, void* replacement,
     for (size_t i = kAbsoluteJumpSize; i < patchSize; ++i) target[i] = 0x90;
     DWORD ignored = 0;
     VirtualProtect(target, patchSize, oldProtect, &ignored);
+    FlushInstructionCache(GetCurrentProcess(), trampoline, patchSize + kAbsoluteJumpSize);
     FlushInstructionCache(GetCurrentProcess(), target, patchSize);
     *original = trampoline;
     return true;
@@ -1390,6 +1195,10 @@ static BOOL CALLBACK InitializeHooks(PINIT_ONCE, PVOID, PVOID*) {
         CloseHandle(startupMapping);
     }
     if (!LoadDictionary()) return TRUE;
+    // Patched font functions retain callback addresses for the host lifetime.
+    HMODULE pinned = nullptr;
+    if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_PIN,
+            reinterpret_cast<LPCWSTR>(g_hookModule), &pinned)) return TRUE;
 
     BYTE* imageBase = (BYTE*)GetModuleHandleW(nullptr);
     BYTE* codeBegin = nullptr;
@@ -1426,25 +1235,6 @@ static BOOL CALLBACK InitializeHooks(PINIT_ONCE, PVOID, PVOID*) {
         }
     }
 
-    // Resolve the caption layout by class RTTI plus method semantics. Never
-    // assume a fixed RVA or vtable slot; a mismatch only disables link
-    // positioning and cannot prevent the translation hooks from starting.
-    BYTE* titleBarVtable = ResolveVtableByName(imageBase, ".?AVTitleBar@mset@@");
-    g_windowVtable = ResolveVtableByName(imageBase, ".?AVWindow@mset@@");
-    g_buttonVtable = ResolveVtableByName(imageBase, ".?AVButton@mset@@");
-    if (titleBarVtable && g_windowVtable && g_buttonVtable) {
-        BYTE* titleBarLayout = ResolveTitleBarLayoutMethod(
-            titleBarVtable, codeBegin, codeEnd);
-        void* original = nullptr;
-        if (titleBarLayout &&
-            InstallInlineHook(titleBarLayout,
-                              reinterpret_cast<void*>(HookTitleBarLayout),
-                              &original)) {
-            g_originalTitleBarLayout =
-                reinterpret_cast<TitleBarLayoutFn>(original);
-        }
-    }
-
     HANDLE linkWindows = CreateThread(nullptr, 0, RunLinkWindowThread,
                                       nullptr, 0, nullptr);
     if (linkWindows) CloseHandle(linkWindows);
@@ -1454,8 +1244,13 @@ static BOOL CALLBACK InitializeHooks(PINIT_ONCE, PVOID, PVOID*) {
 
 // Exported entry point used by the launcher via a remote thread.
 extern "C" __declspec(dllexport) BOOL WINAPI InstallHook() {
-    InitOnceExecuteOnce(&g_initOnce, InitializeHooks, nullptr, nullptr);
-    return g_hooksInstalled;
+    try {
+        InitOnceExecuteOnce(&g_initOnce, InitializeHooks, nullptr, nullptr);
+        return g_hooksInstalled;
+    } catch (...) {
+        OutputDebugStringW(L"Toolbag Chinese: hook initialization failed.\n");
+        return FALSE;
+    }
 }
 
 // Worker thread that signals the launcher once hooks are installed.
